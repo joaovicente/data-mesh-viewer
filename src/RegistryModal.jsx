@@ -1,0 +1,129 @@
+/*
+ * Copyright 2026 Joao Vicente
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React from 'react';
+
+export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad }) {
+    const [url, setUrl] = React.useState(currentUrl);
+
+    React.useEffect(() => {
+        setUrl(currentUrl);
+    }, [currentUrl, isOpen]);
+
+    if (!isOpen) return null;
+
+    const handleLoad = () => {
+        onLoad(url);
+        onClose();
+    };
+
+    return (
+        <>
+            {/* Overlay */}
+            <div
+                onClick={onClose}
+                style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.5)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                {/* Modal */}
+                <div
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                        background: 'white',
+                        borderRadius: '8px',
+                        padding: '24px',
+                        width: '90%',
+                        maxWidth: '600px',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+                    }}
+                >
+                    <h2 style={{ margin: '0 0 16px 0', fontSize: '18px', fontWeight: '600', color: '#1f2937' }}>
+                        Load Data Mesh Registry
+                    </h2>
+
+                    <div style={{ marginBottom: '20px' }}>
+                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#374151' }}>
+                            Registry URL
+                        </label>
+                        <input
+                            type="text"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            placeholder="Enter registry URL..."
+                            style={{
+                                width: '100%',
+                                padding: '10px 12px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                fontSize: '14px',
+                                fontFamily: 'monospace',
+                                boxSizing: 'border-box'
+                            }}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleLoad();
+                                }
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                        <button
+                            onClick={onClose}
+                            style={{
+                                padding: '8px 16px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                background: 'white',
+                                color: '#374151',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleLoad}
+                            style={{
+                                padding: '8px 16px',
+                                border: 'none',
+                                borderRadius: '6px',
+                                background: '#2563eb',
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Load Registry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}

@@ -1,0 +1,46 @@
+defaultDataMeshRegistryUrl: /DataProductRegistryPetsExample.yaml
+
+iconMap:
+  oracleRds: /icons/oracle.svg
+  sharepoint: /icons/sharepoint.svg
+  databricks: /icons/databricks.svg
+  powerBi: /icons/powerbi.svg
+  delta: /icons/delta.svg
+  reltio: /icons/reltio.svg
+  veevaVault: /icons/veeva.svg
+
+domainPalette:
+  - "#fee2e2"
+  - "#f3e8ff"
+  - "#fef3c7"
+  - "#ffedd5"
+  - "#e0e7ff"
+  - "#dbeafe"
+  - "#dcfce7"
+
+tiers:
+  dataSource:
+    label: DATA SOURCE
+    color: "#e2e8f0"
+    bannerColor: "#cbd5e1"
+    columnNumber: 1
+  sourceAligned:
+    label: DATA PRODUCT (SOURCE ALIGNED)
+    color: "#bfdbfe"
+    bannerColor: "#93c5fd"
+    columnNumber: 2
+  curated:
+    label: DATA PRODUCT (CURATED)
+    color: "#bfdbfe"
+    bannerColor: "#93c5fd"
+    columnNumber: 3
+  consumerAligned:
+    label: DATA PRODUCT (CONSUMER ALIGNED)
+    color: "#bfdbfe"
+    bannerColor: "#93c5fd"
+    columnNumber: 4
+  application:
+    label: APPLICATION
+    color: "#e2e8f0"
+    bannerColor: "#cbd5e1"
+    columnNumber: 5

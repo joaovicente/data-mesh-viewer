@@ -1,0 +1,1530 @@
+/*
+ * Copyright 2026 Joao Vicente
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { memo } from 'react';
+import { ReactFlow, Controls, Background, useNodesState, useEdgesState } from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import DataProductNode from './DataProductNode';
+import DataProductDetailNode from './DataProductDetailNode';
+import DataContractNode from './DataContractNode';
+import InteractiveYaml from './InteractiveYaml';
+import ExampleTable from './ExampleTable';
+import QualityTable from './QualityTable';
+import RelationshipEdge from './RelationshipEdge';
+import { validateRegistry } from './ValidationService';
+import YAML from 'yaml';
+
+import DomainSelector from './DomainSelector';
+import GlobalFilter from './GlobalFilter';
+import DataProductVisual from './DataProductVisual';
+import DataContractVisual from './DataContractVisual';
+import DataUsageAgreementVisual from './DataUsageAgreementVisual';
+import RegistryModal from './RegistryModal';
+
+const nodeTypes = {
+    selectorNode: DataProductNode,
+    lineageNode: DataProductDetailNode,
+    dataContractNode: DataContractNode,
+};
+
+const edgeTypes = {
+    relationshipEdge: RelationshipEdge,
+};
+
+const ORACLE_ICON = '/icons/oracle.svg';
+const SHAREPOINT_ICON = '/icons/sharepoint.svg';
+const DATABRICKS_ICON = '/icons/databricks.svg';
+const POWERBI_ICON = '/icons/powerbi.svg';
+const DELTA_ICON = '/icons/delta.svg';
+const RELTIO_ICON = '/icons/reltio.svg';
+const VEEVA_ICON = '/icons/veeva.svg';
+
+const ICON_MAP = {
+    'oracleRds': ORACLE_ICON,
+    'sharepoint': SHAREPOINT_ICON,
+    'databricks': DATABRICKS_ICON,
+    'powerBi': POWERBI_ICON,
+    'delta': DELTA_ICON,
+    'reltio': RELTIO_ICON,
+    'veevaVault': VEEVA_ICON
+};
+
+export default Flow;
+
+function Flow() {
+    // Registry State - URL will be loaded from config.json
+    const [registryUrl, setRegistryUrl] = React.useState('');
+    const [workingUrl, setWorkingUrl] = React.useState('');
+    const [dataMeshRegistry, setDataMeshRegistry] = React.useState([]);
+    const [dataMeshRegistryRaw, setDataMeshRegistryRaw] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
+    const [config, setConfig] = React.useState({ iconMap: {}, tiers: {}, domainPalette: [], defaultDataMeshRegistryUrl: '' }); // Config state
+    const [configError, setConfigError] = React.useState(null); // Track config loading errors
+    const [showRegistryModal, setShowRegistryModal] = React.useState(false);
+
+    // Load Config
+    React.useEffect(() => {
+        fetch('/config.yaml')
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Failed to load config.yaml (${res.status} ${res.statusText}). Make sure the file exists in the public directory.`);
+                }
+                return res.text();
+            })
+            .then(text => {
+                if (!text || text.trim() === '') {
+                    throw new Error('config.yaml is empty. Please add configuration settings to the file.');
+                }
+
+                let data;
+                try {
+                    data = YAML.parse(text);
+                } catch (yamlErr) {
+                    throw new Error(`config.yaml contains invalid YAML syntax: ${yamlErr.message}. Please check the file format.`);
+                }
+
+                if (!data || typeof data !== 'object') {
+                    throw new Error('config.yaml must contain a valid YAML document with configuration settings.');
+                }
+
+                // Validate required fields
+                if (!data.defaultDataMeshRegistryUrl) {
+                    setConfigError('config.yaml is missing required field "defaultDataMeshRegistryUrl". Please add this field with the path to your registry YAML file.');
+                    return;
+                }
+
+                const loadedConfig = {
+                    iconMap: data.iconMap || {},
+                    tiers: data.tiers || {},
+                    domainPalette: data.domainPalette || ['#fee2e2', '#f3e8ff', '#fef3c7', '#ffedd5', '#e0e7ff', '#dbeafe', '#dcfce7'],
+                    defaultDataMeshRegistryUrl: data.defaultDataMeshRegistryUrl
+                };
+                setConfig(loadedConfig);
+                setConfigError(null);
+                // Set initial registry URL from config
+                setRegistryUrl(loadedConfig.defaultDataMeshRegistryUrl);
+                setWorkingUrl(loadedConfig.defaultDataMeshRegistryUrl);
+            })
+            .catch(err => {
+                console.error("Failed to load config.yaml", err);
+                setConfigError(err.message);
+            });
+    }, []);
+
+    // React Flow State
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const [selectedNodeId, setSelectedNodeId] = React.useState(null);
+    const [hoveredEdgeId, setHoveredEdgeId] = React.useState(null);
+    const [rfInstance, setRfInstance] = React.useState(null);
+
+    // Filter State
+    const [selectedDomains, setSelectedDomains] = React.useState([]);
+    const [globalFilterText, setGlobalFilterText] = React.useState('');
+
+    // Side Panel State
+    const [sidePanelContent, setSidePanelContent] = React.useState(null);
+    const [sidePanelType, setSidePanelType] = React.useState('yaml'); // 'yaml' | 'examples'
+    const [sidePanelWidth, setSidePanelWidth] = React.useState(500);
+    const [sidePanelFilter, setSidePanelFilter] = React.useState(''); // New filter state
+    const [sidePanelTab, setSidePanelTab] = React.useState('visual'); // 'visual' | 'yaml'
+
+    // Reset tab to visual when opening new content
+    React.useEffect(() => {
+        if (sidePanelContent) {
+            setSidePanelTab('visual');
+            setSidePanelFilter('');
+        }
+    }, [sidePanelContent]);
+    const [isResizing, setIsResizing] = React.useState(false);
+
+    // Fetch Registry
+    React.useEffect(() => {
+        // Don't fetch if URL is not set yet (waiting for config to load)
+        if (!registryUrl) {
+            return;
+        }
+
+        const fetchRegistry = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const response = await fetch(registryUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch registry from "${registryUrl}" (${response.status} ${response.statusText}). Please check the URL in config.yaml.`);
+                }
+                const text = await response.text();
+                setDataMeshRegistryRaw(text);
+
+                // Check if response is HTML instead of YAML (common when file doesn't exist)
+                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                    throw new Error(`Registry file "${registryUrl}" not found. The server returned an HTML page instead of YAML. Please verify the file path in config.yaml.`);
+                }
+
+                let parsed;
+                try {
+                    parsed = YAML.parse(text);
+                } catch (yamlErr) {
+                    throw new Error(`Invalid YAML format in registry file "${registryUrl}": ${yamlErr.message}`);
+                }
+
+                if (!parsed) {
+                    console.warn("Parsed registry is empty");
+                    setDataMeshRegistry([]);
+                } else if (Array.isArray(parsed)) {
+                    setDataMeshRegistry(parsed);
+                } else if (typeof parsed === 'object') {
+                    // Handle single object (e.g. user pasted a single DataProduct)
+                    console.log("Parsed registry is a single object, wrapping in array");
+                    setDataMeshRegistry([parsed]);
+                } else {
+                    throw new Error(`Registry file "${registryUrl}" contains invalid data. Expected YAML array or object, got: ${typeof parsed}`);
+                }
+            } catch (err) {
+                console.error("Error loading registry:", err);
+                setError(err.message);
+                setDataMeshRegistry([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRegistry();
+    }, [registryUrl]);
+
+    // Available Domains
+    const availableDomains = React.useMemo(() => {
+        const dps = dataMeshRegistry.filter(item => item.kind === 'DataProduct' && item.domain);
+        return Array.from(new Set(dps.map(n => n.domain))).sort();
+    }, [dataMeshRegistry]);
+
+    // Initial default: Select all domains if unselected? Or starts empty (showing all)?
+    // Usually "no selection" = "show all". The DomainSelector has "All" button.
+    // Let's assume if selectedDomains is empty, we show all (or the user can select specific).
+    // Actually, multiselect usually implies "show what is selected".
+    // If I select "Domain A", I only see Domain A.
+    // Let's auto-select ALL domains on load so the view is populated.
+    // Auto-select all domains when registry loads/changes
+    React.useEffect(() => {
+        if (availableDomains.length > 0) {
+            setSelectedDomains(availableDomains);
+        }
+    }, [availableDomains]);
+
+    // Process Registry into Nodes/Edges
+    React.useEffect(() => {
+        if (!dataMeshRegistry || dataMeshRegistry.length === 0) {
+            setNodes([]);
+            setEdges([]);
+            return;
+        }
+
+        const dataMeshNodes = dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract');
+        const dataMeshEdges = dataMeshRegistry.filter(item => item.dataUsageAgreementSpecification);
+
+        // Domain Coloring Logic
+        const uniqueDomains = Array.from(new Set(dataMeshNodes
+            .filter(n => n.kind === 'DataProduct' && n.domain)
+            .map(n => n.domain)))
+            .sort();
+
+        const domainColorMap = {};
+        if (uniqueDomains.length <= 1) {
+            // If only 1 domain (or 0), keep white
+            uniqueDomains.forEach(d => domainColorMap[d] = 'white');
+        } else {
+            uniqueDomains.forEach((domain, index) => {
+                domainColorMap[domain] = config.domainPalette[index % config.domainPalette.length];
+            });
+        }
+
+        // Reset counters for layout - track Y position by columnNumber instead of tier
+        // This ensures that if multiple tiers share the same columnNumber, they don't overlap
+        const columnY = {};
+        Object.keys(config.tiers || {}).forEach(tierKey => {
+            const tierConfig = config.tiers[tierKey];
+            const colNum = tierConfig.columnNumber !== undefined ? tierConfig.columnNumber : 1;
+            if (columnY[colNum] === undefined) {
+                columnY[colNum] = 0;
+            }
+        });
+
+        const initialNodes = dataMeshNodes
+            .filter(node => node.kind === 'DataProduct')
+            .map(node => {
+                const tier = node.customProperties?.find(p => p.property === 'dataProductTier')?.value;
+                const technology = node.customProperties?.find(p => p.property === 'technology')?.value;
+
+                // Get tier config
+                const tierConfig = config.tiers?.[tier] || {};
+                const color = tierConfig.color || '#bfdbfe';
+                const banner = tierConfig.label || 'DATA PRODUCT';
+                const bannerColor = tierConfig.bannerColor || tierConfig.color || '#93c5fd';
+
+                // Background Color Logic (Domain based)
+                const backgroundColor = domainColorMap[node.domain] || 'white';
+
+                // Auto-layout Logic - Calculate X position from columnNumber
+                // Use 450px spacing between columns to prevent overlap
+                // columnNumber starts at 1, so subtract 1 for 0-based positioning
+                const COLUMN_SPACING = 450;
+                const NODE_WIDTH = 280; // Consistent width for all nodes
+                const NODE_HEIGHT = 110; // Fixed height for consistency
+                const VERTICAL_GAP = 40; // Space between nodes
+                const VERTICAL_STEP = NODE_HEIGHT + VERTICAL_GAP;
+
+                const columnNumber = tierConfig.columnNumber !== undefined ? tierConfig.columnNumber : 1;
+                const x = (columnNumber - 1) * COLUMN_SPACING;
+
+                // Track Y position by columnNumber, not by tier
+                // This allows multiple tiers in the same column to stack vertically
+                const y = columnY[columnNumber] !== undefined ? columnY[columnNumber] : 0;
+
+                if (columnY[columnNumber] !== undefined) {
+                    columnY[columnNumber] += VERTICAL_STEP;
+                }
+
+                return {
+                    id: node.id,
+                    type: 'selectorNode',
+                    data: {
+                        id: node.id,
+                        color: color,
+                        label: node.name,
+                        banner: banner,
+                        bannerColor: bannerColor,
+                        backgroundColor: backgroundColor,
+                        subtitle: node.domain,
+                        icon: config.iconMap[technology] || ICON_MAP[technology] || DATABRICKS_ICON,
+                        hasOutputPorts: node.outputPorts && node.outputPorts.length > 0,
+                        outputPortCount: node.outputPorts ? node.outputPorts.length : 0,
+                        originalData: node // Pass full source data for YAML view
+                    },
+                    position: { x, y }
+                };
+            });
+
+        const initialEdges = dataMeshEdges.map(edge => ({
+            id: edge.id,
+            source: edge.provider.dataProductId,
+            target: edge.consumer.dataProductId,
+            animated: true,
+            type: 'default',
+            markerEnd: { type: 'arrowclosed' },
+            style: {
+                strokeWidth: hoveredEdgeId === edge.id ? 3 : 2,
+                stroke: hoveredEdgeId === edge.id ? '#2563eb' : '#9ca3af',
+                zIndex: hoveredEdgeId === edge.id ? 10 : 0
+            }
+        }));
+
+        setNodes(initialNodes);
+        setEdges(initialEdges);
+
+    }, [dataMeshRegistry, setNodes, setEdges, hoveredEdgeId]);
+
+
+    // Validation Logic
+    const [validationResults, setValidationResults] = React.useState(null);
+    const [showValidationModal, setShowValidationModal] = React.useState(false);
+
+    // Automatic validation when registry is loaded or changed
+    React.useEffect(() => {
+        if (!isLoading && dataMeshRegistry && dataMeshRegistry.length > 0) {
+            const errors = validateRegistry(dataMeshRegistry, dataMeshRegistryRaw);
+            setValidationResults(errors);
+        } else if (!isLoading && (!dataMeshRegistry || dataMeshRegistry.length === 0)) {
+            setValidationResults(null);
+        }
+    }, [dataMeshRegistry, dataMeshRegistryRaw, isLoading]);
+
+    const handleValidateRegistry = () => {
+        setShowValidationModal(true);
+    };
+
+    // Helper to find nodes in the raw registry
+    const dataMeshNodes = React.useMemo(() =>
+        dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract'),
+        [dataMeshRegistry]);
+
+    // Filter nodes and edges based on selection
+    const contractViewNodes = React.useMemo(() => {
+        if (!selectedNodeId) {
+            return null;
+        }
+
+        // Helper to find nodes in the raw registry
+        const contractData = dataMeshNodes.find(n => n.id === selectedNodeId && n.kind === 'DataContract');
+
+        if (contractData) {
+            const tech = contractData.customProperties?.find(p => p.property === 'technology')?.value;
+
+            // Create nodes for schema elements
+            if (contractData.schema && Array.isArray(contractData.schema)) {
+                // 1. Dependency-aware sorting
+                // Tables with outbound FKs (sources) should be on the left
+                const adj = {};
+                const inDegree = {};
+                contractData.schema.forEach(s => {
+                    adj[s.name] = new Set();
+                    inDegree[s.name] = 0;
+                });
+
+                contractData.schema.forEach(s => {
+                    const findTargets = (rels) => {
+                        if (!rels) return;
+                        rels.forEach(rel => {
+                            if (rel.type === 'foreignKey' && rel.to) {
+                                (Array.isArray(rel.to) ? rel.to : [rel.to]).forEach(target => {
+                                    const targetTable = target.split('.')[0];
+                                    if (adj[targetTable] && targetTable !== s.name) {
+                                        // Dependency: current table 's' depends on 'targetTable'
+                                        // We want 'targetTable' on the left, so targetTable -> s
+                                        if (!adj[targetTable].has(s.name)) {
+                                            adj[targetTable].add(s.name);
+                                            inDegree[s.name]++;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    };
+                    findTargets(s.relationships);
+                    const props = s.properties || s.columns || [];
+                    props.forEach(p => findTargets(p.relationships));
+                });
+
+                // Topological sort using Kahn's algorithm
+                const sortedSchema = [];
+                const queue = contractData.schema.filter(s => inDegree[s.name] === 0).map(s => s.name);
+
+                // Sort queue to maintain some stability
+                queue.sort();
+
+                while (queue.length > 0) {
+                    const currentName = queue.shift();
+                    const fullTable = contractData.schema.find(table => table.name === currentName);
+                    if (fullTable) sortedSchema.push(fullTable);
+
+                    const neighbors = Array.from(adj[currentName] || []);
+                    neighbors.sort().forEach(neighbor => {
+                        inDegree[neighbor]--;
+                        if (inDegree[neighbor] === 0) {
+                            queue.push(neighbor);
+                        }
+                    });
+                }
+
+                // Add any remaining tables (cycles or disconnected)
+                contractData.schema.forEach(s => {
+                    if (!sortedSchema.find(item => item.name === s.name)) {
+                        sortedSchema.push(s);
+                    }
+                });
+
+                // 2. Grid Layout logic with compact spacing (4 grid points = 80px)
+                let maxW = 260;
+                let maxH = 200;
+
+                sortedSchema.forEach(s => {
+                    const cols = s.properties || s.columns || [];
+                    const nameLen = cols.reduce((max, c) => Math.max(max, (c.physicalName || c.name || "").length), 0);
+                    const typeLen = cols.reduce((max, c) => Math.max(max, (c.logicalType || "").length), 0);
+                    const w = Math.min(600, Math.max(260, (nameLen + typeLen) * 8 + 80));
+                    const h = 110 + (cols.length * 40);
+                    if (w > maxW) maxW = w;
+                    if (h > maxH) maxH = h;
+                });
+
+                const GRID_GAP = 100; // 5 grid points of 20px each as requested
+                const HORIZONTAL_GAP = maxW + GRID_GAP;
+                const VERTICAL_GAP = maxH + GRID_GAP;
+
+                const total = sortedSchema.length;
+                let cols = 1;
+                if (total === 2) {
+                    cols = 2;
+                } else if (total > 2) {
+                    cols = Math.ceil(Math.sqrt(total));
+                }
+
+                return sortedSchema.map((schemaElement, index) => {
+                    const row = Math.floor(index / cols);
+                    const col = index % cols;
+
+                    return {
+                        id: `${contractData.id}-schema-${index}`,
+                        type: 'dataContractNode',
+                        position: { x: col * HORIZONTAL_GAP, y: row * VERTICAL_GAP },
+                        data: {
+                            ...contractData, // Spread contract properties
+                            schema: [schemaElement], // Pass only this schema element
+                            description: schemaElement.description || contractData.description?.purpose || contractData.description,
+                            originalData: contractData, // Store full contract for side panel
+                            label: schemaElement.name || schemaElement.physicalName || `Schema ${index + 1}`,
+                            banner: 'DATA CONTRACT',
+                            bannerColor: '#e5e7eb',
+                            icon: config.iconMap[tech] || ICON_MAP[tech] || ICON_MAP['databricks'],
+                            // Add a stable ID for handles to reference
+                            tableName: schemaElement.name,
+                            rowIndices: { row, col, totalCols: cols },
+                            verticalGap: GRID_GAP,
+                            verticalGapCenter: (row * VERTICAL_GAP) + maxH + (GRID_GAP / 2)
+                        }
+                    };
+                });
+            }
+
+            // Fallback: if no schema
+            const centralNode = {
+                id: contractData.id,
+                type: 'dataContractNode',
+                position: { x: 0, y: 0 },
+                data: {
+                    ...contractData,
+                    description: contractData.description?.purpose || contractData.description,
+                    originalData: contractData,
+                    label: contractData.name || contractData.physicalName || selectedNodeId,
+                    banner: 'DATA CONTRACT',
+                    bannerColor: '#e5e7eb',
+                    icon: config.iconMap[tech] || ICON_MAP[tech] || ICON_MAP['databricks'],
+                }
+            };
+            return [centralNode];
+        }
+        return null;
+    }, [selectedNodeId, dataMeshNodes, config]);
+
+    // Create edges for foreign key relationships in contract view
+    const contractViewEdges = React.useMemo(() => {
+        if (!contractViewNodes) return [];
+
+        const edges = [];
+
+        contractViewNodes.forEach((sourceNode) => {
+            const schemaElement = sourceNode.data.schema[0];
+            const sourceNodeId = sourceNode.id;
+
+            // Parse table-level relationships
+            if (schemaElement.relationships && Array.isArray(schemaElement.relationships)) {
+                schemaElement.relationships.forEach((rel, relIndex) => {
+                    if (rel.type === 'foreignKey' && rel.from && rel.to) {
+                        rel.from.forEach((fromCol, idx) => {
+                            const toCol = rel.to[idx];
+                            if (fromCol && toCol) {
+                                const fromColName = fromCol.includes('.') ? fromCol.split('.')[1] : fromCol;
+                                const toTable = toCol.split('.')[0];
+                                const toColName = toCol.split('.')[1];
+
+                                // Find target node in contractViewNodes by tableName
+                                const targetNode = contractViewNodes.find(n => n.data.tableName === toTable);
+
+                                if (targetNode) {
+                                    const sourceCol = schemaElement.properties?.find(p => p.name === fromColName);
+                                    const targetSchema = targetNode.data.schema[0];
+                                    const targetCol = targetSchema.properties?.find(p => p.name === toColName);
+
+                                    const sourceHandle = `${sourceCol?.physicalName || fromColName}-source`;
+                                    const targetHandle = `${targetCol?.physicalName || toColName}-target`;
+
+                                    edges.push({
+                                        id: `table-rel-${sourceNodeId}-${relIndex}-${idx}`,
+                                        source: sourceNodeId,
+                                        target: targetNode.id,
+                                        sourceHandle,
+                                        targetHandle,
+                                        type: 'relationshipEdge',
+                                        animated: false,
+                                        style: { stroke: '#a855f7', strokeWidth: 1.5 },
+                                        data: {
+                                            description: `The '${sourceNode.data.tableName}' table links to '${toTable}' using the '${fromColName}' composite field.`,
+                                            gapCenterY: sourceNode.data.verticalGapCenter,
+                                            isSameRow: sourceNode.data.rowIndices.row === targetNode.data.rowIndices.row
+                                        },
+                                        markerEnd: { type: 'arrowclosed', color: '#a855f7', width: 12, height: 12 }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Parse column-level relationships
+            const properties = schemaElement.properties || schemaElement.columns || [];
+            properties.forEach((col) => {
+                if (col.relationships && Array.isArray(col.relationships)) {
+                    col.relationships.forEach((rel, relIndex) => {
+                        if (rel.type === 'foreignKey' && rel.to) {
+                            const sourceColName = col.name;
+                            const targetTable = rel.to.split('.')[0];
+                            const targetColName = rel.to.split('.')[1];
+
+                            // Find target node in contractViewNodes by tableName
+                            const targetNode = contractViewNodes.find(n => n.data.tableName === targetTable);
+
+                            if (targetNode) {
+                                const targetSchema = targetNode.data.schema[0];
+                                const targetCol = targetSchema.properties?.find(p => p.name === targetColName);
+
+                                const sourceHandle = `${col.physicalName || col.name}-source`;
+                                const targetHandle = `${targetCol?.physicalName || targetColName}-target`;
+
+                                edges.push({
+                                    id: `col-rel-${sourceNodeId}-${sourceColName}-${relIndex}`,
+                                    source: sourceNodeId,
+                                    target: targetNode.id,
+                                    sourceHandle,
+                                    targetHandle,
+                                    type: 'relationshipEdge',
+                                    animated: false,
+                                    style: { stroke: '#3b82f6', strokeWidth: 1.5 },
+                                    data: {
+                                        description: `The '${sourceNode.data.tableName}' table links to '${targetTable}' using the '${sourceColName}' field.`,
+                                        gapCenterY: sourceNode.data.verticalGapCenter,
+                                        isSameRow: sourceNode.data.rowIndices.row === targetNode.data.rowIndices.row
+                                    },
+                                    markerEnd: { type: 'arrowclosed', color: '#3b82f6', width: 12, height: 12 }
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Track-based routing for overlap avoidance
+        return edges.map((edge, index) => {
+            const sourceNode = contractViewNodes.find(n => n.id === edge.source);
+            const targetNode = contractViewNodes.find(n => n.id === edge.target);
+
+            // Map each edge to a unique grid lane (grid is 20px, gap is 100px)
+            const laneIdx = index % 5;
+            const gapOffset = (laneIdx - 2) * 20; // -40, -20, 0, 20, 40 from gap center
+            const stepOffset = 30 + (laneIdx * 15); // Staggered offsets for horizontal/vertical turns
+
+            // Detection: if it spans more than one column distance, it's long distance
+            const isLongDistance = Math.abs(sourceNode.data.rowIndices.col - targetNode.data.rowIndices.col) > 1;
+
+            return {
+                ...edge,
+                data: {
+                    ...edge.data,
+                    gapOffset,
+                    stepOffset,
+                    laneIdx,
+                    isLongDistance
+                }
+            };
+        });
+    }, [contractViewNodes]);
+
+    const lineageViewNodes = React.useMemo(() => {
+        if (!selectedNodeId) return null; // Logic change: only return if selectedNodeId exists
+
+        const selectedNode = nodes.find(n => n.id === selectedNodeId);
+        if (!selectedNode) return null; // Should be handled by contractViewNodes if it was a contract
+
+        const centralNode = {
+            ...selectedNode,
+            type: 'lineageNode',
+            position: { x: 0, y: 0 },
+            data: {
+                ...selectedNode.data,
+                // Add outputPorts from original dataMeshNodes if available, enriched with icon
+                outputPorts: dataMeshNodes.find(n => n.id === selectedNodeId)?.outputPorts?.map(port => {
+                    let icon = null;
+                    if (port.contractId) {
+                        const contract = dataMeshNodes.find(c => c.id === port.contractId && c.kind === 'DataContract');
+                        if (contract) {
+                            const tech = contract.customProperties?.find(p => p.property === 'technology')?.value;
+                            icon = config.iconMap[tech] || ICON_MAP[tech] || ICON_MAP['databricks'];
+                        }
+                    }
+                    return { ...port, icon };
+                })
+            }
+        };
+
+        const relatedNodes = [centralNode];
+        // Re-construct edges from registry to traverse
+        const dataMeshEdges = dataMeshRegistry.filter(item => item.dataUsageAgreementSpecification).map(edge => ({
+            id: edge.id,
+            source: edge.provider.dataProductId,
+            target: edge.consumer.dataProductId
+        }));
+
+        // Upstream Nodes (Producers)
+        const upstreamEdges = dataMeshEdges.filter(e => e.target === selectedNodeId);
+        upstreamEdges.forEach((edge, index) => {
+            const sourceNode = nodes.find(n => n.id === edge.source);
+            if (sourceNode) {
+                relatedNodes.push({
+                    ...sourceNode,
+                    position: { x: -450, y: index * 150 } // Stack upstream on left - Using 450 to match COLUMN_SPACING
+                });
+            }
+        });
+
+        // Downstream Nodes (Consumers)
+        const downstreamEdges = dataMeshEdges.filter(e => e.source === selectedNodeId);
+        downstreamEdges.forEach((edge, index) => {
+            const targetNode = nodes.find(n => n.id === edge.target);
+            if (targetNode) {
+                relatedNodes.push({
+                    ...targetNode,
+                    position: { x: 450, y: index * 150 } // Stack downstream on right
+                });
+            }
+        });
+
+        return relatedNodes;
+    }, [selectedNodeId, nodes, dataMeshNodes, dataMeshRegistry]);
+
+    // Mesh filtering visibility logic
+    const meshFilterNodes = React.useMemo(() => {
+        // If we have a selected node, we don't use this logic (we show Drill Down view)
+        if (selectedNodeId) return null;
+
+        // 1. Identify "Primary Matches" based on filters
+        const primaryMatches = nodes.filter(node => {
+            const matchesDomain = selectedDomains.length === 0 || selectedDomains.includes(node.data.subtitle); // subtitle stores domain
+            const matchesName = globalFilterText === '' || node.data.label.toLowerCase().includes(globalFilterText.toLowerCase());
+            return matchesDomain && matchesName;
+        });
+
+        if (primaryMatches.length === 0 && (selectedDomains.length > 0 || globalFilterText !== '')) {
+            return []; // No matches
+        }
+        if (selectedDomains.length === 0 && globalFilterText === '') {
+            return nodes; // No filters, show all
+        }
+
+        // 2. Identify Neighbors (Producers and Consumers) of Primary Matches
+        // We need the edges to find neighbors
+        const allEdges = dataMeshRegistry.filter(item => item.dataUsageAgreementSpecification).map(edge => ({
+            source: edge.provider.dataProductId,
+            target: edge.consumer.dataProductId
+        }));
+
+        const primaryIds = new Set(primaryMatches.map(n => n.id));
+        const neighborIds = new Set();
+
+        allEdges.forEach(edge => {
+            if (primaryIds.has(edge.source)) {
+                neighborIds.add(edge.target); // Consumer is neighbor
+            }
+            if (primaryIds.has(edge.target)) {
+                neighborIds.add(edge.source); // Provider is neighbor
+            }
+        });
+
+        // 3. Union of Primary + Neighbors
+        const finalIds = new Set([...primaryIds, ...neighborIds]);
+
+        return nodes.filter(n => finalIds.has(n.id));
+
+    }, [nodes, selectedDomains, globalFilterText, dataMeshRegistry, selectedNodeId]);
+
+
+    const visibleNodes = contractViewNodes || lineageViewNodes || meshFilterNodes || nodes;
+
+
+    // Side Panel Resizing
+    const startResizing = React.useCallback((mouseDownEvent) => {
+        mouseDownEvent.preventDefault();
+        setIsResizing(true);
+    }, []);
+
+    const stopResizing = React.useCallback(() => {
+        setIsResizing(false);
+    }, []);
+
+    const resize = React.useCallback((mouseMoveEvent) => {
+        if (isResizing) {
+            const newWidth = document.body.clientWidth - mouseMoveEvent.clientX;
+            if (newWidth > 300 && newWidth < 1200) { // Min and Max width constraints
+                setSidePanelWidth(newWidth);
+            }
+        }
+    }, [isResizing]);
+
+    React.useEffect(() => {
+        window.addEventListener('mousemove', resize);
+        window.addEventListener('mouseup', stopResizing);
+        return () => {
+            window.removeEventListener('mousemove', resize);
+            window.removeEventListener('mouseup', stopResizing);
+        };
+    }, [resize, stopResizing]);
+
+    // Event Listeners
+    React.useEffect(() => {
+        const handleOpenSidePanel = (e) => {
+            setSidePanelContent(e.detail.content);
+            const type = e.detail.type || 'yaml';
+            setSidePanelType(type);
+            setSidePanelFilter(''); // Reset filter when opening new content
+
+            if (type === 'examples') {
+                // For examples, default to auto/fit-content
+                setSidePanelWidth('auto');
+            } else if (e.detail.width) {
+                // Allow up to 1400px or 90% of screen width if I could, but simple max:
+                setSidePanelWidth(Math.min(1400, Math.max(300, e.detail.width)));
+            } else if (['yaml', 'data-product-yaml', 'agreement-yaml', 'data-contract-yaml'].includes(type)) {
+                // Reset to default for YAML if no specific width requested
+                setSidePanelWidth(500);
+            }
+        };
+        window.addEventListener('open-side-panel', handleOpenSidePanel);
+        return () => window.removeEventListener('open-side-panel', handleOpenSidePanel);
+    }, []);
+
+    // Fit view on load/change
+    React.useEffect(() => {
+        if (rfInstance && !isLoading && nodes.length > 0) {
+            window.requestAnimationFrame(() => {
+                rfInstance.fitView({ duration: 800, padding: 0.2 });
+            });
+        }
+    }, [selectedNodeId, rfInstance, isLoading, nodes.length]);
+
+    const visibleEdges = React.useMemo(() => {
+        // If Contract View, show relationship edges
+        if (contractViewNodes) {
+            return contractViewEdges;
+        }
+
+        // If Drill Down
+        if (selectedNodeId) {
+            // Re-construct initial edges from registry state for filtering
+            const initialEdges = dataMeshRegistry
+                .filter(item => item.dataUsageAgreementSpecification)
+                .map(edge => ({
+                    id: edge.id,
+                    source: edge.provider.dataProductId,
+                    target: edge.consumer.dataProductId,
+                    animated: true,
+                    type: 'default',
+                    markerEnd: { type: 'arrowclosed' },
+                    style: {
+                        strokeWidth: hoveredEdgeId === edge.id ? 3 : 2,
+                        stroke: hoveredEdgeId === edge.id ? '#2563eb' : '#9ca3af',
+                        zIndex: hoveredEdgeId === edge.id ? 10 : 0
+                    }
+                }));
+
+            // Base edges connected to the selected node
+            const connectedEdges = initialEdges.filter(e => e.source === selectedNodeId || e.target === selectedNodeId);
+            return connectedEdges;
+        }
+
+        // If Mesh View (Filtered)
+        // We want edges that connect any two visible nodes?
+        // Or just edges connected to our "Primary set"? The user said "show also data products ... even if they are not selected domains".
+        // Usually you want to see the connections between visible nodes.
+        const visibleNodeIds = new Set(visibleNodes.map(n => n.id));
+        return edges.filter(e => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target));
+
+    }, [selectedNodeId, edges, dataMeshRegistry, hoveredEdgeId, visibleNodes, contractViewNodes, contractViewEdges]);
+
+
+    const onNodeClick = React.useCallback((event, node) => {
+        // Check if the click happened on a Data Contract pill
+        const contractPill = event.target.closest('.data-contract-pill');
+
+        if (contractPill) {
+            const contractId = contractPill.getAttribute('data-contract-id');
+            if (contractId && contractId !== selectedNodeId) {
+                console.log('Navigating to Data Contract view:', contractId);
+                setSelectedNodeId(contractId);
+            }
+            return;
+        }
+
+        // Check if the click happened on an Output Ports pill
+        const outputPortsPill = event.target.closest('.output-ports-pill');
+        if (outputPortsPill) {
+            if (node.id !== selectedNodeId) {
+                console.log('Navigating to Data Product detail view:', node.id);
+                setSelectedNodeId(node.id);
+            }
+            return;
+        }
+    }, [selectedNodeId]);
+
+    const onNodeDoubleClick = (event, node) => {
+        console.log('Double click ignored');
+    };
+
+    const handleBack = React.useCallback((e) => {
+        if (e && e.stopPropagation) {
+            e.stopPropagation();
+        }
+
+        const dataMeshNodes = dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract');
+        // Check if current view is a Data Contract
+        const isContract = dataMeshNodes.some(n => n.id === selectedNodeId && n.kind === 'DataContract');
+        if (isContract) {
+            // Find the producer (upstream Data Product)
+            const producerNode = dataMeshNodes.find(n => n.outputPorts?.some(p => p.contractId === selectedNodeId));
+            if (producerNode) {
+                setSelectedNodeId(producerNode.id);
+                return;
+            }
+        }
+        // Default: Reset to Mesh
+        setSelectedNodeId(null);
+    }, [selectedNodeId, dataMeshRegistry]);
+
+    const backButtonLabel = React.useMemo(() => {
+        if (!selectedNodeId) return '';
+        const dataMeshNodes = dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract');
+        const isContract = dataMeshNodes.some(n => n.id === selectedNodeId && n.kind === 'DataContract');
+        if (isContract) return 'Back to Data Product';
+        return 'Back to Mesh';
+    }, [selectedNodeId, dataMeshRegistry]);
+
+    const handleLoadUrl = (e) => {
+        e.preventDefault();
+        setRegistryUrl(workingUrl);
+    };
+
+    const onEdgeClick = React.useCallback((event, edge) => {
+        event.stopPropagation();
+        const agreement = dataMeshRegistry.find(item => item.id === edge.id);
+        if (agreement) {
+            const customEvent = new CustomEvent('open-side-panel', {
+                detail: {
+                    content: agreement,
+                    type: 'agreement-yaml'
+                }
+            });
+            window.dispatchEvent(customEvent);
+        }
+    }, [dataMeshRegistry]);
+
+    const onEdgeMouseEnter = React.useCallback((event, edge) => {
+        setHoveredEdgeId(edge.id);
+    }, []);
+
+    const onEdgeMouseLeave = React.useCallback((event, edge) => {
+        setHoveredEdgeId(null);
+    }, []);
+
+    return (
+        <div style={{ height: '100%', position: 'relative', overflow: 'hidden' }}>
+
+            {/* Configuration Error Banner */}
+            {configError && (
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    background: '#fef2f2',
+                    border: '2px solid #dc2626',
+                    borderRadius: '8px',
+                    padding: '16px 20px',
+                    margin: '20px',
+                    zIndex: 1000,
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ margin: '0 0 8px 0', color: '#991b1b', fontSize: '16px', fontWeight: '600' }}>
+                                Configuration Error
+                            </h3>
+                            <p style={{ margin: '0 0 12px 0', color: '#7f1d1d', fontSize: '14px', lineHeight: '1.5' }}>
+                                {configError}
+                            </p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                style={{
+                                    padding: '6px 12px',
+                                    background: '#dc2626',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Registry Error Banner */}
+            {error && !configError && (
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    background: '#fef2f2',
+                    border: '2px solid #dc2626',
+                    borderRadius: '8px',
+                    padding: '16px 20px',
+                    margin: '20px',
+                    zIndex: 1000,
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div style={{ flex: 1 }}>
+                            <h3 style={{ margin: '0 0 8px 0', color: '#991b1b', fontSize: '16px', fontWeight: '600' }}>
+                                Registry Loading Error
+                            </h3>
+                            <p style={{ margin: '0 0 12px 0', color: '#7f1d1d', fontSize: '14px', lineHeight: '1.5' }}>
+                                {error}
+                            </p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                style={{
+                                    padding: '6px 12px',
+                                    background: '#dc2626',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    fontSize: '13px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Top Bar for Controls */}
+            {/* Top Bar for Controls */}
+            <div style={{
+                position: 'absolute',
+                top: '20px',
+                left: '20px',
+                right: '20px',
+                zIndex: 10,
+                display: 'flex',
+                gap: '12px',
+                alignItems: 'center',
+                pointerEvents: 'none' // Let clicks pass through to canvas where empty
+            }}>
+
+                {/* Left Controls Group */}
+                <div style={{ display: 'flex', gap: '12px', pointerEvents: 'auto' }}>
+                    {/* Domain Selector */}
+                    {!selectedNodeId && (
+                        <DomainSelector
+                            domains={availableDomains}
+                            selectedDomains={selectedDomains}
+                            onChange={setSelectedDomains}
+                        />
+                    )}
+
+                    {/* Global Filter */}
+                    {!selectedNodeId && (
+                        <GlobalFilter
+                            filterText={globalFilterText}
+                            onFilterChange={setGlobalFilterText}
+                        />
+                    )}
+
+                    {/* Validate Button */}
+                    {!selectedNodeId && validationResults?.length > 0 && (
+                        <button
+                            onClick={handleValidateRegistry}
+                            disabled={isLoading || error}
+                            style={{
+                                padding: '8px 16px',
+                                background: '#dc2626',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                height: '32px' // Match input height roughly
+                            }}
+                        >
+                            Found {validationResults.length} Registry Error(s)
+                        </button>
+                    )}
+
+                    {/* Back Button */}
+                    {selectedNodeId && (
+                        <button
+                            onClick={handleBack}
+                            style={{
+                                padding: '8px 16px',
+                                background: '#2563eb',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                        >
+                            {backButtonLabel}
+                        </button>
+                    )}
+                </div>
+
+                {/* Spacer */}
+                <div style={{ flex: 1 }}></div>
+
+                {/* Right Controls Group */}
+                <div style={{ display: 'flex', gap: '12px', pointerEvents: 'auto' }}>
+                    {/* Registry URL input removed - now accessible via floating icon */}
+                </div>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+                <div style={{
+                    position: 'absolute',
+                    top: '80px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 10,
+                    background: '#fee2e2',
+                    color: '#b91c1c',
+                    padding: '12px 24px',
+                    borderRadius: '8px',
+                    border: '1px solid #f87171',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                }}>
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {error}
+                </div>
+            )}
+
+            {/* Validation Modal */}
+            {showValidationModal && (
+                <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(0,0,0,0.5)',
+                    zIndex: 100,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}>
+                    <div style={{
+                        background: 'white',
+                        borderRadius: '8px',
+                        padding: '24px',
+                        maxWidth: '600px',
+                        width: '90%',
+                        maxHeight: '80%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                    }}>
+                        <h2 style={{ marginTop: 0, color: validationResults?.length === 0 ? '#059669' : '#dc2626' }}>
+                            {validationResults?.length === 0 ? 'Validation Successful' : 'Validation Failed'}
+                        </h2>
+
+                        <div style={{ flex: 1, overflow: 'auto', marginBottom: '20px' }}>
+                            {validationResults?.length === 0 ? (
+                                <p style={{ color: '#4b5563' }}>All registry items match the provided schemas.</p>
+                            ) : (
+                                <div>
+                                    <p style={{ color: '#4b5563', fontWeight: '500' }}>Found {validationResults.length} errors:</p>
+                                    <ul style={{ paddingLeft: '20px', color: '#dc2626' }}>
+                                        {validationResults.map((err, i) => (
+                                            <li key={i} style={{ marginBottom: '8px', fontSize: '14px' }}>
+                                                <strong>{err.id} ({err.type}){err.line ? ` [Line ${err.line}]` : ''}:</strong> {err.message}
+                                                <div style={{ fontSize: '12px', color: '#6b7280', fontFamily: 'monospace' }}>
+                                                    Path: {err.path || 'root'}
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={() => setShowValidationModal(false)}
+                            style={{
+                                alignSelf: 'flex-end',
+                                padding: '8px 16px',
+                                background: '#e5e7eb',
+                                color: '#374151',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '500'
+                            }}
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            <ReactFlow
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                nodes={visibleNodes}
+                edges={visibleEdges}
+                onNodesChange={!selectedNodeId ? onNodesChange : undefined}
+                onEdgesChange={onEdgesChange}
+                onNodeClick={onNodeClick}
+                onEdgeClick={onEdgeClick}
+                onEdgeMouseEnter={onEdgeMouseEnter}
+                onEdgeMouseLeave={onEdgeMouseLeave}
+                onNodeDoubleClick={onNodeDoubleClick}
+                onInit={setRfInstance}
+                minZoom={0.1}
+                fitView
+            >
+                <Background />
+                <Controls />
+            </ReactFlow>
+
+            {/* Side Panel */}
+            <div style={{
+                position: 'absolute',
+                top: 0,
+                right: 0, // Anchor to right
+                bottom: 0, // Full height
+                // Use 'fit-content' for 'examples' type unless manually resized (which sets sidePanelWidth to a number)
+                // We'll interpret sidePanelWidth='auto' as fit-content.
+                width: sidePanelWidth === 'auto' ? 'fit-content' : `${sidePanelWidth}px`,
+                maxWidth: '90%', // Prevent taking full screen
+                minWidth: '300px', // Minimum width
+                background: 'white',
+                boxShadow: '-4px 0 12px rgba(0,0,0,0.1)',
+                // Use transform for slide in/out
+                transform: sidePanelContent ? 'translateX(0)' : 'translateX(100%)',
+                // Transition transform
+                transition: isResizing ? 'none' : 'transform 0.3s ease-in-out',
+                zIndex: 20,
+                display: 'flex',
+                flexDirection: 'column'
+            }}>
+                {/* Resize Handle */}
+                <div
+                    onMouseDown={startResizing}
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: '5px',
+                        cursor: 'ew-resize',
+                        zIndex: 21, // Higher than panel content
+                        background: 'transparent', // Invisible by default
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 0, 0, 0.1)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                />
+
+                {sidePanelContent && (
+                    <>
+                        <div style={{
+                            padding: '20px',
+                            borderBottom: '1px solid #e2e8f0',
+                            background: '#f8fafc',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: '10px'
+                        }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <h3 style={{ margin: 0, color: '#1e293b' }}>
+                                        {sidePanelType === 'examples' ? 'Examples' :
+                                            sidePanelType === 'dq' ? 'Data Quality' :
+                                                sidePanelType === 'agreement-yaml' ? 'Data Usage Agreement' :
+                                                    sidePanelType === 'data-product-yaml' ? 'Data Product' :
+                                                        sidePanelType === 'data-contract-yaml' ? 'Data Contract' : 'YAML'}
+                                    </h3>
+
+                                    {/* Standard Specification Pills */}
+                                    {sidePanelType === 'data-product-yaml' && (
+                                        <a
+                                            href="https://bitol-io.github.io/open-data-product-standard/v1.0.0"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '11px',
+                                                padding: '2px 8px',
+                                                background: '#f3e8ff', // purple-100
+                                                color: '#6b21a8', // purple-800
+                                                border: '1px solid #d8b4fe', // purple-300
+                                                borderRadius: '12px',
+                                                textDecoration: 'none',
+                                                fontWeight: '500',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            Open Data Product Standard v1.0.0
+                                        </a>
+                                    )}
+                                    {sidePanelType === 'data-contract-yaml' && (
+                                        <a
+                                            href="https://bitol-io.github.io/open-data-contract-standard/v3.0.1"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '11px',
+                                                padding: '2px 8px',
+                                                background: '#f3e8ff',
+                                                color: '#6b21a8',
+                                                border: '1px solid #d8b4fe',
+                                                borderRadius: '12px',
+                                                textDecoration: 'none',
+                                                fontWeight: '500',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            Open Data Contract Standard v3.0.1
+                                        </a>
+                                    )}
+                                    {sidePanelType === 'agreement-yaml' && (
+                                        <a
+                                            href="https://datausageagreement.com/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{
+                                                fontSize: '11px',
+                                                padding: '2px 8px',
+                                                background: '#f3e8ff',
+                                                color: '#6b21a8',
+                                                border: '1px solid #d8b4fe',
+                                                borderRadius: '12px',
+                                                textDecoration: 'none',
+                                                fontWeight: '500',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            Data Usage Agreement Specification v0.0.1
+                                        </a>
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={() => setSidePanelContent(null)}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '20px',
+                                        color: '#64748b'
+                                    }}
+                                >
+                                    &times;
+                                </button>
+                            </div>
+
+                            {/* Tab Selector */}
+                            {['data-product-yaml', 'data-contract-yaml', 'agreement-yaml'].includes(sidePanelType) && (
+                                <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginTop: '12px' }}>
+                                    <button
+                                        onClick={() => setSidePanelTab('visual')}
+                                        style={{
+                                            padding: '8px 16px',
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            color: sidePanelTab === 'visual' ? '#2563eb' : '#64748b',
+                                            borderBottom: sidePanelTab === 'visual' ? '2px solid #2563eb' : '2px solid transparent',
+                                            background: 'none',
+                                            border: 'none',
+                                            borderBottomStyle: 'solid',
+                                            cursor: 'pointer',
+                                            marginRight: '16px'
+                                        }}
+                                    >
+                                        Visual Representation
+                                    </button>
+                                    <button
+                                        onClick={() => setSidePanelTab('yaml')}
+                                        style={{
+                                            padding: '8px 16px',
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            color: sidePanelTab === 'yaml' ? '#2563eb' : '#64748b',
+                                            borderBottom: sidePanelTab === 'yaml' ? '2px solid #2563eb' : '2px solid transparent',
+                                            background: 'none',
+                                            border: 'none',
+                                            borderBottomStyle: 'solid',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        YAML Viewer
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Filter Input for YAML views - Only show in YAML tab */}
+                            {['yaml', 'data-product-yaml', 'agreement-yaml', 'data-contract-yaml'].includes(sidePanelType) && sidePanelTab === 'yaml' && (
+                                <div style={{ position: 'relative' }}>
+                                    <input
+                                        type="text"
+                                        placeholder="Filter YAML..."
+                                        value={sidePanelFilter}
+                                        onChange={(e) => setSidePanelFilter(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '6px 10px',
+                                            paddingRight: '24px',
+                                            border: '1px solid #cbd5e1',
+                                            borderRadius: '4px',
+                                            fontSize: '13px'
+                                        }}
+                                    />
+                                    {sidePanelFilter && (
+                                        <button
+                                            onClick={() => setSidePanelFilter('')}
+                                            style={{
+                                                position: 'absolute',
+                                                right: '8px',
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                background: 'none',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                color: '#94a3b8',
+                                                fontSize: '14px',
+                                                padding: 0
+                                            }}
+                                        >
+                                            &times;
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ flex: 1, overflow: 'auto', padding: '0px' }}>
+                            {sidePanelType === 'examples' ? (
+                                <ExampleTable schema={sidePanelContent} />
+                            ) : sidePanelType === 'dq' ? (
+                                <QualityTable schema={sidePanelContent} />
+                            ) : sidePanelTab === 'visual' && sidePanelType === 'data-product-yaml' ? (
+                                <DataProductVisual data={sidePanelContent.originalData || sidePanelContent} />
+                            ) : sidePanelTab === 'visual' && sidePanelType === 'data-contract-yaml' ? (
+                                <DataContractVisual data={sidePanelContent.originalData || sidePanelContent} />
+                            ) : sidePanelTab === 'visual' && sidePanelType === 'agreement-yaml' ? (
+                                <DataUsageAgreementVisual data={sidePanelContent.originalData || sidePanelContent} />
+                            ) : sidePanelType === 'agreement-yaml' ? (
+                                <InteractiveYaml
+                                    data={sidePanelContent.originalData || sidePanelContent}
+                                    filterText={sidePanelFilter}
+                                />
+                            ) : (
+                                // Default YAML view
+                                <InteractiveYaml
+                                    data={sidePanelContent.originalData || sidePanelContent}
+                                    type={sidePanelType}
+                                    filterText={sidePanelFilter}
+                                />
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+
+            {/* Overlay to close panel when clicking outside */}
+            {sidePanelContent && (
+                <div
+                    onClick={() => setSidePanelContent(null)}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        background: 'rgba(0,0,0,0.2)',
+                        zIndex: 15
+                    }}
+                />
+            )}
+
+            {/* Floating File Icon - Bottom Right */}
+            <button
+                onClick={() => setShowRegistryModal(true)}
+                style={{
+                    position: 'fixed',
+                    bottom: '24px',
+                    right: '24px',
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '17px',
+                    background: '#f3f4f6',
+                    border: 'none',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    zIndex: 100,
+                    transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#e5e7eb';
+                    e.currentTarget.style.transform = 'scale(1.05)';
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#f3f4f6';
+                    e.currentTarget.style.transform = 'scale(1)';
+                }}
+                title="Load Registry"
+            >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+            </button>
+
+            {/* Registry Modal */}
+            <RegistryModal
+                isOpen={showRegistryModal}
+                onClose={() => setShowRegistryModal(false)}
+                currentUrl={registryUrl}
+                onLoad={(url) => setRegistryUrl(url)}
+            />
+        </div>
+    );
+}
