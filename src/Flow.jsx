@@ -44,13 +44,25 @@ const edgeTypes = {
     relationshipEdge: RelationshipEdge,
 };
 
-const ORACLE_ICON = '/icons/oracle.svg';
-const SHAREPOINT_ICON = '/icons/sharepoint.svg';
-const DATABRICKS_ICON = '/icons/databricks.svg';
-const POWERBI_ICON = '/icons/powerbi.svg';
-const DELTA_ICON = '/icons/delta.svg';
-const RELTIO_ICON = '/icons/reltio.svg';
-const VEEVA_ICON = '/icons/veeva.svg';
+const BASE_URL = import.meta.env.BASE_URL;
+
+const normalizePath = (path) => {
+    if (!path) return path;
+    if (path.startsWith('http')) return path;
+    // Prefix relative paths starting with / with BASE_URL
+    if (path.startsWith('/')) {
+        return `${BASE_URL}${path.slice(1)}`;
+    }
+    return path;
+};
+
+const ORACLE_ICON = normalizePath('/icons/oracle.svg');
+const SHAREPOINT_ICON = normalizePath('/icons/sharepoint.svg');
+const DATABRICKS_ICON = normalizePath('/icons/databricks.svg');
+const POWERBI_ICON = normalizePath('/icons/powerbi.svg');
+const DELTA_ICON = normalizePath('/icons/delta.svg');
+const RELTIO_ICON = normalizePath('/icons/reltio.svg');
+const VEEVA_ICON = normalizePath('/icons/veeva.svg');
 
 const ICON_MAP = {
     'oracleRds': ORACLE_ICON,
@@ -78,7 +90,7 @@ function Flow() {
 
     // Load Config
     React.useEffect(() => {
-        fetch('/config.yaml')
+        fetch(normalizePath('/config.yaml'))
             .then(res => {
                 if (!res.ok) {
                     throw new Error(`Failed to load config.yaml (${res.status} ${res.statusText}). Make sure the file exists in the public directory.`);
@@ -111,7 +123,7 @@ function Flow() {
                     iconMap: data.iconMap || {},
                     tiers: data.tiers || {},
                     domainPalette: data.domainPalette || ['#fee2e2', '#f3e8ff', '#fef3c7', '#ffedd5', '#e0e7ff', '#dbeafe', '#dcfce7'],
-                    defaultDataMeshRegistryUrl: data.defaultDataMeshRegistryUrl
+                    defaultDataMeshRegistryUrl: normalizePath(data.defaultDataMeshRegistryUrl)
                 };
                 setConfig(loadedConfig);
                 setConfigError(null);
@@ -309,7 +321,7 @@ function Flow() {
                         bannerColor: bannerColor,
                         backgroundColor: backgroundColor,
                         subtitle: node.domain,
-                        icon: config.iconMap[technology] || ICON_MAP[technology] || DATABRICKS_ICON,
+                        icon: normalizePath(config.iconMap[technology]) || ICON_MAP[technology] || DATABRICKS_ICON,
                         hasOutputPorts: node.outputPorts && node.outputPorts.length > 0,
                         outputPortCount: node.outputPorts ? node.outputPorts.length : 0,
                         originalData: node // Pass full source data for YAML view
@@ -652,7 +664,7 @@ function Flow() {
                         const contract = dataMeshNodes.find(c => c.id === port.contractId && c.kind === 'DataContract');
                         if (contract) {
                             const tech = contract.customProperties?.find(p => p.property === 'technology')?.value;
-                            icon = config.iconMap[tech] || ICON_MAP[tech] || ICON_MAP['databricks'];
+                            icon = normalizePath(config.iconMap[tech]) || ICON_MAP[tech] || ICON_MAP['databricks'];
                         }
                     }
                     return { ...port, icon };
