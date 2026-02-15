@@ -90,6 +90,9 @@
     - name: customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTA-C-001
@@ -101,6 +104,9 @@
     - name: first_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - John
       quality:
@@ -111,11 +117,17 @@
     - name: last_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Smith
     - name: email
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - john.smith@email.com
       quality:
@@ -126,20 +138,32 @@
     - name: phone
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - +1-555-0101
     - name: registration_date
       logicalType: date
       physicalType: DATE
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-01-15'
   - name: orders
     physicalName: psta_orders
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: order_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTA-ORD-001
@@ -151,6 +175,9 @@
     - name: customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTA-C-001
       quality:
@@ -164,6 +191,9 @@
     - name: order_date
       logicalType: timestamp
       physicalType: TIMESTAMP
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01T10:30:00Z'
       quality:
@@ -174,6 +204,9 @@
     - name: total_amount
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 125.5
       quality:
@@ -184,6 +217,9 @@
     - name: status
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - completed
       quality:
@@ -194,16 +230,25 @@
   - name: order_items
     physicalName: psta_order_items
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: order_item_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTA-OI-001
     - name: order_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTA-ORD-001
       relationships:
@@ -212,6 +257,9 @@
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTA-PRD-001
       relationships:
@@ -220,6 +268,9 @@
     - name: quantity
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 2
       quality:
@@ -230,21 +281,33 @@
     - name: unit_price
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 29.99
   - name: products
     physicalName: psta_products
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTA-PRD-001
     - name: product_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Premium Dog Food
       quality:
@@ -255,11 +318,17 @@
     - name: category
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - dog_food
     - name: price
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 29.99
       quality:
@@ -270,21 +339,33 @@
     - name: supplier_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - SUP-001
   - name: inventory
     physicalName: psta_inventory
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: inventory_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTA-INV-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTA-PRD-001
       relationships:
@@ -293,6 +374,9 @@
     - name: quantity_on_hand
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 150
       quality:
@@ -303,11 +387,17 @@
     - name: reorder_point
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 50
     - name: last_updated
       logicalType: timestamp
       physicalType: TIMESTAMP
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01T08:00:00Z'
 - kind: DataProduct
@@ -353,10 +443,16 @@
   - name: customers
     physicalName: pstb_customers
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTB-C-001
@@ -368,6 +464,9 @@
     - name: first_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - John
       quality:
@@ -378,11 +477,17 @@
     - name: last_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Smith
     - name: email
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - john.smith@email.com
       quality:
@@ -393,20 +498,32 @@
     - name: phone
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - +1-555-0101
     - name: registration_date
       logicalType: date
       physicalType: DATE
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-01-15'
   - name: orders
     physicalName: pstb_orders
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: order_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTB-ORD-001
@@ -418,6 +535,9 @@
     - name: customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTB-C-001
       quality:
@@ -431,6 +551,9 @@
     - name: order_date
       logicalType: timestamp
       physicalType: TIMESTAMP
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01T10:30:00Z'
       quality:
@@ -441,6 +564,9 @@
     - name: total_amount
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 125.5
       quality:
@@ -451,6 +577,9 @@
     - name: status
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - completed
       quality:
@@ -461,16 +590,25 @@
   - name: order_items
     physicalName: pstb_order_items
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: order_item_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTB-OI-001
     - name: order_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTB-ORD-001
       relationships:
@@ -479,6 +617,9 @@
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTB-PRD-001
       relationships:
@@ -487,6 +628,9 @@
     - name: quantity
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 2
       quality:
@@ -497,21 +641,33 @@
     - name: unit_price
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 29.99
   - name: products
     physicalName: pstb_products
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTB-PRD-001
     - name: product_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Premium Dog Food
       quality:
@@ -522,11 +678,17 @@
     - name: category
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - dog_food
     - name: price
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 29.99
       quality:
@@ -537,21 +699,33 @@
     - name: supplier_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - SUP-001
   - name: inventory
     physicalName: pstb_inventory
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: inventory_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PSTB-INV-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - PSTB-PRD-001
       relationships:
@@ -560,6 +734,9 @@
     - name: quantity_on_hand
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 150
       quality:
@@ -570,11 +747,17 @@
     - name: reorder_point
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 50
     - name: last_updated
       logicalType: timestamp
       physicalType: TIMESTAMP
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01T08:00:00Z'
 - kind: DataProduct
@@ -620,31 +803,49 @@
   - name: food_products
     physicalName: food_products
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - FP-001
     - name: product_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Premium Dog Food - Chicken
     - name: category
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - dog_food
     - name: weight_kg
       logicalType: number
       physicalType: DECIMAL(8,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 5.0
     - name: protein_percentage
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 28.5
       quality:
@@ -655,16 +856,25 @@
   - name: recipes
     physicalName: recipes
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: recipe_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - RCP-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - FP-001
       relationships:
@@ -673,6 +883,9 @@
     - name: material_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - MAT-001
       relationships:
@@ -681,6 +894,9 @@
     - name: quantity_required
       logicalType: number
       physicalType: DECIMAL(10,3)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 2.5
       quality:
@@ -691,16 +907,25 @@
   - name: production_batches
     physicalName: production_batches
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: batch_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - BATCH-2024-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - FP-001
       relationships:
@@ -709,11 +934,17 @@
     - name: batch_date
       logicalType: date
       physicalType: DATE
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01'
     - name: quantity_produced
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 1000
       quality:
@@ -724,6 +955,9 @@
     - name: quality_score
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 98.5
       quality:
@@ -734,21 +968,33 @@
   - name: raw_materials
     physicalName: raw_materials
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: material_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - MAT-001
     - name: material_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Chicken Meal
     - name: supplier_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - SUP-001
       relationships:
@@ -757,6 +1003,9 @@
     - name: unit_cost
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 5.5
       quality:
@@ -767,21 +1016,33 @@
   - name: suppliers
     physicalName: suppliers
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: supplier_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SUP-001
     - name: supplier_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Premium Ingredients Inc
     - name: contact_email
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - contact@supplier.com
       quality:
@@ -792,6 +1053,9 @@
     - name: rating
       logicalType: number
       physicalType: DECIMAL(3,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 4.5
       quality:
@@ -848,26 +1112,41 @@
   - name: unified_customers
     physicalName: unified_customers
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: unified_customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - UC-001
     - name: source_system
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - petstore_a
     - name: first_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - John
     - name: email
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - john@email.com
       quality:
@@ -878,16 +1157,25 @@
   - name: unified_orders
     physicalName: unified_orders
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: unified_order_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - UO-001
     - name: unified_customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - UC-001
       relationships:
@@ -896,31 +1184,49 @@
     - name: order_date
       logicalType: timestamp
       physicalType: TIMESTAMP
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01T10:00:00Z'
     - name: total_amount
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 150.0
   - name: unified_products
     physicalName: unified_products
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: unified_product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - UP-001
     - name: product_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Premium Dog Food
     - name: category_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - CAT-001
       relationships:
@@ -929,16 +1235,25 @@
   - name: unified_inventory
     physicalName: unified_inventory
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: inventory_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - UI-001
     - name: unified_product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - UP-001
       relationships:
@@ -947,21 +1262,33 @@
     - name: total_quantity
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 500
   - name: sales_facts
     physicalName: sales_facts
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: sale_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SALE-001
     - name: unified_customer_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - UC-001
       relationships:
@@ -970,6 +1297,9 @@
     - name: unified_product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - UP-001
       relationships:
@@ -978,46 +1308,73 @@
     - name: sale_amount
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 75.0
   - name: customer_segments
     physicalName: customer_segments
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: segment_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SEG-001
     - name: segment_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Premium Customers
     - name: min_lifetime_value
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 1000.0
   - name: product_categories
     physicalName: product_categories
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: category_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - CAT-001
     - name: category_name
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - Dog Food
     - name: parent_category_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - CAT-000
 - kind: DataProduct
@@ -1066,121 +1423,193 @@
   - name: product_quality
     physicalName: product_quality
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: quality_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - QA-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - FP-001
     - name: avg_quality_score
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 97.5
   - name: batch_performance
     physicalName: batch_performance
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: performance_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - BP-001
     - name: batch_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - BATCH-2024-001
     - name: efficiency_score
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 95.0
   - name: material_inventory
     physicalName: material_inventory
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: inventory_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - MI-001
     - name: material_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - MAT-001
     - name: quantity_on_hand
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 5000.0
   - name: cost_analysis
     physicalName: cost_analysis
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: analysis_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - CA-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - FP-001
     - name: total_cost
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 8.5
   - name: supplier_performance
     physicalName: supplier_performance
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: performance_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SP-001
     - name: supplier_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - SUP-001
     - name: on_time_delivery_rate
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 98.5
   - name: production_schedule
     physicalName: production_schedule
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: schedule_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SCH-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - FP-001
     - name: planned_quantity
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 2000
 - kind: DataProduct
@@ -1223,101 +1652,161 @@
   - name: sales_metrics
     physicalName: sales_metrics
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: metric_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SM-001
     - name: metric_date
       logicalType: date
       physicalType: DATE
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01'
     - name: total_sales
       logicalType: number
       physicalType: DECIMAL(12,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 15000.0
     - name: order_count
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 125
   - name: customer_metrics
     physicalName: customer_metrics
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: metric_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - CM-001
     - name: segment_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - SEG-001
     - name: customer_count
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 500
     - name: avg_lifetime_value
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 1250.0
   - name: inventory_metrics
     physicalName: inventory_metrics
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: metric_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - IM-001
     - name: category_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - CAT-001
     - name: total_value
       logicalType: number
       physicalType: DECIMAL(12,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 50000.0
     - name: turnover_rate
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 4.5
   - name: product_performance_metrics
     physicalName: product_performance_metrics
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: metric_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PPM-001
     - name: unified_product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - UP-001
     - name: units_sold
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 250
     - name: revenue
       logicalType: number
       physicalType: DECIMAL(10,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 7500.0
 - kind: DataProduct
@@ -1357,76 +1846,121 @@
   - name: production_efficiency
     physicalName: production_efficiency
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: metric_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - PE-001
     - name: metric_date
       logicalType: date
       physicalType: DATE
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - '2024-06-01'
     - name: production_volume
       logicalType: integer
       physicalType: INT
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 5000
     - name: efficiency_percentage
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 94.5
   - name: quality_trends
     physicalName: quality_trends
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: trend_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - QT-001
     - name: product_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - FP-001
     - name: avg_quality_score
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 97.0
     - name: trend_direction
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - improving
   - name: supply_chain_metrics
     physicalName: supply_chain_metrics
     physicalType: table
+    customProperties:
+    - property: technology
+      value: deltaLake
     properties:
     - name: metric_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       primaryKey: true
       examples:
       - SCM-001
     - name: supplier_id
       logicalType: string
       physicalType: STRING
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - SUP-001
     - name: delivery_performance
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 98.0
     - name: cost_efficiency
       logicalType: number
       physicalType: DECIMAL(5,2)
+      customProperties:
+      - property: technology
+        value: deltaLake
       examples:
       - 92.5
 - kind: DataProduct
