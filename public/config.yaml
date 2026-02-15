@@ -1,11 +1,11 @@
 defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 
 iconMap:
-  oracleRds: /icons/oracle.svg
+  rdsOracle: /icons/rdsoracle.svg
   sharepoint: /icons/sharepoint.svg
   databricks: /icons/databricks.svg
   powerBi: /icons/powerbi.svg
-  deltaLake: /icons/delta.svg
+  deltaLake: /icons/deltalake.svg
   reltio: /icons/reltio.svg
   veevaVault: /icons/veeva.svg
 

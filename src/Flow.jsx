@@ -56,25 +56,6 @@ const normalizePath = (path) => {
     return path;
 };
 
-const ORACLE_ICON = normalizePath('/icons/oracle.svg');
-const SHAREPOINT_ICON = normalizePath('/icons/sharepoint.svg');
-const DATABRICKS_ICON = normalizePath('/icons/databricks.svg');
-const POWERBI_ICON = normalizePath('/icons/powerbi.svg');
-const DELTA_ICON = normalizePath('/icons/delta.svg');
-const RELTIO_ICON = normalizePath('/icons/reltio.svg');
-const VEEVA_ICON = normalizePath('/icons/veeva.svg');
-
-const ICON_MAP = {
-    'oracleRds': ORACLE_ICON,
-    'sharepoint': SHAREPOINT_ICON,
-    'databricks': DATABRICKS_ICON,
-    'powerBi': POWERBI_ICON,
-    'delta': DELTA_ICON,
-    'deltaLake': DELTA_ICON,
-    'reltio': RELTIO_ICON,
-    'veevaVault': VEEVA_ICON
-};
-
 export default Flow;
 
 function Flow() {
@@ -322,7 +303,7 @@ function Flow() {
                         bannerColor: bannerColor,
                         backgroundColor: backgroundColor,
                         subtitle: node.domain,
-                        icon: normalizePath(config.iconMap[technology]) || ICON_MAP[technology] || DATABRICKS_ICON,
+                        icon: normalizePath(config.iconMap[technology] || config.iconMap['databricks']),
                         hasOutputPorts: node.outputPorts && node.outputPorts.length > 0,
                         outputPortCount: node.outputPorts ? node.outputPorts.length : 0,
                         originalData: node // Pass full source data for YAML view
@@ -491,7 +472,7 @@ function Flow() {
                             label: schemaElement.name || schemaElement.physicalName || `Schema ${index + 1}`,
                             banner: 'DATA CONTRACT',
                             bannerColor: '#e5e7eb',
-                            icon: config.iconMap[tech] || ICON_MAP[tech] || ICON_MAP['databricks'],
+                            icon: normalizePath(config.iconMap[tech] || config.iconMap['databricks']),
                             // Add a stable ID for handles to reference
                             tableName: schemaElement.name,
                             rowIndices: { row, col, totalCols: cols },
@@ -514,7 +495,7 @@ function Flow() {
                     label: contractData.name || contractData.physicalName || selectedNodeId,
                     banner: 'DATA CONTRACT',
                     bannerColor: '#e5e7eb',
-                    icon: config.iconMap[tech] || ICON_MAP[tech] || ICON_MAP['databricks'],
+                    icon: normalizePath(config.iconMap[tech] || config.iconMap['databricks']),
                 }
             };
             return [centralNode];
@@ -670,7 +651,7 @@ function Flow() {
                                 const techProp = table.customProperties.find(p => p.property === 'technology');
                                 if (techProp) {
                                     const tech = techProp.value;
-                                    portIcon = normalizePath(config.iconMap[tech]) || ICON_MAP[tech];
+                                    portIcon = normalizePath(config.iconMap[tech]);
                                 }
                             }
 
@@ -679,7 +660,7 @@ function Flow() {
                                 const techProp = contract.customProperties.find(p => p.property === 'technology');
                                 if (techProp) {
                                     const tech = techProp.value;
-                                    portIcon = normalizePath(config.iconMap[tech]) || ICON_MAP[tech];
+                                    portIcon = normalizePath(config.iconMap[tech]);
                                 }
                             }
                         }

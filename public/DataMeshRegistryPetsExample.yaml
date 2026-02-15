@@ -10,7 +10,7 @@
   - property: dataProductTier
     value: dataSource
   - property: technology
-    value: oracleRds
+    value: rdsOracle
   outputPorts: []
 - kind: DataProduct
   id: urn:petstore-b:source:operational-db
@@ -24,7 +24,7 @@
   - property: dataProductTier
     value: dataSource
   - property: technology
-    value: oracleRds
+    value: rdsOracle
   outputPorts: []
 - kind: DataProduct
   id: urn:food-production:source:operational-db
@@ -38,7 +38,7 @@
   - property: dataProductTier
     value: dataSource
   - property: technology
-    value: oracleRds
+    value: rdsOracle
   outputPorts: []
 - kind: DataProduct
   id: urn:petstore-a:source-aligned:retail-data
