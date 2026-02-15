@@ -76,7 +76,6 @@
   apiVersion: v3.0.0
   schema:
     - name: customers
-      physicalName: psta_customers
       physicalType: table
       description: Petstore A operational data for customers
       customProperties:
@@ -148,7 +147,6 @@
           examples:
             - 2024-01-15
     - name: orders
-      physicalName: psta_orders
       physicalType: table
       description: Petstore A operational data for orders
       customProperties:
@@ -225,7 +223,6 @@
               mustBe: 0
               query: status IN ('pending', 'completed', 'cancelled')
     - name: order_items
-      physicalName: psta_order_items
       physicalType: table
       description: Petstore A operational data for order_items
       customProperties:
@@ -285,7 +282,6 @@
           examples:
             - 29.99
     - name: products
-      physicalName: psta_products
       physicalType: table
       description: Petstore A operational data for products
       customProperties:
@@ -344,7 +340,6 @@
           examples:
             - SUP-001
     - name: inventory
-      physicalName: psta_inventory
       physicalType: table
       description: Petstore A operational data for inventory
       customProperties:
@@ -436,7 +431,6 @@
   apiVersion: v3.0.0
   schema:
     - name: customers
-      physicalName: pstb_customers
       physicalType: table
       description: Petstore B operational data for customers
       customProperties:
@@ -508,7 +502,6 @@
           examples:
             - 2024-01-15
     - name: orders
-      physicalName: pstb_orders
       physicalType: table
       description: Petstore B operational data for orders
       customProperties:
@@ -585,7 +578,6 @@
               mustBe: 0
               query: status IN ('pending', 'completed', 'cancelled')
     - name: order_items
-      physicalName: pstb_order_items
       physicalType: table
       description: Petstore B operational data for order_items
       customProperties:
@@ -645,7 +637,6 @@
           examples:
             - 29.99
     - name: products
-      physicalName: pstb_products
       physicalType: table
       description: Petstore B operational data for products
       customProperties:
@@ -704,7 +695,6 @@
           examples:
             - SUP-001
     - name: inventory
-      physicalName: pstb_inventory
       physicalType: table
       description: Petstore B operational data for inventory
       customProperties:
@@ -796,7 +786,6 @@
   apiVersion: v3.0.0
   schema:
     - name: food_products
-      physicalName: food_products
       physicalType: table
       description: Food production data for food_products
       customProperties:
@@ -850,7 +839,6 @@
               mustBe: 0
               query: protein_percentage BETWEEN 0 AND 100
     - name: recipes
-      physicalName: recipes
       physicalType: table
       description: Food production data for recipes
       customProperties:
@@ -902,7 +890,6 @@
               mustBe: 0
               query: quantity_required > 0
     - name: production_batches
-      physicalName: production_batches
       physicalType: table
       description: Food production data for production_batches
       customProperties:
@@ -964,7 +951,6 @@
               mustBe: 0
               query: quality_score BETWEEN 0 AND 100
     - name: raw_materials
-      physicalName: raw_materials
       physicalType: table
       description: Food production data for raw_materials
       customProperties:
@@ -1013,7 +999,6 @@
               mustBe: 0
               query: unit_cost > 0
     - name: suppliers
-      physicalName: suppliers
       physicalType: table
       description: Food production data for suppliers
       customProperties:
@@ -1105,7 +1090,6 @@
   apiVersion: v3.0.0
   schema:
     - name: unified_customers
-      physicalName: unified_customers
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for unified_customers
@@ -1152,7 +1136,6 @@
               metric: invalidValues
               mustBe: 0
     - name: unified_orders
-      physicalName: unified_orders
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for unified_orders
@@ -1197,7 +1180,6 @@
           examples:
             - 150
     - name: unified_products
-      physicalName: unified_products
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for unified_products
@@ -1234,7 +1216,6 @@
             - to: product_categories.category_id
               type: foreignKey
     - name: unified_inventory
-      physicalName: unified_inventory
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for unified_inventory
@@ -1271,7 +1252,6 @@
           examples:
             - 500
     - name: sales_facts
-      physicalName: sales_facts
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for sales_facts
@@ -1319,7 +1299,6 @@
           examples:
             - 75
     - name: customer_segments
-      physicalName: customer_segments
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for customer_segments
@@ -1353,7 +1332,6 @@
           examples:
             - 1000
     - name: product_categories
-      physicalName: product_categories
       physicalType: table
       description: Unified view of customers, orders, products, inventory, sales,
         customer segments, and product categories data for product_categories
@@ -1426,7 +1404,6 @@
   apiVersion: v3.0.0
   schema:
     - name: product_quality
-      physicalName: product_quality
       physicalType: table
       description: Production data with quality metrics, batch performance, inventory
         levels, cost analysis, supplier ratings, and production schedules data
@@ -1461,7 +1438,6 @@
           examples:
             - 97.5
     - name: batch_performance
-      physicalName: batch_performance
       physicalType: table
       description: Production data with quality metrics, batch performance, inventory
         levels, cost analysis, supplier ratings, and production schedules data
@@ -1496,7 +1472,6 @@
           examples:
             - 95
     - name: material_inventory
-      physicalName: material_inventory
       physicalType: table
       description: Production data with quality metrics, batch performance, inventory
         levels, cost analysis, supplier ratings, and production schedules data
@@ -1531,7 +1506,6 @@
           examples:
             - 5000
     - name: cost_analysis
-      physicalName: cost_analysis
       physicalType: table
       description: Production data with quality metrics, batch performance, inventory
         levels, cost analysis, supplier ratings, and production schedules data
@@ -1566,7 +1540,6 @@
           examples:
             - 8.5
     - name: supplier_performance
-      physicalName: supplier_performance
       physicalType: table
       description: Production data with quality metrics, batch performance, inventory
         levels, cost analysis, supplier ratings, and production schedules data
@@ -1601,7 +1574,6 @@
           examples:
             - 98.5
     - name: production_schedule
-      physicalName: production_schedule
       physicalType: table
       description: Production data with quality metrics, batch performance, inventory
         levels, cost analysis, supplier ratings, and production schedules data
@@ -1668,7 +1640,6 @@
   apiVersion: v3.0.0
   schema:
     - name: sales_metrics
-      physicalName: sales_metrics
       physicalType: table
       description: Aggregated metrics data for sales_metrics
       customProperties:
@@ -1709,7 +1680,6 @@
           examples:
             - 125
     - name: customer_metrics
-      physicalName: customer_metrics
       physicalType: table
       description: Aggregated metrics data for customer_metrics
       customProperties:
@@ -1750,7 +1720,6 @@
           examples:
             - 1250
     - name: inventory_metrics
-      physicalName: inventory_metrics
       physicalType: table
       description: Aggregated metrics data for inventory_metrics
       customProperties:
@@ -1791,7 +1760,6 @@
           examples:
             - 4.5
     - name: product_performance_metrics
-      physicalName: product_performance_metrics
       physicalType: table
       description: Aggregated metrics data for product_performance_metrics
       customProperties:
@@ -1861,7 +1829,6 @@
   apiVersion: v3.0.0
   schema:
     - name: production_efficiency
-      physicalName: production_efficiency
       physicalType: table
       description: Aggregated metrics data for production_efficiency
       customProperties:
@@ -1902,7 +1869,6 @@
           examples:
             - 94.5
     - name: quality_trends
-      physicalName: quality_trends
       physicalType: table
       description: Aggregated metrics data for quality_trends
       customProperties:
@@ -1943,7 +1909,6 @@
           examples:
             - improving
     - name: supply_chain_metrics
-      physicalName: supply_chain_metrics
       physicalType: table
       description: Aggregated metrics data for supply_chain_metrics
       customProperties:
