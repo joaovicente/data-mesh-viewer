@@ -25,8 +25,8 @@ export default memo(({ data, isConnectable }) => {
             background: data.backgroundColor || 'white',
             overflow: 'hidden',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-            width: '280px',
-            height: '110px',
+            width: '320px',
+            height: '120px',
             fontFamily: 'Inter, sans-serif'
         }}>
             <div style={{
@@ -53,7 +53,7 @@ export default memo(({ data, isConnectable }) => {
                         background: 'rgba(255, 255, 255, 0.5)',
                         border: '1px solid rgba(255, 255, 255, 0.6)',
                         borderRadius: '4px',
-                        padding: '4px', // Adjusted padding for icon
+                        padding: '4px',
                         cursor: 'pointer',
                         color: '#1e3a8a',
                         display: 'flex',
@@ -92,7 +92,7 @@ export default memo(({ data, isConnectable }) => {
                     </svg>
                 </div>
             </div>
-            <div style={{ padding: '12px', display: 'flex', alignItems: 'flex-start' }}>
+            <div style={{ padding: '12px', display: 'flex', alignItems: 'flex-start', flex: 1 }}>
                 <Handle
                     type="target"
                     position={Position.Left}
@@ -107,11 +107,39 @@ export default memo(({ data, isConnectable }) => {
                     style={{ width: '32px', height: '32px', marginRight: '12px', marginTop: '2px' }}
                 />
 
-                <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ fontSize: '16px', fontWeight: '700', color: '#1f2937', lineHeight: '1.2' }}>
-                            {data.label}
-                        </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                        fontSize: '15px',
+                        fontWeight: '700',
+                        color: '#1f2937',
+                        lineHeight: '1.2',
+                        wordBreak: 'break-word',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical'
+                    }}>
+                        {data.label}
+                    </div>
+
+                    <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '8px',
+                        gap: '8px'
+                    }}>
+                        {data.subtitle && (
+                            <div style={{
+                                fontSize: '11px',
+                                color: '#6b7280',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis'
+                            }}>
+                                {data.subtitle}
+                            </div>
+                        )}
                         {data.hasOutputPorts && (
                             <div
                                 className="nodrag output-ports-pill"
@@ -128,15 +156,10 @@ export default memo(({ data, isConnectable }) => {
                                     whiteSpace: 'nowrap'
                                 }}
                             >
-                                Output Ports ({data.outputPortCount || 0})
+                                {data.outputPortCount || 0} Ports
                             </div>
                         )}
                     </div>
-                    {data.subtitle && (
-                        <div style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>
-                            {data.subtitle}
-                        </div>
-                    )}
                 </div>
 
                 <Handle

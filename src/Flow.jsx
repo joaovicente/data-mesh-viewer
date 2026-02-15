@@ -294,8 +294,8 @@ function Flow() {
                 // Use 450px spacing between columns to prevent overlap
                 // columnNumber starts at 1, so subtract 1 for 0-based positioning
                 const COLUMN_SPACING = 450;
-                const NODE_WIDTH = 280; // Consistent width for all nodes
-                const NODE_HEIGHT = 110; // Fixed height for consistency
+                const NODE_WIDTH = 320; // Consistent width for all nodes
+                const NODE_HEIGHT = 120; // Fixed height for consistency
                 const VERTICAL_GAP = 40; // Space between nodes
                 const VERTICAL_STEP = NODE_HEIGHT + VERTICAL_GAP;
 
