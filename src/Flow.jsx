@@ -136,6 +136,7 @@ function Flow() {
     const [sidePanelWidth, setSidePanelWidth] = React.useState(500);
     const [sidePanelFilter, setSidePanelFilter] = React.useState(''); // New filter state
     const [sidePanelTab, setSidePanelTab] = React.useState('visual'); // 'visual' | 'yaml'
+    const [sidePanelAnchor, setSidePanelAnchor] = React.useState(null); // Table anchor
 
     // Reset tab to visual when opening new content
     React.useEffect(() => {
@@ -798,8 +799,15 @@ function Flow() {
                 // Allow up to 1400px or 90% of screen width if I could, but simple max:
                 setSidePanelWidth(Math.min(1400, Math.max(300, e.detail.width)));
             } else if (['yaml', 'data-product-yaml', 'agreement-yaml', 'data-contract-yaml'].includes(type)) {
-                // Reset to default for YAML if no specific width requested
                 setSidePanelWidth(500);
+            }
+
+            // Handle anchoring for Data Contract tables
+            if (e.detail.activeTable) {
+                setSidePanelTab('visual');
+                setSidePanelAnchor(e.detail.activeTable);
+            } else {
+                setSidePanelAnchor(null);
             }
         };
         window.addEventListener('open-side-panel', handleOpenSidePanel);
@@ -1372,43 +1380,85 @@ function Flow() {
 
                             {/* Tab Selector */}
                             {['data-product-yaml', 'data-contract-yaml', 'agreement-yaml'].includes(sidePanelType) && (
-                                <div style={{
-                                    display: 'flex',
-                                    gap: '8px',
-                                    marginTop: '8px'
-                                }}>
-                                    <button
-                                        onClick={() => setSidePanelTab('visual')}
-                                        style={{
-                                            padding: '10px 24px',
-                                            fontSize: '14px',
-                                            fontWeight: '600',
-                                            color: sidePanelTab === 'visual' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
-                                            background: sidePanelTab === 'visual' ? 'var(--m3-primary-container)' : 'transparent',
-                                            border: 'none',
-                                            borderRadius: '20px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease'
-                                        }}
-                                    >
-                                        Representation
-                                    </button>
-                                    <button
-                                        onClick={() => setSidePanelTab('yaml')}
-                                        style={{
-                                            padding: '10px 24px',
-                                            fontSize: '14px',
-                                            fontWeight: '600',
-                                            color: sidePanelTab === 'yaml' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
-                                            background: sidePanelTab === 'yaml' ? 'var(--m3-primary-container)' : 'transparent',
-                                            border: 'none',
-                                            borderRadius: '20px',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.2s ease'
-                                        }}
-                                    >
-                                        YAML Source
-                                    </button>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        background: 'var(--m3-surface-variant)',
+                                        padding: '4px',
+                                        borderRadius: '24px',
+                                        width: 'fit-content'
+                                    }}>
+                                        <button
+                                            onClick={() => setSidePanelTab('visual')}
+                                            style={{
+                                                padding: '10px 24px',
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                                color: sidePanelTab === 'visual' ? 'var(--m3-on-secondary-container)' : 'var(--m3-on-surface-variant)',
+                                                background: sidePanelTab === 'visual' ? 'var(--m3-secondary-container)' : 'transparent',
+                                                border: 'none',
+                                                borderRadius: '20px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease',
+                                                boxShadow: sidePanelTab === 'visual' ? 'var(--m3-elevation-1)' : 'none'
+                                            }}
+                                        >
+                                            Representation
+                                        </button>
+                                        <button
+                                            onClick={() => setSidePanelTab('yaml')}
+                                            style={{
+                                                padding: '10px 24px',
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                                color: sidePanelTab === 'yaml' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
+                                                background: sidePanelTab === 'yaml' ? 'var(--m3-primary-container)' : 'transparent',
+                                                border: 'none',
+                                                borderRadius: '20px',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                        >
+                                            YAML Source
+                                        </button>
+                                    </div>
+
+                                    {sidePanelType === 'data-contract-yaml' && sidePanelAnchor && (
+                                        <button
+                                            onClick={() => setSidePanelAnchor(null)}
+                                            style={{
+                                                background: '#f0f9ff',
+                                                color: '#0369a1',
+                                                border: '1px solid #bae6fd',
+                                                padding: '8px 16px',
+                                                borderRadius: '20px',
+                                                fontWeight: '600',
+                                                fontSize: '13px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px',
+                                                transition: 'all 0.2s'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.background = '#e0f2fe';
+                                                e.currentTarget.style.borderColor = '#7dd3fc';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.background = '#f0f9ff';
+                                                e.currentTarget.style.borderColor = '#bae6fd';
+                                            }}
+                                            title="Show Full Contract"
+                                        >
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polyline points="15 3 21 3 21 9"></polyline>
+                                                <polyline points="9 21 3 21 3 15"></polyline>
+                                                <line x1="21" y1="3" x2="14" y2="10"></line>
+                                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                                            </svg>
+                                            Full Contract
+                                        </button>
+                                    )}
                                 </div>
                             )}
 
@@ -1459,7 +1509,12 @@ function Flow() {
                             ) : sidePanelTab === 'visual' && sidePanelType === 'data-product-yaml' ? (
                                 <DataProductVisual data={sidePanelContent.originalData || sidePanelContent} />
                             ) : sidePanelTab === 'visual' && sidePanelType === 'data-contract-yaml' ? (
-                                <DataContractVisual data={sidePanelContent.originalData || sidePanelContent} />
+                                <DataContractVisual
+                                    data={sidePanelContent.originalData || sidePanelContent}
+                                    anchor={sidePanelAnchor}
+                                    filterByAnchor={!!sidePanelAnchor}
+                                    onViewFull={() => setSidePanelAnchor(null)}
+                                />
                             ) : sidePanelTab === 'visual' && sidePanelType === 'agreement-yaml' ? (
                                 <DataUsageAgreementVisual data={sidePanelContent.originalData || sidePanelContent} />
                             ) : sidePanelType === 'agreement-yaml' ? (
@@ -1470,7 +1525,17 @@ function Flow() {
                             ) : (
                                 // Default YAML view
                                 <InteractiveYaml
-                                    data={sidePanelContent.originalData || sidePanelContent}
+                                    data={(() => {
+                                        const rawData = sidePanelContent.originalData || sidePanelContent;
+                                        if (sidePanelType === 'data-contract-yaml' && sidePanelAnchor) {
+                                            const table = rawData.schema?.find(t => (t.physicalName || t.name) === sidePanelAnchor);
+                                            // Show only the schema for that table
+                                            // We return it wrapped in the schema array to maintain some structure, or just the object
+                                            // Returning just the object is cleaner for "focus"
+                                            return table || rawData;
+                                        }
+                                        return rawData;
+                                    })()}
                                     type={sidePanelType}
                                     filterText={sidePanelFilter}
                                 />

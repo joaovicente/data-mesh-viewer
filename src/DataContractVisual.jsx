@@ -14,20 +14,34 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
-export default function DataContractVisual({ data }) {
+export default function DataContractVisual({ data, anchor, filterByAnchor = false, onViewFull }) {
     // data is the full YAML object for the Data Contract
+    const containerRef = useRef(null);
 
-    const schema = data.schema || [];
-    // Handle schema being array or object (in case of future changes, but currently array of tables)
-    // The current YAML structure shows schema as a list of tables, each with properties (columns)
+    const fullSchema = data.schema || [];
+    const schema = filterByAnchor && anchor
+        ? fullSchema.filter(t => (t.physicalName || t.name) === anchor)
+        : fullSchema;
 
-    // Flatten properties from all tables for a simpler view, or show by table
-    // The example YAML has one table per contract typically, but let's map it.
+    // Auto-scroll to anchored table
+    useEffect(() => {
+        if (anchor && !filterByAnchor) {
+            // Find the element with the ID matching the anchor table name
+            // Use a slight delay to ensure the DOM is ready and the transition is smooth
+            const timer = setTimeout(() => {
+                const element = document.getElementById(`table-${anchor}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
+        }
+    }, [anchor, filterByAnchor]);
 
     return (
-        <div style={{ padding: '24px', fontFamily: 'Inter, sans-serif', color: 'var(--m3-on-surface)' }}>
+        <div ref={containerRef} style={{ padding: '24px', fontFamily: 'Inter, sans-serif', color: 'var(--m3-on-surface)' }}>
             {/* Header Section */}
             <div style={{ marginBottom: '32px' }}>
                 <h2 style={{
