@@ -55,19 +55,19 @@
       value: databricks
   outputPorts:
     - name: customers
-      version: '1'
+      version: "1"
       contractId: urn:petstore-a:contract:retail-data
     - name: orders
-      version: '1'
+      version: "1"
       contractId: urn:petstore-a:contract:retail-data
     - name: order_items
-      version: '1'
+      version: "1"
       contractId: urn:petstore-a:contract:retail-data
     - name: products
-      version: '1'
+      version: "1"
       contractId: urn:petstore-a:contract:retail-data
     - name: inventory
-      version: '1'
+      version: "1"
       contractId: urn:petstore-a:contract:retail-data
 - kind: DataContract
   id: urn:petstore-a:contract:retail-data
@@ -78,6 +78,7 @@
     - name: customers
       physicalName: psta_customers
       physicalType: table
+      description: Petstore A operational data for customers
       customProperties:
         - property: technology
           value: deltaLake
@@ -145,11 +146,11 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-01-15'
-      description: Petstore A operational data for customers
+            - 2024-01-15
     - name: orders
       physicalName: psta_orders
       physicalType: table
+      description: Petstore A operational data for orders
       customProperties:
         - property: technology
           value: deltaLake
@@ -191,7 +192,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01T10:30:00Z'
+            - 2024-06-01T10:30:00Z
           quality:
             - dimension: timeliness
               type: sql
@@ -223,10 +224,10 @@
               type: sql
               mustBe: 0
               query: status IN ('pending', 'completed', 'cancelled')
-      description: Petstore A operational data for orders
     - name: order_items
       physicalName: psta_order_items
       physicalType: table
+      description: Petstore A operational data for order_items
       customProperties:
         - property: technology
           value: deltaLake
@@ -283,10 +284,10 @@
               value: deltaLake
           examples:
             - 29.99
-      description: Petstore A operational data for order_items
     - name: products
       physicalName: psta_products
       physicalType: table
+      description: Petstore A operational data for products
       customProperties:
         - property: technology
           value: deltaLake
@@ -342,10 +343,10 @@
               value: deltaLake
           examples:
             - SUP-001
-      description: Petstore A operational data for products
     - name: inventory
       physicalName: psta_inventory
       physicalType: table
+      description: Petstore A operational data for inventory
       customProperties:
         - property: technology
           value: deltaLake
@@ -398,8 +399,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01T08:00:00Z'
-      description: Petstore A operational data for inventory
+            - 2024-06-01T08:00:00Z
 - kind: DataProduct
   id: urn:petstore-b:source-aligned:retail-data
   name: Petstore B
@@ -415,19 +415,19 @@
       value: databricks
   outputPorts:
     - name: customers
-      version: '1'
+      version: "1"
       contractId: urn:petstore-b:contract:retail-data
     - name: orders
-      version: '1'
+      version: "1"
       contractId: urn:petstore-b:contract:retail-data
     - name: order_items
-      version: '1'
+      version: "1"
       contractId: urn:petstore-b:contract:retail-data
     - name: products
-      version: '1'
+      version: "1"
       contractId: urn:petstore-b:contract:retail-data
     - name: inventory
-      version: '1'
+      version: "1"
       contractId: urn:petstore-b:contract:retail-data
 - kind: DataContract
   id: urn:petstore-b:contract:retail-data
@@ -438,6 +438,7 @@
     - name: customers
       physicalName: pstb_customers
       physicalType: table
+      description: Petstore B operational data for customers
       customProperties:
         - property: technology
           value: deltaLake
@@ -505,11 +506,11 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-01-15'
-      description: Petstore B operational data for customers
+            - 2024-01-15
     - name: orders
       physicalName: pstb_orders
       physicalType: table
+      description: Petstore B operational data for orders
       customProperties:
         - property: technology
           value: deltaLake
@@ -551,7 +552,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01T10:30:00Z'
+            - 2024-06-01T10:30:00Z
           quality:
             - dimension: timeliness
               type: sql
@@ -583,10 +584,10 @@
               type: sql
               mustBe: 0
               query: status IN ('pending', 'completed', 'cancelled')
-      description: Petstore B operational data for orders
     - name: order_items
       physicalName: pstb_order_items
       physicalType: table
+      description: Petstore B operational data for order_items
       customProperties:
         - property: technology
           value: deltaLake
@@ -643,10 +644,10 @@
               value: deltaLake
           examples:
             - 29.99
-      description: Petstore B operational data for order_items
     - name: products
       physicalName: pstb_products
       physicalType: table
+      description: Petstore B operational data for products
       customProperties:
         - property: technology
           value: deltaLake
@@ -702,10 +703,10 @@
               value: deltaLake
           examples:
             - SUP-001
-      description: Petstore B operational data for products
     - name: inventory
       physicalName: pstb_inventory
       physicalType: table
+      description: Petstore B operational data for inventory
       customProperties:
         - property: technology
           value: deltaLake
@@ -758,8 +759,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01T08:00:00Z'
-      description: Petstore B operational data for inventory
+            - 2024-06-01T08:00:00Z
 - kind: DataProduct
   id: urn:food-production:source-aligned:manufacturing-data
   name: Food Production
@@ -775,19 +775,19 @@
       value: databricks
   outputPorts:
     - name: food_products
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:manufacturing-data
     - name: recipes
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:manufacturing-data
     - name: production_batches
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:manufacturing-data
     - name: raw_materials
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:manufacturing-data
     - name: suppliers
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:manufacturing-data
 - kind: DataContract
   id: urn:food-production:contract:manufacturing-data
@@ -798,6 +798,7 @@
     - name: food_products
       physicalName: food_products
       physicalType: table
+      description: Food production data for food_products
       customProperties:
         - property: technology
           value: deltaLake
@@ -834,7 +835,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - 5.0
+            - 5
         - name: protein_percentage
           logicalType: number
           physicalType: DECIMAL(5,2)
@@ -848,10 +849,10 @@
               type: sql
               mustBe: 0
               query: protein_percentage BETWEEN 0 AND 100
-      description: Food production data for food_products
     - name: recipes
       physicalName: recipes
       physicalType: table
+      description: Food production data for recipes
       customProperties:
         - property: technology
           value: deltaLake
@@ -900,10 +901,10 @@
               type: sql
               mustBe: 0
               query: quantity_required > 0
-      description: Food production data for recipes
     - name: production_batches
       physicalName: production_batches
       physicalType: table
+      description: Food production data for production_batches
       customProperties:
         - property: technology
           value: deltaLake
@@ -935,7 +936,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01'
+            - 2024-06-01
         - name: quantity_produced
           logicalType: integer
           physicalType: INT
@@ -962,10 +963,10 @@
               type: sql
               mustBe: 0
               query: quality_score BETWEEN 0 AND 100
-      description: Food production data for production_batches
     - name: raw_materials
       physicalName: raw_materials
       physicalType: table
+      description: Food production data for raw_materials
       customProperties:
         - property: technology
           value: deltaLake
@@ -1011,10 +1012,10 @@
               type: sql
               mustBe: 0
               query: unit_cost > 0
-      description: Food production data for raw_materials
     - name: suppliers
       physicalName: suppliers
       physicalType: table
+      description: Food production data for suppliers
       customProperties:
         - property: technology
           value: deltaLake
@@ -1062,7 +1063,6 @@
               type: sql
               mustBe: 0
               query: rating BETWEEN 0 AND 5
-      description: Food production data for suppliers
 - kind: DataProduct
   id: urn:petstore:curated:unified-retail
   name: Unified Petstore Retail Data
@@ -1078,25 +1078,25 @@
       value: databricks
   outputPorts:
     - name: unified_customers
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
     - name: unified_orders
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
     - name: unified_products
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
     - name: unified_inventory
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
     - name: sales_facts
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
     - name: customer_segments
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
     - name: product_categories
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:unified-retail
 - kind: DataContract
   id: urn:petstore:contract:unified-retail
@@ -1107,6 +1107,8 @@
     - name: unified_customers
       physicalName: unified_customers
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for unified_customers
       customProperties:
         - property: technology
           value: deltaLake
@@ -1149,11 +1151,11 @@
               type: library
               metric: invalidValues
               mustBe: 0
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for unified_customers
     - name: unified_orders
       physicalName: unified_orders
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for unified_orders
       customProperties:
         - property: technology
           value: deltaLake
@@ -1185,7 +1187,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01T10:00:00Z'
+            - 2024-06-01T10:00:00Z
         - name: total_amount
           logicalType: number
           physicalType: DECIMAL(10,2)
@@ -1193,12 +1195,12 @@
             - property: technology
               value: deltaLake
           examples:
-            - 150.0
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for unified_orders
+            - 150
     - name: unified_products
       physicalName: unified_products
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for unified_products
       customProperties:
         - property: technology
           value: deltaLake
@@ -1231,11 +1233,11 @@
           relationships:
             - to: product_categories.category_id
               type: foreignKey
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for unified_products
     - name: unified_inventory
       physicalName: unified_inventory
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for unified_inventory
       customProperties:
         - property: technology
           value: deltaLake
@@ -1268,11 +1270,11 @@
               value: deltaLake
           examples:
             - 500
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for unified_inventory
     - name: sales_facts
       physicalName: sales_facts
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for sales_facts
       customProperties:
         - property: technology
           value: deltaLake
@@ -1315,12 +1317,12 @@
             - property: technology
               value: deltaLake
           examples:
-            - 75.0
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for sales_facts
+            - 75
     - name: customer_segments
       physicalName: customer_segments
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for customer_segments
       customProperties:
         - property: technology
           value: deltaLake
@@ -1349,12 +1351,12 @@
             - property: technology
               value: deltaLake
           examples:
-            - 1000.0
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for customer_segments
+            - 1000
     - name: product_categories
       physicalName: product_categories
       physicalType: table
+      description: Unified view of customers, orders, products, inventory, sales,
+        customer segments, and product categories data for product_categories
       customProperties:
         - property: technology
           value: deltaLake
@@ -1384,8 +1386,6 @@
               value: deltaLake
           examples:
             - CAT-000
-      description: Unified view of customers, orders, products, inventory, sales, customer
-        segments, and product categories data for product_categories
 - kind: DataProduct
   id: urn:food-production:curated:production-analytics
   name: Food Production Analytics Data
@@ -1402,22 +1402,22 @@
       value: databricks
   outputPorts:
     - name: product_quality
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:production-analytics
     - name: batch_performance
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:production-analytics
     - name: material_inventory
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:production-analytics
     - name: cost_analysis
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:production-analytics
     - name: supplier_performance
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:production-analytics
     - name: production_schedule
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:production-analytics
 - kind: DataContract
   id: urn:food-production:contract:production-analytics
@@ -1428,6 +1428,9 @@
     - name: product_quality
       physicalName: product_quality
       physicalType: table
+      description: Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for product_quality
       customProperties:
         - property: technology
           value: deltaLake
@@ -1457,12 +1460,12 @@
               value: deltaLake
           examples:
             - 97.5
-      description: Production data with quality metrics, batch performance, inventory
-        levels, cost analysis, supplier ratings, and production schedules data
-        for product_quality
     - name: batch_performance
       physicalName: batch_performance
       physicalType: table
+      description: Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for batch_performance
       customProperties:
         - property: technology
           value: deltaLake
@@ -1491,13 +1494,13 @@
             - property: technology
               value: deltaLake
           examples:
-            - 95.0
-      description: Production data with quality metrics, batch performance, inventory
-        levels, cost analysis, supplier ratings, and production schedules data
-        for batch_performance
+            - 95
     - name: material_inventory
       physicalName: material_inventory
       physicalType: table
+      description: Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for material_inventory
       customProperties:
         - property: technology
           value: deltaLake
@@ -1526,13 +1529,13 @@
             - property: technology
               value: deltaLake
           examples:
-            - 5000.0
-      description: Production data with quality metrics, batch performance, inventory
-        levels, cost analysis, supplier ratings, and production schedules data
-        for material_inventory
+            - 5000
     - name: cost_analysis
       physicalName: cost_analysis
       physicalType: table
+      description: Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for cost_analysis
       customProperties:
         - property: technology
           value: deltaLake
@@ -1562,12 +1565,12 @@
               value: deltaLake
           examples:
             - 8.5
-      description: Production data with quality metrics, batch performance, inventory
-        levels, cost analysis, supplier ratings, and production schedules data
-        for cost_analysis
     - name: supplier_performance
       physicalName: supplier_performance
       physicalType: table
+      description: Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for supplier_performance
       customProperties:
         - property: technology
           value: deltaLake
@@ -1597,12 +1600,12 @@
               value: deltaLake
           examples:
             - 98.5
-      description: Production data with quality metrics, batch performance, inventory
-        levels, cost analysis, supplier ratings, and production schedules data
-        for supplier_performance
     - name: production_schedule
       physicalName: production_schedule
       physicalType: table
+      description: Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for production_schedule
       customProperties:
         - property: technology
           value: deltaLake
@@ -1632,9 +1635,6 @@
               value: deltaLake
           examples:
             - 2000
-      description: Production data with quality metrics, batch performance, inventory
-        levels, cost analysis, supplier ratings, and production schedules data
-        for production_schedule
 - kind: DataProduct
   id: urn:petstore:consumer-aligned:business-analytics
   name: Petstore Business Analytics
@@ -1650,16 +1650,16 @@
       value: databricks
   outputPorts:
     - name: sales_metrics
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:business-analytics
     - name: customer_metrics
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:business-analytics
     - name: inventory_metrics
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:business-analytics
     - name: product_performance_metrics
-      version: '1'
+      version: "1"
       contractId: urn:petstore:contract:business-analytics
 - kind: DataContract
   id: urn:petstore:contract:business-analytics
@@ -1670,6 +1670,7 @@
     - name: sales_metrics
       physicalName: sales_metrics
       physicalType: table
+      description: Aggregated metrics data for sales_metrics
       customProperties:
         - property: technology
           value: deltaLake
@@ -1690,7 +1691,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01'
+            - 2024-06-01
         - name: total_sales
           logicalType: number
           physicalType: DECIMAL(12,2)
@@ -1698,7 +1699,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - 15000.0
+            - 15000
         - name: order_count
           logicalType: integer
           physicalType: INT
@@ -1707,10 +1708,10 @@
               value: deltaLake
           examples:
             - 125
-      description: Aggregated metrics data for sales_metrics
     - name: customer_metrics
       physicalName: customer_metrics
       physicalType: table
+      description: Aggregated metrics data for customer_metrics
       customProperties:
         - property: technology
           value: deltaLake
@@ -1747,11 +1748,11 @@
             - property: technology
               value: deltaLake
           examples:
-            - 1250.0
-      description: Aggregated metrics data for customer_metrics
+            - 1250
     - name: inventory_metrics
       physicalName: inventory_metrics
       physicalType: table
+      description: Aggregated metrics data for inventory_metrics
       customProperties:
         - property: technology
           value: deltaLake
@@ -1780,7 +1781,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - 50000.0
+            - 50000
         - name: turnover_rate
           logicalType: number
           physicalType: DECIMAL(5,2)
@@ -1789,10 +1790,10 @@
               value: deltaLake
           examples:
             - 4.5
-      description: Aggregated metrics data for inventory_metrics
     - name: product_performance_metrics
       physicalName: product_performance_metrics
       physicalType: table
+      description: Aggregated metrics data for product_performance_metrics
       customProperties:
         - property: technology
           value: deltaLake
@@ -1829,8 +1830,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - 7500.0
-      description: Aggregated metrics data for product_performance_metrics
+            - 7500
 - kind: DataProduct
   id: urn:food-production:consumer-aligned:operations-analytics
   name: Food Production Operations Analytics
@@ -1846,13 +1846,13 @@
       value: databricks
   outputPorts:
     - name: production_efficiency
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:operations-analytics
     - name: quality_trends
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:operations-analytics
     - name: supply_chain_metrics
-      version: '1'
+      version: "1"
       contractId: urn:food-production:contract:operations-analytics
 - kind: DataContract
   id: urn:food-production:contract:operations-analytics
@@ -1863,6 +1863,7 @@
     - name: production_efficiency
       physicalName: production_efficiency
       physicalType: table
+      description: Aggregated metrics data for production_efficiency
       customProperties:
         - property: technology
           value: deltaLake
@@ -1883,7 +1884,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - '2024-06-01'
+            - 2024-06-01
         - name: production_volume
           logicalType: integer
           physicalType: INT
@@ -1900,10 +1901,10 @@
               value: deltaLake
           examples:
             - 94.5
-      description: Aggregated metrics data for production_efficiency
     - name: quality_trends
       physicalName: quality_trends
       physicalType: table
+      description: Aggregated metrics data for quality_trends
       customProperties:
         - property: technology
           value: deltaLake
@@ -1932,7 +1933,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - 97.0
+            - 97
         - name: trend_direction
           logicalType: string
           physicalType: STRING
@@ -1941,10 +1942,10 @@
               value: deltaLake
           examples:
             - improving
-      description: Aggregated metrics data for quality_trends
     - name: supply_chain_metrics
       physicalName: supply_chain_metrics
       physicalType: table
+      description: Aggregated metrics data for supply_chain_metrics
       customProperties:
         - property: technology
           value: deltaLake
@@ -1973,7 +1974,7 @@
             - property: technology
               value: deltaLake
           examples:
-            - 98.0
+            - 98
         - name: cost_efficiency
           logicalType: number
           physicalType: DECIMAL(5,2)
@@ -1982,7 +1983,6 @@
               value: deltaLake
           examples:
             - 92.5
-      description: Aggregated metrics data for supply_chain_metrics
 - kind: DataProduct
   id: urn:petstore:application:analytics-powerbi
   name: Petstore Analytics Dashboard Data
@@ -2017,10 +2017,10 @@
     active: true
     purpose: Extract operational data from Petstore A database
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: petstore-a-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:petstore-a:source:operational-db
   consumer:
     teamId: petstore-central-team
@@ -2031,10 +2031,10 @@
     active: true
     purpose: Extract operational data from Petstore B database
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: petstore-b-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:petstore-b:source:operational-db
   consumer:
     teamId: petstore-central-team
@@ -2045,10 +2045,10 @@
     active: true
     purpose: Extract operational data from Food Production database
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: food-production-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:food-production:source:operational-db
   consumer:
     teamId: food-production-team
@@ -2059,10 +2059,10 @@
     active: true
     purpose: Integrate Petstore A data into unified retail view
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: petstore-central-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:petstore-a:source-aligned:retail-data
   consumer:
     teamId: petstore-analytics-team
@@ -2073,10 +2073,10 @@
     active: true
     purpose: Integrate Petstore B data into unified retail view
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: petstore-central-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:petstore-b:source-aligned:retail-data
   consumer:
     teamId: petstore-analytics-team
@@ -2087,10 +2087,10 @@
     active: true
     purpose: Enrich food production data with analytics
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: food-production-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:food-production:source-aligned:manufacturing-data
   consumer:
     teamId: food-analytics-team
@@ -2101,10 +2101,10 @@
     active: true
     purpose: Aggregate unified retail data for business analytics
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: petstore-analytics-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:petstore:curated:unified-retail
   consumer:
     teamId: business-intelligence-team
@@ -2115,10 +2115,10 @@
     active: true
     purpose: Aggregate production data for operations analytics
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: food-analytics-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:food-production:curated:production-analytics
   consumer:
     teamId: operations-team
@@ -2129,10 +2129,10 @@
     active: true
     purpose: Power BI visualization of petstore business metrics
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: business-intelligence-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:petstore:consumer-aligned:business-analytics
   consumer:
     teamId: app-dev-team
@@ -2143,10 +2143,10 @@
     active: true
     purpose: Power BI visualization of food production metrics
     status: approved
-    startDate: '2026-02-10'
+    startDate: 2026-02-10
   provider:
     teamId: operations-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:food-production:consumer-aligned:operations-analytics
   consumer:
     teamId: app-dev-team
@@ -2158,10 +2158,10 @@
     purpose: Consume manufacturing data from Food Production to enrich Unified
       Petstore Retail Data
     status: approved
-    startDate: '2026-02-14'
+    startDate: 2026-02-14
   provider:
     teamId: food-production-team
-    outputPortId: '*'
+    outputPortId: "*"
     dataProductId: urn:food-production:source-aligned:manufacturing-data
   consumer:
     teamId: petstore-analytics-team
