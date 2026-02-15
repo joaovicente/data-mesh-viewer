@@ -77,7 +77,15 @@ export default memo(({ data, isConnectable }) => {
             }}>
                 <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', marginBottom: description ? '4px' : '0' }}>
-                        <TableIcon />
+                        {data.icon ? (
+                            <img
+                                src={data.icon}
+                                alt="icon"
+                                style={{ width: '18px', height: '18px', marginRight: '8px', objectFit: 'contain' }}
+                            />
+                        ) : (
+                            <TableIcon />
+                        )}
                         <span style={{ fontWeight: '700', fontSize: '14px' }}>{data.label}</span>
                     </div>
                     {description && (

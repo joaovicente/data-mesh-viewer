@@ -303,7 +303,7 @@ function Flow() {
                         bannerColor: bannerColor,
                         backgroundColor: backgroundColor,
                         subtitle: node.domain,
-                        icon: normalizePath(config.iconMap[technology] || config.iconMap['databricks']),
+                        icon: normalizePath(config.iconMap[technology] || (node.kind === 'DataContract' ? config.iconMap['table'] : config.iconMap['dataProduct'])),
                         hasOutputPorts: node.outputPorts && node.outputPorts.length > 0,
                         outputPortCount: node.outputPorts ? node.outputPorts.length : 0,
                         originalData: node // Pass full source data for YAML view
@@ -472,7 +472,7 @@ function Flow() {
                             label: schemaElement.name || schemaElement.physicalName || `Schema ${index + 1}`,
                             banner: 'DATA CONTRACT',
                             bannerColor: '#e5e7eb',
-                            icon: normalizePath(config.iconMap[tech] || config.iconMap['databricks']),
+                            icon: normalizePath(config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
                             // Add a stable ID for handles to reference
                             tableName: schemaElement.name,
                             rowIndices: { row, col, totalCols: cols },
@@ -495,7 +495,7 @@ function Flow() {
                     label: contractData.name || contractData.physicalName || selectedNodeId,
                     banner: 'DATA CONTRACT',
                     bannerColor: '#e5e7eb',
-                    icon: normalizePath(config.iconMap[tech] || config.iconMap['databricks']),
+                    icon: normalizePath(config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
                 }
             };
             return [centralNode];
@@ -665,8 +665,8 @@ function Flow() {
                             }
                         }
                     }
-                    // Final fallback to the Data Product's own icon
-                    return { ...port, icon: portIcon || selectedNode.data.icon };
+                    // Final fallback to table icon then the Data Product's own icon
+                    return { ...port, icon: portIcon || normalizePath(config.iconMap['table']) || selectedNode.data.icon };
                 })
             }
         };
