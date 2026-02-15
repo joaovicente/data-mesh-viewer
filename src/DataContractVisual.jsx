@@ -27,29 +27,52 @@ export default function DataContractVisual({ data }) {
     // The example YAML has one table per contract typically, but let's map it.
 
     return (
-        <div style={{ padding: '20px', fontFamily: 'Inter, sans-serif', color: '#1f2937' }}>
+        <div style={{ padding: '24px', fontFamily: 'Inter, sans-serif', color: 'var(--m3-on-surface)' }}>
             {/* Header Section */}
-            <div style={{ marginBottom: '24px', borderBottom: '1px solid #e5e7eb', paddingBottom: '16px' }}>
-                <h2 style={{ fontSize: '16px', fontWeight: '700', margin: '0 0 12px 0', color: '#111827', fontFamily: 'monospace' }}>
+            <div style={{ marginBottom: '32px' }}>
+                <h2 style={{
+                    fontSize: '18px',
+                    fontWeight: '700',
+                    margin: '0 0 16px 0',
+                    color: 'var(--m3-on-surface)',
+                    fontFamily: 'monospace',
+                    letterSpacing: '0.5px'
+                }}>
                     {data.id}
                 </h2>
-                <div style={{ display: 'flex', gap: '16px', fontSize: '13px', alignItems: 'center' }}>
+                <div style={{
+                    display: 'flex',
+                    gap: '16px',
+                    fontSize: '14px',
+                    alignItems: 'center',
+                    background: 'var(--m3-surface-variant)',
+                    padding: '12px 20px',
+                    borderRadius: '12px',
+                    border: '1px solid var(--m3-outline-variant)'
+                }}>
                     <span style={{
-                        background: '#dcfce7',
-                        color: '#166534',
-                        padding: '2px 8px',
-                        borderRadius: '12px',
+                        background: data.status === 'active' ? '#c2efd3' : 'var(--m3-primary-container)',
+                        color: data.status === 'active' ? '#064e3b' : 'var(--m3-on-primary-container)',
+                        padding: '4px 12px',
+                        borderRadius: '8px',
                         fontWeight: '600',
                         textTransform: 'uppercase',
-                        fontSize: '11px'
+                        fontSize: '12px',
+                        letterSpacing: '0.5px'
                     }}>
                         {data.status}
                     </span>
-                    <span style={{ color: '#6b7280' }}>Version: <strong style={{ color: '#374151' }}>{data.version}</strong></span>
-                    <span style={{ color: '#6b7280' }}>API: <strong style={{ color: '#374151' }}>{data.apiVersion}</strong></span>
+                    <span style={{ color: 'var(--m3-on-surface-variant)' }}>Version: <strong style={{ color: 'var(--m3-on-surface)' }}>{data.version}</strong></span>
+                    <span style={{ color: 'var(--m3-on-surface-variant)' }}>API: <strong style={{ color: 'var(--m3-on-surface)' }}>{data.apiVersion}</strong></span>
                 </div>
                 {data.description && data.description.purpose && (
-                    <div style={{ marginTop: '12px', fontSize: '14px', color: '#4b5563', fontStyle: 'italic' }}>
+                    <div style={{
+                        marginTop: '16px',
+                        fontSize: '15px',
+                        color: 'var(--m3-on-surface-variant)',
+                        fontStyle: 'italic',
+                        lineHeight: '1.5'
+                    }}>
                         "{data.description.purpose}"
                     </div>
                 )}
@@ -57,40 +80,83 @@ export default function DataContractVisual({ data }) {
 
             {/* Schema Section */}
             <div>
-                <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#374151', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    Schema
+                <h3 style={{
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    color: 'var(--m3-primary)',
+                    marginBottom: '20px',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px'
+                }}>
+                    Schema Elements
                 </h3>
 
                 {schema.map((table, tIdx) => (
-                    <div key={tIdx} style={{ marginBottom: '24px' }}>
-                        <div style={{ marginBottom: '4px', fontWeight: '600', fontSize: '13px', color: '#4b5563' }}>
-                            Table: <span style={{ fontFamily: 'monospace', color: '#2563eb' }}>{table.name}</span>
-                        </div>
-                        {table.description && (
-                            <div style={{ marginBottom: '12px', fontSize: '12px', color: '#6b7280', lineHeight: '1.4' }}>
-                                {table.description}
+                    <div key={tIdx} style={{
+                        marginBottom: '32px',
+                        border: '1px solid var(--m3-outline-variant)',
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        background: 'var(--m3-surface)'
+                    }}>
+                        <div style={{
+                            padding: '16px 20px',
+                            background: 'var(--m3-surface-variant)',
+                            borderBottom: '1px solid var(--m3-outline-variant)'
+                        }}>
+                            <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)' }}>
+                                Table: <span style={{ fontFamily: 'monospace', color: 'var(--m3-primary)' }}>{table.name}</span>
                             </div>
-                        )}
-                        <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
-                                <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+                            {table.description && (
+                                <div style={{ marginTop: '4px', fontSize: '13px', color: 'var(--m3-on-surface-variant)', lineHeight: '1.4' }}>
+                                    {table.description}
+                                </div>
+                            )}
+                        </div>
+
+                        <div style={{ overflowX: 'auto' }}>
+                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
+                                <thead style={{ background: 'var(--m3-surface)', borderBottom: '1px solid var(--m3-outline-variant)' }}>
                                     <tr>
-                                        <th style={{ padding: '10px 12px', fontWeight: '600', color: '#4b5563' }}>Column</th>
-                                        <th style={{ padding: '10px 12px', fontWeight: '600', color: '#4b5563' }}>Logical Type</th>
-                                        <th style={{ padding: '10px 12px', fontWeight: '600', color: '#4b5563' }}>Physical Type</th>
-                                        <th style={{ padding: '10px 12px', fontWeight: '600', color: '#4b5563' }}>Examples</th>
+                                        <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Column</th>
+                                        <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Logical</th>
+                                        <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Physical</th>
+                                        <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Examples</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {table.properties && table.properties.map((col, cIdx) => (
-                                        <tr key={cIdx} style={{ borderBottom: cIdx < table.properties.length - 1 ? '1px solid #f3f4f6' : 'none', background: 'white' }}>
-                                            <td style={{ padding: '10px 12px', fontWeight: '500', color: '#1f2937', fontFamily: 'monospace' }}>
+                                        <tr key={cIdx} style={{
+                                            borderBottom: cIdx < table.properties.length - 1 ? '1px solid var(--m3-outline-variant)' : 'none',
+                                            background: 'transparent'
+                                        }}>
+                                            <td style={{ padding: '14px 20px', fontWeight: '500', color: 'var(--m3-on-surface)', fontFamily: 'monospace' }}>
                                                 {col.name}
-                                                {col.primaryKey && <span style={{ marginLeft: '6px', fontSize: '9px', color: '#d97706', border: '1px solid #fcd34d', padding: '1px 4px', borderRadius: '4px' }}>PK</span>}
+                                                {col.primaryKey && (
+                                                    <span style={{
+                                                        marginLeft: '8px',
+                                                        fontSize: '10px',
+                                                        color: '#92400e',
+                                                        background: '#fef3c7',
+                                                        padding: '2px 6px',
+                                                        borderRadius: '6px',
+                                                        fontWeight: '700',
+                                                        border: '1px solid #fcd34d'
+                                                    }}>PK</span>
+                                                )}
                                             </td>
-                                            <td style={{ padding: '10px 12px', color: '#4b5563' }}>{col.logicalType}</td>
-                                            <td style={{ padding: '10px 12px', color: '#6b7280', fontSize: '12px' }}>{col.physicalType}</td>
-                                            <td style={{ padding: '10px 12px', color: '#9ca3af', fontStyle: 'italic', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <td style={{ padding: '14px 20px', color: 'var(--m3-on-surface)' }}>{col.logicalType}</td>
+                                            <td style={{ padding: '14px 20px', color: 'var(--m3-on-surface-variant)', fontSize: '13px' }}>{col.physicalType}</td>
+                                            <td style={{
+                                                padding: '14px 20px',
+                                                color: 'var(--m3-on-surface-variant)',
+                                                fontStyle: 'italic',
+                                                maxWidth: '200px',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                whiteSpace: 'nowrap',
+                                                fontSize: '13px'
+                                            }}>
                                                 {col.examples ? col.examples.join(', ') : '-'}
                                             </td>
                                         </tr>

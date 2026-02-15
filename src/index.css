@@ -11,6 +11,22 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* M3 Tokens */
+  --m3-surface: #fdfbff;
+  --m3-surface-variant: #f2f0f4;
+  --m3-on-surface: #1b1b1f;
+  --m3-on-surface-variant: #45464f;
+  --m3-primary: #005ac1;
+  --m3-primary-container: #d8e2ff;
+  --m3-on-primary-container: #001a41;
+  --m3-outline: #757780;
+  --m3-outline-variant: #c5c6d0;
+  
+  /* Elevation */
+  --m3-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --m3-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.3);
+  --m3-elevation-3: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 html,

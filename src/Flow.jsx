@@ -1244,15 +1244,17 @@ function Flow() {
                 width: sidePanelWidth === 'auto' ? 'fit-content' : `${sidePanelWidth}px`,
                 maxWidth: '90%', // Prevent taking full screen
                 minWidth: '300px', // Minimum width
-                background: 'white',
-                boxShadow: '-4px 0 12px rgba(0,0,0,0.1)',
+                borderRadius: '24px 0 0 24px', // M3 Large Corner
+                background: 'var(--m3-surface)',
+                boxShadow: 'var(--m3-elevation-3)',
                 // Use transform for slide in/out
                 transform: sidePanelContent ? 'translateX(0)' : 'translateX(100%)',
                 // Transition transform
-                transition: isResizing ? 'none' : 'transform 0.3s ease-in-out',
+                transition: isResizing ? 'none' : 'transform 0.4s cubic-bezier(0.05, 0.7, 0.1, 1.0)', // M3 Easing
                 zIndex: 20,
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
+                border: '1px solid var(--m3-outline-variant)'
             }}>
                 {/* Resize Handle */}
                 <div
@@ -1274,12 +1276,12 @@ function Flow() {
                 {sidePanelContent && (
                     <>
                         <div style={{
-                            padding: '20px',
-                            borderBottom: '1px solid #e2e8f0',
-                            background: '#f8fafc',
+                            padding: '24px',
+                            borderBottom: '1px solid var(--m3-outline-variant)',
+                            background: 'var(--m3-surface-variant)',
                             display: 'flex',
                             flexDirection: 'column',
-                            gap: '10px'
+                            gap: '16px'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -1370,39 +1372,42 @@ function Flow() {
 
                             {/* Tab Selector */}
                             {['data-product-yaml', 'data-contract-yaml', 'agreement-yaml'].includes(sidePanelType) && (
-                                <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', marginTop: '12px' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    gap: '8px',
+                                    marginTop: '8px'
+                                }}>
                                     <button
                                         onClick={() => setSidePanelTab('visual')}
                                         style={{
-                                            padding: '8px 16px',
-                                            fontSize: '13px',
+                                            padding: '10px 24px',
+                                            fontSize: '14px',
                                             fontWeight: '600',
-                                            color: sidePanelTab === 'visual' ? '#2563eb' : '#64748b',
-                                            borderBottom: sidePanelTab === 'visual' ? '2px solid #2563eb' : '2px solid transparent',
-                                            background: 'none',
+                                            color: sidePanelTab === 'visual' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
+                                            background: sidePanelTab === 'visual' ? 'var(--m3-primary-container)' : 'transparent',
                                             border: 'none',
-                                            borderBottomStyle: 'solid',
+                                            borderRadius: '20px',
                                             cursor: 'pointer',
-                                            marginRight: '16px'
+                                            transition: 'all 0.2s ease'
                                         }}
                                     >
-                                        Visual Representation
+                                        Representation
                                     </button>
                                     <button
                                         onClick={() => setSidePanelTab('yaml')}
                                         style={{
-                                            padding: '8px 16px',
-                                            fontSize: '13px',
+                                            padding: '10px 24px',
+                                            fontSize: '14px',
                                             fontWeight: '600',
-                                            color: sidePanelTab === 'yaml' ? '#2563eb' : '#64748b',
-                                            borderBottom: sidePanelTab === 'yaml' ? '2px solid #2563eb' : '2px solid transparent',
-                                            background: 'none',
+                                            color: sidePanelTab === 'yaml' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
+                                            background: sidePanelTab === 'yaml' ? 'var(--m3-primary-container)' : 'transparent',
                                             border: 'none',
-                                            borderBottomStyle: 'solid',
-                                            cursor: 'pointer'
+                                            borderRadius: '20px',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease'
                                         }}
                                     >
-                                        YAML Viewer
+                                        YAML Source
                                     </button>
                                 </div>
                             )}
