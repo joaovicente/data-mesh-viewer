@@ -1,6 +1,8 @@
 defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 
 iconMap:
+  dataProduct: /icons/dataproduct.svg
+  table: /icons/table.svg
   rdsOracle: /icons/rdsoracle.svg
   sharepoint: /icons/sharepoint.svg
   databricks: /icons/databricks.svg
@@ -8,6 +10,8 @@ iconMap:
   deltaLake: /icons/deltalake.svg
   reltio: /icons/reltio.svg
   veevaVault: /icons/veeva.svg
+  agent: /icons/robot.svg
+  robot: /icons/robot.svg
 
 domainPalette:
   - "#fee2e2"
