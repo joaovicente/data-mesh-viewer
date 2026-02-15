@@ -1,4 +1,4 @@
-defaultDataMeshRegistryUrl: /DataProductRegistryPetsExample.yaml
+defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 
 iconMap:
   oracleRds: /icons/oracle.svg

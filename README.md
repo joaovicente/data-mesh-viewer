@@ -2,6 +2,8 @@
 
 A React-based visualization tool for exploring Data Mesh registries, Data Products, Data Contracts, and Data Usage Agreements.
 
+Live demo: https://joaovicente.github.io/data-mesh-viewer
+
 ## Features
 
 - **Interactive Visualization**: Browse Data Products, their relationships, and contracts
@@ -12,12 +14,12 @@ A React-based visualization tool for exploring Data Mesh registries, Data Produc
 
 ## Configuration
 
-The application is configured through `public/config.yaml`. This file controls the default registry URL, visual appearance, and data product tiers.
+The application is configured through `./public/config.yaml`. This file controls the default registry URL, visual appearance, and data product tiers.
 
 ### Configuration File Structure
 
 ```yaml
-defaultDataMeshRegistryUrl: /DataProductRegistry.yaml
+defaultDataMeshRegistryUrl: /DataMeshRegistry.yaml
 iconMap:
   ...
 domainPalette:
@@ -30,12 +32,17 @@ tiers:
 
 #### `defaultDataMeshRegistryUrl` (required)
 
-The path or URL to your Data Mesh registry YAML file.
+The path or URL to your Data Mesh registry YAML or JSON file.
 
 **Examples:**
+local file: 
 ```yaml
-defaultDataMeshRegistryUrl: /DataProductRegistry.yaml
-defaultDataMeshRegistryUrl: https://example.com/registry.yaml
+defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
+```
+
+remote file:
+```yaml
+defaultDataMeshRegistryUrl: https://www.example.com/DataMeshRegistryPetsExample.yaml
 ```
 
 ### Optional Fields
@@ -149,7 +156,7 @@ If you see a red "Configuration Error" banner:
 
 **"config.yaml is missing required field 'defaultDataMeshRegistryUrl'"**
 - Add the `defaultDataMeshRegistryUrl` field to your config.yaml
-- Example: `defaultDataMeshRegistryUrl: /DataProductRegistry.yaml`
+- Example: `defaultDataMeshRegistryUrl: /DataMeshRegistry.yaml`
 
 **"config.yaml must contain a valid YAML document"**
 - Ensure the file is not empty
@@ -192,7 +199,7 @@ The application expects a YAML file containing an array of Data Mesh entries tha
 - `DataContract`: Schema definitions with columns, types, and relationships
 - `DataUsageAgreement`: Agreements between providers and consumers
 
-See the included `public/DataProductRegistry.yaml` for a complete example.
+See the included `public/DataMeshPetsRegistry.yaml` for a complete example.
 
 ## Browser Compatibility
 
