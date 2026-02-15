@@ -70,6 +70,7 @@ const ICON_MAP = {
     'databricks': DATABRICKS_ICON,
     'powerBi': POWERBI_ICON,
     'delta': DELTA_ICON,
+    'deltaLake': DELTA_ICON,
     'reltio': RELTIO_ICON,
     'veevaVault': VEEVA_ICON
 };
@@ -659,15 +660,32 @@ function Flow() {
                 ...selectedNode.data,
                 // Add outputPorts from original dataMeshNodes if available, enriched with icon
                 outputPorts: dataMeshNodes.find(n => n.id === selectedNodeId)?.outputPorts?.map(port => {
-                    let icon = null;
+                    let portIcon = null;
                     if (port.contractId) {
                         const contract = dataMeshNodes.find(c => c.id === port.contractId && c.kind === 'DataContract');
-                        if (contract) {
-                            const tech = contract.customProperties?.find(p => p.property === 'technology')?.value;
-                            icon = normalizePath(config.iconMap[tech]) || ICON_MAP[tech] || ICON_MAP['databricks'];
+                        if (contract && contract.schema) {
+                            // Find matching table/item in schema
+                            const table = contract.schema.find(t => t.name === port.name);
+                            if (table && table.customProperties) {
+                                const techProp = table.customProperties.find(p => p.property === 'technology');
+                                if (techProp) {
+                                    const tech = techProp.value;
+                                    portIcon = normalizePath(config.iconMap[tech]) || ICON_MAP[tech];
+                                }
+                            }
+
+                            // Fallback to contract level tech if table tech not found (optional but helpful)
+                            if (!portIcon && contract.customProperties) {
+                                const techProp = contract.customProperties.find(p => p.property === 'technology');
+                                if (techProp) {
+                                    const tech = techProp.value;
+                                    portIcon = normalizePath(config.iconMap[tech]) || ICON_MAP[tech];
+                                }
+                            }
                         }
                     }
-                    return { ...port, icon };
+                    // Final fallback to the Data Product's own icon
+                    return { ...port, icon: portIcon || selectedNode.data.icon };
                 })
             }
         };

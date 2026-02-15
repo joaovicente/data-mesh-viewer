@@ -5,7 +5,7 @@ iconMap:
   sharepoint: /icons/sharepoint.svg
   databricks: /icons/databricks.svg
   powerBi: /icons/powerbi.svg
-  delta: /icons/delta.svg
+  deltaLake: /icons/delta.svg
   reltio: /icons/reltio.svg
   veevaVault: /icons/veeva.svg
 
