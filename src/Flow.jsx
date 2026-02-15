@@ -467,7 +467,7 @@ function Flow() {
                         data: {
                             ...contractData, // Spread contract properties
                             schema: [schemaElement], // Pass only this schema element
-                            description: schemaElement.description || contractData.description?.purpose || contractData.description,
+                            description: schemaElement.description || "",
                             originalData: contractData, // Store full contract for side panel
                             label: schemaElement.name || schemaElement.physicalName || `Schema ${index + 1}`,
                             banner: 'DATA CONTRACT',
@@ -490,7 +490,7 @@ function Flow() {
                 position: { x: 0, y: 0 },
                 data: {
                     ...contractData,
-                    description: contractData.description?.purpose || contractData.description,
+                    description: contractData.schema?.[0]?.description || "",
                     originalData: contractData,
                     label: contractData.name || contractData.physicalName || selectedNodeId,
                     banner: 'DATA CONTRACT',

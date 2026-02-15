@@ -63,9 +63,14 @@ export default function DataContractVisual({ data }) {
 
                 {schema.map((table, tIdx) => (
                     <div key={tIdx} style={{ marginBottom: '24px' }}>
-                        <div style={{ marginBottom: '8px', fontWeight: '600', fontSize: '13px', color: '#4b5563' }}>
+                        <div style={{ marginBottom: '4px', fontWeight: '600', fontSize: '13px', color: '#4b5563' }}>
                             Table: <span style={{ fontFamily: 'monospace', color: '#2563eb' }}>{table.name}</span>
                         </div>
+                        {table.description && (
+                            <div style={{ marginBottom: '12px', fontSize: '12px', color: '#6b7280', lineHeight: '1.4' }}>
+                                {table.description}
+                            </div>
+                        )}
                         <div style={{ border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden' }}>
                             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
                                 <thead style={{ background: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
