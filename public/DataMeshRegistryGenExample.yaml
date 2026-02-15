@@ -124,7 +124,7 @@
   # Lots of information
   description:
     purpose: Views built on top of the seller tables.
-    liiitations: Data based on seller perspective, no buyer information
+    limitations: Data based on seller perspective, no buyer information
     usage: Predict sales over time
     authoritativeDefinitions:
       - type: privacy-statement
