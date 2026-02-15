@@ -72,7 +72,7 @@
 - kind: DataContract
   id: urn:petstore-a:contract:retail-data
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: customers
@@ -427,7 +427,7 @@
 - kind: DataContract
   id: urn:petstore-b:contract:retail-data
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: customers
@@ -782,7 +782,7 @@
 - kind: DataContract
   id: urn:food-production:contract:manufacturing-data
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: food_products
@@ -1086,7 +1086,7 @@
 - kind: DataContract
   id: urn:petstore:contract:unified-retail
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: unified_customers
@@ -1400,7 +1400,7 @@
 - kind: DataContract
   id: urn:food-production:contract:production-analytics
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: product_quality
@@ -1636,7 +1636,7 @@
 - kind: DataContract
   id: urn:petstore:contract:business-analytics
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: sales_metrics
@@ -1825,7 +1825,7 @@
 - kind: DataContract
   id: urn:food-production:contract:operations-analytics
   status: active
-  version: 1.0.0
+  version: "1"
   apiVersion: v3.0.0
   schema:
     - name: production_efficiency
