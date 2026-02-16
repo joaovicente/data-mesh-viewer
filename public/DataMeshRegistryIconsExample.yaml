@@ -1,6 +1,18 @@
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "1"
+  id: "oracle-data-source"
+  name: Oracle data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: oracle
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "rds-oracle-data-source"
   name: Oracle data source
   domain: acme
   status: active
@@ -12,7 +24,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "2"
+  id: "rds-aurora-data-source"
   name: RDS Aurora data source
   domain: acme
   status: active
@@ -24,7 +36,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "3"
+  id: "rds-mariadb-data-source"
   name: RDS MariaDB data source
   domain: acme
   status: active
@@ -36,7 +48,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "4"
+  id: "rds-mysql-data-source"
   name: RDS MySQL data source
   domain: acme
   status: active
@@ -48,7 +60,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "5"
+  id: "rds-postgresql-data-source"
   name: RDS PostgreSQL data source
   domain: acme
   status: active
@@ -60,7 +72,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "6"
+  id: "rds-sqlserver-data-source"
   name: RDS SQL Server data source
   domain: acme
   status: active
@@ -72,7 +84,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "7"
+  id: "sharepoint-data-source"
   name: SharePoint data source
   domain: acme
   status: active
@@ -84,7 +96,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "8"
+  id: "reltio-mdm-data-source"
   name: Reltio MDM data source
   domain: acme
   status: active
@@ -96,7 +108,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "9"
+  id: "veeva-vault-data-source"
   name: Veeva Vault data source
   domain: acme
   status: active
@@ -108,7 +120,115 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "10"
+  id: "ftp-data-source"
+  name: Ftp data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: ftp
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "salesforce-data-source"
+  name: Salesforce data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: salesforce
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "sap-data-source"
+  name: SAP data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: sap
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "service-now-data-source"
+  name: Service Now data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: serviceNow
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "s3-data-source"
+  name: S3 data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: s3
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "redshift-data-source"
+  name: Redshift data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: redshift
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "google-analytics-data-source"
+  name: Google Analytics data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: googleAnalytics
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "atlassian-data-source"
+  name: Atlassian data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: atlassian 
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "jira-data-source"
+  name: Jira data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: jira 
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "databricks-data-product"
   name: Databricks data product
   domain: acme
   status: active
@@ -158,7 +278,7 @@
   - name: "my_generic_table"
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "11"
+  id: "snowflake-data-product"
   name: Snowflake data product
   domain: acme
   status: active
@@ -170,8 +290,18 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "12"
-  name: Kafka
+  id: "generic-data-product"
+  name: Generic data product
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: curated
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "kafka-data-product"
+  name: Kafka data product
   domain: acme
   status: active
   customProperties:
@@ -182,8 +312,8 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "13"
-  name: Kinesis
+  id: "kinesis-data-product"
+  name: Kinesis data product
   domain: acme
   status: active
   customProperties:
@@ -194,8 +324,8 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "14"
-  name: Agent 
+  id: "agent-data-product"
+  name: Agent
   domain: acme
   status: active
   customProperties:
@@ -206,7 +336,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "15"
+  id: "powerbi-application"
   name: Power BI Application
   domain: acme
   status: active
@@ -218,24 +348,14 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "16"
-  name: Agent 
+  id: "application"
+  name: Generic Application
   domain: acme
   status: active
   customProperties:
     - property: dataProductTier
-      value: agent
+      value: application
     - property: technology
-      value: agent
-  outputPorts: []
-- kind: DataProduct
-  apiVersion: v1.0.0
-  id: "17"
-  name: Generic data product
-  domain: acme
-  status: active
-  customProperties:
-    - property: dataProductTier
-      value: curated
+      value: application
   outputPorts: []
 

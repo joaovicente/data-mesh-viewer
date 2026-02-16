@@ -13,6 +13,15 @@ iconMap:
   sharepoint: /icons/sharepoint.svg
   reltio: /icons/reltio.svg
   veevaVault: /icons/veeva.svg
+  ftp: /icons/ftp.svg
+  salesforce: /icons/salesforce.svg
+  sap: /icons/sap.svg
+  s3: /icons/s3.svg
+  redshift: /icons/redshift.svg
+  atlassian: /icons/atlassian.svg
+  jira: /icons/jira.svg
+  googleAnalytics: /icons/googleanalytics.svg
+  serviceNow: /icons/servicenow.svg
   databricks: /icons/databricks.svg
   deltaLake: /icons/deltalake.svg
   odata: /icons/odata.svg
@@ -23,7 +32,7 @@ iconMap:
   kinesis: /icons/kinesis.svg
   powerBi: /icons/powerbi.svg
   agent: /icons/robot.svg
-  robot: /icons/robot.svg
+  application: /icons/application.svg
 
 domainPalette:
   - "#fee2e2"
