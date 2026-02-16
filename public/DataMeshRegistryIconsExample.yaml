@@ -1,0 +1,194 @@
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "1"
+  name: Oracle data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: rdsOracle
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "2"
+  name: RDS Aurora data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: rdsAurora
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "3"
+  name: RDS MariaDB data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: rdsMariaDb
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "4"
+  name: RDS MySQL data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: rdsMySql
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "5"
+  name: RDS PostgreSQL data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: rdsPostgreSql
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "6"
+  name: RDS SQL Server data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: rdsSqlserver
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "7"
+  name: SharePoint data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: sharepoint
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "8"
+  name: Reltio MDM data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: reltio
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "9"
+  name: Veeva Vault data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: veevaVault
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "10"
+  name: Databricks data product
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: sourceAligned
+    - property: technology
+      value: databricks
+  outputPorts:
+  - name: my_delta_table
+    contractId: "my-databricks-contract-1"
+    version: "1"
+  - name: my_iceberg_table
+    contractId: "my-databricks-contract-1"
+    version: "1"
+  - name: my_odata_endpoint
+    contractId: "my-databricks-contract-1"
+    version: "1"
+  - name: my_api
+    contractId: "my-databricks-contract-1"
+    version: "1"
+  - name: my_generic_table
+    contractId: "my-databricks-contract-1"
+    version: "1"
+- kind: DataContract
+  apiVersion: v3.0.1
+  version: "1"
+  status: active
+  id: "my-databricks-contract-1"
+  schema:
+  - name: "my_delta_table"
+    customProperties:
+    - property: technology
+      value: deltaLake
+  - name: "my_iceberg_table"
+    customProperties:
+    - property: technology
+      value: iceberg
+  - name: "my_odata_endpoint"
+    customProperties:
+    - property: technology
+      value: odata
+  - name: "my_api"
+    customProperties:
+    - property: technology
+      value: api
+  - name: "my_generic_table"
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "11"
+  name: Snowflake data product
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: sourceAligned
+    - property: technology
+      value: snowflake
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "12"
+  name: Power BI Application
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: application
+    - property: technology
+      value: powerBi
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "13"
+  name: Agent 
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: agent
+    - property: technology
+      value: agent
+  outputPorts: []

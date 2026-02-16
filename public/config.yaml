@@ -3,13 +3,23 @@ defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 iconMap:
   dataProduct: /icons/dataproduct.svg
   table: /icons/table.svg
+  oracle: /icons/oracle.svg
   rdsOracle: /icons/rdsoracle.svg
+  rdsAurora: /icons/rdsaurora.svg
+  rdsMariaDb: /icons/rdsmariadb.svg
+  rdsMySql: /icons/rdsmysql.svg
+  rdsPostgreSql: /icons/rdspostgresql.svg
+  rdsSqlserver: /icons/rdssqlserver.svg
   sharepoint: /icons/sharepoint.svg
-  databricks: /icons/databricks.svg
-  powerBi: /icons/powerbi.svg
-  deltaLake: /icons/deltalake.svg
   reltio: /icons/reltio.svg
   veevaVault: /icons/veeva.svg
+  databricks: /icons/databricks.svg
+  deltaLake: /icons/deltalake.svg
+  odata: /icons/odata.svg
+  snowflake: /icons/snowflake.svg
+  api: /icons/api.svg
+  iceberg: /icons/iceberg.svg
+  powerBi: /icons/powerbi.svg
   agent: /icons/robot.svg
   robot: /icons/robot.svg
 
@@ -45,6 +55,11 @@ tiers:
     columnNumber: 4
   application:
     label: APPLICATION
+    color: "#e2e8f0"
+    bannerColor: "#cbd5e1"
+    columnNumber: 5
+  agent:
+    label: AGENT
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 5
