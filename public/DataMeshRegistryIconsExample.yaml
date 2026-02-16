@@ -231,7 +231,7 @@
 - kind: DataProduct
   apiVersion: v1.0.0
   id: "17"
-  name: Agent 
+  name: Generic data product
   domain: acme
   status: active
   customProperties:
