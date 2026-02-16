@@ -171,6 +171,42 @@
 - kind: DataProduct
   apiVersion: v1.0.0
   id: "12"
+  name: Kafka
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: consumerAligned
+    - property: technology
+      value: kafka
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "13"
+  name: Kinesis
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: consumerAligned
+    - property: technology
+      value: kinesis
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "14"
+  name: Agent 
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: agent
+    - property: technology
+      value: agent
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "15"
   name: Power BI Application
   domain: acme
   status: active
@@ -182,7 +218,7 @@
   outputPorts: []
 - kind: DataProduct
   apiVersion: v1.0.0
-  id: "13"
+  id: "16"
   name: Agent 
   domain: acme
   status: active
@@ -192,3 +228,14 @@
     - property: technology
       value: agent
   outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
+  id: "17"
+  name: Agent 
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: curated
+  outputPorts: []
+

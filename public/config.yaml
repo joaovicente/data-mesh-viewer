@@ -19,6 +19,8 @@ iconMap:
   snowflake: /icons/snowflake.svg
   api: /icons/api.svg
   iceberg: /icons/iceberg.svg
+  kafka: /icons/kafka.svg
+  kinesis: /icons/kinesis.svg
   powerBi: /icons/powerbi.svg
   agent: /icons/robot.svg
   robot: /icons/robot.svg
