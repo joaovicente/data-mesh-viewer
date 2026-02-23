@@ -22,6 +22,16 @@ export default function DataUsageAgreementVisual({ data }) {
     const info = data.info || {};
     const provider = data.provider || {};
     const consumer = data.consumer || {};
+    const custom = data.custom || {};
+
+    const formatKey = (key) => {
+        return key
+            .replace(/([A-Z])/g, ' $1') // insert a space before all caps
+            .replace(/^./, (str) => str.toUpperCase()) // capitalize the first letter
+            .trim();
+    };
+
+    const hasCustomProperties = Object.keys(custom).length > 0;
 
     return (
         <div style={{ padding: '24px', fontFamily: 'Inter, sans-serif', color: 'var(--m3-on-surface)' }}>
@@ -156,6 +166,53 @@ export default function DataUsageAgreementVisual({ data }) {
                     </div>
                 </div>
 
+                {/* Custom Properties */}
+                {hasCustomProperties && (
+                    <div style={{
+                        marginTop: '16px',
+                        border: '1px solid var(--m3-outline-variant)',
+                        borderRadius: '16px',
+                        padding: '24px',
+                        background: 'var(--m3-surface)'
+                    }}>
+                        <h3 style={{
+                            fontSize: '12px',
+                            fontWeight: '700',
+                            color: 'var(--m3-primary)',
+                            marginBottom: '16px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px'
+                        }}>
+                            Custom Properties
+                        </h3>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                            {Object.entries(custom).map(([key, value]) => (
+                                <div key={key} style={{
+                                    border: '1px solid var(--m3-outline-variant)',
+                                    borderRadius: '12px',
+                                    padding: '12px 16px',
+                                    background: 'var(--m3-surface-variant)'
+                                }}>
+                                    <div style={{
+                                        fontSize: '11px',
+                                        fontWeight: '700',
+                                        color: 'var(--m3-on-surface-variant)',
+                                        marginBottom: '4px'
+                                    }}>
+                                        {formatKey(key)}
+                                    </div>
+                                    <div style={{
+                                        fontSize: '14px',
+                                        fontWeight: '500',
+                                        color: 'var(--m3-on-surface)'
+                                    }}>
+                                        {String(value)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

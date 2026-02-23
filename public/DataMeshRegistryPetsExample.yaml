@@ -2102,6 +2102,8 @@
   consumer:
     teamId: app-dev-team
     dataProductId: urn:petstore:application:analytics-powerbi
+  custom:
+    consumerApplicationClientId: "6779ef20e75817b79602"
 - dataUsageAgreementSpecification: 0.0.1
   id: urn:dua:food-consumer-to-app
   info:
