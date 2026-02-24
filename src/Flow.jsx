@@ -147,6 +147,51 @@ function Flow() {
     }, [sidePanelContent]);
     const [isResizing, setIsResizing] = React.useState(false);
 
+    const processRegistryText = (text) => {
+        setDataMeshRegistryRaw(text);
+
+        // Check if response is HTML instead of YAML (common when file doesn't exist)
+        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+            throw new Error(`Registry file not found or invalid format. The content starts with HTML instead of YAML.`);
+        }
+
+        let parsed;
+        try {
+            parsed = YAML.parse(text);
+        } catch (yamlErr) {
+            throw new Error(`Invalid YAML format: ${yamlErr.message}`);
+        }
+
+        if (!parsed) {
+            console.warn("Parsed registry is empty");
+            setDataMeshRegistry([]);
+        } else if (Array.isArray(parsed)) {
+            setDataMeshRegistry(parsed);
+        } else if (typeof parsed === 'object') {
+            // Handle single object (e.g. user pasted a single DataProduct)
+            console.log("Parsed registry is a single object, wrapping in array");
+            setDataMeshRegistry([parsed]);
+        } else {
+            throw new Error(`Registry contains invalid data. Expected YAML array or object, got: ${typeof parsed}`);
+        }
+    };
+
+    const handleLoadRegistryText = (text) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            processRegistryText(text);
+            setRegistryUrl(''); // Clear URL if loading from clipboard
+            setWorkingUrl('');
+        } catch (err) {
+            console.error("Error loading registry from text:", err);
+            setError(err.message);
+            setDataMeshRegistry([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Fetch Registry
     React.useEffect(() => {
         // Don't fetch if URL is not set yet (waiting for config to load)
@@ -163,32 +208,7 @@ function Flow() {
                     throw new Error(`Failed to fetch registry from "${registryUrl}" (${response.status} ${response.statusText}). Please check the URL in config.yaml.`);
                 }
                 const text = await response.text();
-                setDataMeshRegistryRaw(text);
-
-                // Check if response is HTML instead of YAML (common when file doesn't exist)
-                if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-                    throw new Error(`Registry file "${registryUrl}" not found. The server returned an HTML page instead of YAML. Please verify the file path in config.yaml.`);
-                }
-
-                let parsed;
-                try {
-                    parsed = YAML.parse(text);
-                } catch (yamlErr) {
-                    throw new Error(`Invalid YAML format in registry file "${registryUrl}": ${yamlErr.message}`);
-                }
-
-                if (!parsed) {
-                    console.warn("Parsed registry is empty");
-                    setDataMeshRegistry([]);
-                } else if (Array.isArray(parsed)) {
-                    setDataMeshRegistry(parsed);
-                } else if (typeof parsed === 'object') {
-                    // Handle single object (e.g. user pasted a single DataProduct)
-                    console.log("Parsed registry is a single object, wrapping in array");
-                    setDataMeshRegistry([parsed]);
-                } else {
-                    throw new Error(`Registry file "${registryUrl}" contains invalid data. Expected YAML array or object, got: ${typeof parsed}`);
-                }
+                processRegistryText(text);
             } catch (err) {
                 console.error("Error loading registry:", err);
                 setError(err.message);
@@ -1605,6 +1625,7 @@ function Flow() {
                 onClose={() => setShowRegistryModal(false)}
                 currentUrl={registryUrl}
                 onLoad={(url) => setRegistryUrl(url)}
+                onLoadText={(text) => handleLoadRegistryText(text)}
             />
         </div>
     );

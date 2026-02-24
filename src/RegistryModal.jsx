@@ -16,7 +16,7 @@
 
 import React from 'react';
 
-export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad }) {
+export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad, onLoadText }) {
     const [url, setUrl] = React.useState(currentUrl);
 
     React.useEffect(() => {
@@ -28,6 +28,21 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad }) {
     const handleLoad = () => {
         onLoad(url);
         onClose();
+    };
+
+    const handleLoadFromClipboard = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            if (text) {
+                onLoadText(text);
+                onClose();
+            } else {
+                alert("Clipboard is empty.");
+            }
+        } catch (err) {
+            console.error("Failed to read clipboard:", err);
+            alert("Failed to read clipboard. Please make sure you have granted permission.");
+        }
     };
 
     return (
@@ -90,7 +105,7 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad }) {
                         />
                     </div>
 
-                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                         <button
                             onClick={onClose}
                             style={{
@@ -107,6 +122,21 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad }) {
                             Cancel
                         </button>
                         <button
+                            onClick={handleLoadFromClipboard}
+                            style={{
+                                padding: '8px 16px',
+                                border: '1px solid #d1d5db',
+                                borderRadius: '6px',
+                                background: '#f3f4f6',
+                                color: '#374151',
+                                fontSize: '14px',
+                                fontWeight: '500',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Load from clipboard
+                        </button>
+                        <button
                             onClick={handleLoad}
                             style={{
                                 padding: '8px 16px',
@@ -119,7 +149,7 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad }) {
                                 cursor: 'pointer'
                             }}
                         >
-                            Load Registry
+                            Load from URL
                         </button>
                     </div>
                 </div>
