@@ -1,5 +1,17 @@
 - kind: DataProduct
   apiVersion: v1.0.0
+  id: "database-data-source"
+  name: Database data source
+  domain: acme
+  status: active
+  customProperties:
+    - property: dataProductTier
+      value: dataSource
+    - property: technology
+      value: database
+  outputPorts: []
+- kind: DataProduct
+  apiVersion: v1.0.0
   id: "oracle-data-source"
   name: Oracle data source
   domain: acme

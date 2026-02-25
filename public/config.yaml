@@ -2,6 +2,7 @@ defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 
 iconMap:
   dataProduct: /icons/dataproduct.svg
+  database: /icons/database.svg
   table: /icons/table.svg
   oracle: /icons/oracle.svg
   rdsOracle: /icons/rdsoracle.svg
