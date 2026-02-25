@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { getSmoothStepPath, EdgeLabelRenderer, BaseEdge } from '@xyflow/react';
 
 export default function RelationshipEdge({
@@ -14,7 +14,8 @@ export default function RelationshipEdge({
     markerEnd,
     data,
 }) {
-    const [isHovered, setIsHovered] = useState(false);
+    // Use global hover state from Flow.jsx
+    const isHovered = data?.isHovered;
 
     // Grid track routing: each edge gets its own dedicated "lane" in the gap and unique turn offsets.
     const isSameRow = data?.isSameRow;
@@ -42,16 +43,14 @@ export default function RelationshipEdge({
         centerY,
     });
 
-    const onMouseEnter = () => setIsHovered(true);
-    const onMouseLeave = () => setIsHovered(false);
-
     // Description from data, generated in Flow.jsx
     const description = data?.description || 'Relationship';
 
     return (
-        <>
+        <g className="react-flow__edge-relationship-group">
             {/* The actual visible edge */}
             <BaseEdge
+                id={id}
                 path={edgePath}
                 markerEnd={markerEnd}
                 style={{
@@ -63,14 +62,15 @@ export default function RelationshipEdge({
                 }}
             />
 
-            {/* Invisible thicker path for easier hovering - MUST be after BaseEdge */}
+            {/* Thicker hit area for interaction. 
+                In Safari, using a transparent stroke on a path with pointer-events: all 
+                is the most reliable way to create a large hit area. 
+                We don't add event listeners here; we let them bubble to the React Flow edge container. */}
             <path
                 d={edgePath}
                 fill="none"
                 stroke="transparent"
                 strokeWidth={40}
-                onMouseEnter={onMouseEnter}
-                onMouseLeave={onMouseLeave}
                 style={{ cursor: 'pointer', pointerEvents: 'all' }}
             />
 
@@ -100,6 +100,6 @@ export default function RelationshipEdge({
                     </div>
                 </EdgeLabelRenderer>
             )}
-        </>
+        </g>
     );
 }

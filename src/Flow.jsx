@@ -342,6 +342,7 @@ function Flow() {
             animated: true,
             type: 'default',
             markerEnd: { type: 'arrowclosed' },
+            interactionWidth: 40,
             style: {
                 strokeWidth: hoveredEdgeId === edge.id ? 3 : 2,
                 stroke: hoveredEdgeId === edge.id ? '#2563eb' : '#9ca3af',
@@ -567,7 +568,9 @@ function Flow() {
                                         type: 'relationshipEdge',
                                         animated: false,
                                         style: { stroke: '#a855f7', strokeWidth: 1.5 },
+                                        interactionWidth: 40,
                                         data: {
+                                            isHovered: hoveredEdgeId === `table-rel-${sourceNodeId}-${relIndex}-${idx}`,
                                             description: `The '${sourceNode.data.tableName}' table links to '${toTable}' using the '${fromColName}' composite field.`,
                                             gapCenterY: sourceNode.data.verticalGapCenter,
                                             isSameRow: sourceNode.data.rowIndices.row === targetNode.data.rowIndices.row
@@ -610,7 +613,9 @@ function Flow() {
                                     type: 'relationshipEdge',
                                     animated: false,
                                     style: { stroke: '#3b82f6', strokeWidth: 1.5 },
+                                    interactionWidth: 40,
                                     data: {
+                                        isHovered: hoveredEdgeId === `col-rel-${sourceNodeId}-${sourceColName}-${relIndex}`,
                                         description: `The '${sourceNode.data.tableName}' table links to '${targetTable}' using the '${sourceColName}' field.`,
                                         gapCenterY: sourceNode.data.verticalGapCenter,
                                         isSameRow: sourceNode.data.rowIndices.row === targetNode.data.rowIndices.row
@@ -648,7 +653,7 @@ function Flow() {
                 }
             };
         });
-    }, [contractViewNodes, selection.kind]);
+    }, [contractViewNodes, selection.kind, hoveredEdgeId]);
 
     const lineageViewNodes = React.useMemo(() => {
         if (!selection.id || selection.kind !== 'DataProduct') return null;
@@ -873,6 +878,7 @@ function Flow() {
                     animated: true,
                     type: 'default',
                     markerEnd: { type: 'arrowclosed' },
+                    interactionWidth: 40,
                     style: {
                         strokeWidth: hoveredEdgeId === edge.id ? 3 : 2,
                         stroke: hoveredEdgeId === edge.id ? '#2563eb' : '#9ca3af',
