@@ -200,18 +200,24 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                         </svg>
                                     )}
                                 </div>
-                                <div style={{ flex: 1, overflow: 'hidden' }}>
-                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px', wordBreak: 'break-word' }}>
                                         {server.server || `Server ${idx + 1}`}
                                     </div>
                                     <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px', overflow: 'hidden' }}>
+                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                             <span style={{ fontWeight: '600', minWidth: '70px' }}>Type:</span>
                                             <span style={{ fontFamily: 'monospace' }}>{server.type}</span>
                                         </div>
-                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px', overflow: 'hidden' }}>
+                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                             <span style={{ fontWeight: '600', minWidth: '70px' }}>Host:</span>
-                                            <a href={server.host} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--m3-primary)', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            <a
+                                                href={server.host}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title={server.host}
+                                                style={{ color: 'var(--m3-primary)', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                            >
                                                 {server.host}
                                             </a>
                                         </div>
@@ -231,13 +237,13 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                         {server.catalog && (
                                             <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                 <span style={{ fontWeight: '600', minWidth: '70px' }}>Catalog:</span>
-                                                <span style={{ fontFamily: 'monospace' }}>{server.catalog}</span>
+                                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-word' }}>{server.catalog}</span>
                                             </div>
                                         )}
                                         {server.schema && (
                                             <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                 <span style={{ fontWeight: '600', minWidth: '70px' }}>Schema:</span>
-                                                <span style={{ fontFamily: 'monospace' }}>{server.schema}</span>
+                                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-word' }}>{server.schema}</span>
                                             </div>
                                         )}
                                     </div>
@@ -286,8 +292,8 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                         <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                                     </svg>
                                 </div>
-                                <div style={{ flex: 1, overflow: 'hidden' }}>
-                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px', wordBreak: 'break-word' }}>
                                         {roleObj.role || `Role ${idx + 1}`}
                                     </div>
                                     <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -295,7 +301,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                             key !== 'role' && (
                                                 <div key={key} style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                     <span style={{ fontWeight: '600', minWidth: '60px', textTransform: 'capitalize' }}>{key}:</span>
-                                                    <span>{String(value)}</span>
+                                                    <span style={{ wordBreak: 'break-word' }}>{String(value)}</span>
                                                 </div>
                                             )
                                         ))}
