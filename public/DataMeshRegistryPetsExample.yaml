@@ -73,7 +73,7 @@
   id: urn:petstore-a:contract:retail-data
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: customers
       physicalType: table
@@ -428,7 +428,7 @@
   id: urn:petstore-b:contract:retail-data
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: customers
       physicalType: table
@@ -783,7 +783,7 @@
   id: urn:food-production:contract:manufacturing-data
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: food_products
       physicalType: table
@@ -1087,7 +1087,7 @@
   id: urn:petstore:contract:unified-retail
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: unified_customers
       physicalType: table
@@ -1401,7 +1401,7 @@
   id: urn:food-production:contract:production-analytics
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: product_quality
       physicalType: table
@@ -1637,7 +1637,7 @@
   id: urn:petstore:contract:business-analytics
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: sales_metrics
       physicalType: table
@@ -1826,7 +1826,7 @@
   id: urn:food-production:contract:operations-analytics
   status: active
   version: "1"
-  apiVersion: v3.0.0
+  apiVersion: v3.0.1
   schema:
     - name: production_efficiency
       physicalType: table
