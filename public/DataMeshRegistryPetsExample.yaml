@@ -74,6 +74,13 @@
   status: active
   version: "1"
   apiVersion: v3.0.1
+  servers:
+    - server: "Petstore workspace"
+      type: databricks
+      environment: dev
+      host: https://joaovicente.github.io
+      catalog: petstore
+      schema: retail_data
   schema:
     - name: customers
       physicalType: table
