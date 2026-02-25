@@ -248,6 +248,65 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                 </div>
             )}
 
+            {/* Roles Section */}
+            {data.roles && data.roles.length > 0 && (
+                <div style={{ marginBottom: '32px' }}>
+                    <h3 style={headerLabelStyle}>Roles</h3>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                        gap: '16px'
+                    }}>
+                        {data.roles.map((roleObj, idx) => (
+                            <div key={idx} style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '14px',
+                                padding: '16px',
+                                background: 'white',
+                                borderRadius: '16px',
+                                border: '1px solid var(--m3-outline-variant)',
+                                boxShadow: 'var(--m3-elevation-1)'
+                            }}>
+                                <div style={{
+                                    width: '36px',
+                                    height: '36px',
+                                    borderRadius: '10px',
+                                    background: '#fef3c7',
+                                    color: '#92400e',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0
+                                }}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                </div>
+                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px' }}>
+                                        {roleObj.role || `Role ${idx + 1}`}
+                                    </div>
+                                    <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        {Object.entries(roleObj).map(([key, value]) => (
+                                            key !== 'role' && (
+                                                <div key={key} style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
+                                                    <span style={{ fontWeight: '600', minWidth: '60px', textTransform: 'capitalize' }}>{key}:</span>
+                                                    <span>{String(value)}</span>
+                                                </div>
+                                            )
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Schema Section */}
             <div>
                 <h3 style={{

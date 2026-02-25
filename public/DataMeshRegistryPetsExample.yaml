@@ -93,6 +93,11 @@
       host: https://joaovicente.github.io
       catalog: petstore
       schema: retail_data
+  roles:
+  - role: dataAnalyst
+    access: read
+  - role: dataEngineer
+    access: write
   schema:
     - name: customers
       physicalType: table
