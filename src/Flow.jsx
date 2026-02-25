@@ -750,7 +750,7 @@ function Flow() {
             return []; // No matches
         }
         if (selectedDomains.length === 0 && globalFilterText === '') {
-            return nodes; // No filters, show all
+            return nodes; // No filters, show all (original positions)
         }
 
         // 2. Identify Neighbors (Producers and Consumers) of Primary Matches
@@ -774,10 +774,48 @@ function Flow() {
 
         // 3. Union of Primary + Neighbors
         const finalIds = new Set([...primaryIds, ...neighborIds]);
+        const filteredNodes = nodes.filter(n => finalIds.has(n.id));
 
-        return nodes.filter(n => finalIds.has(n.id));
+        // 4. Dynamic Relayout for Filtered View
+        // Sort nodes by tier (columnNumber) then by domain then by label to ensure consistent vertical order
+        const sortedNodes = [...filteredNodes].sort((a, b) => {
+            const tierA = a.data.originalData?.customProperties?.find(p => p.property === 'dataProductTier')?.value;
+            const tierB = b.data.originalData?.customProperties?.find(p => p.property === 'dataProductTier')?.value;
+            const colA = config.tiers?.[tierA]?.columnNumber || 1;
+            const colB = config.tiers?.[tierB]?.columnNumber || 1;
+            if (colA !== colB) return colA - colB;
 
-    }, [nodes, selectedDomains, globalFilterText, dataMeshRegistry, selection.id]);
+            // Secondary sort by domain
+            if (a.data.subtitle !== b.data.subtitle) {
+                return a.data.subtitle.localeCompare(b.data.subtitle);
+            }
+
+            // Tertiary sort by label
+            return a.data.label.localeCompare(b.data.label);
+        });
+
+        const columnY = {};
+        const COLUMN_SPACING = 450;
+        const NODE_HEIGHT = 120;
+        const VERTICAL_GAP = 40;
+        const VERTICAL_STEP = NODE_HEIGHT + VERTICAL_GAP;
+
+        return sortedNodes.map(node => {
+            const tier = node.data.originalData?.customProperties?.find(p => p.property === 'dataProductTier')?.value;
+            const tierConfig = config.tiers?.[tier] || {};
+            const columnNumber = tierConfig.columnNumber !== undefined ? tierConfig.columnNumber : 1;
+
+            const x = (columnNumber - 1) * COLUMN_SPACING;
+            const y = columnY[columnNumber] || 0;
+            columnY[columnNumber] = y + VERTICAL_STEP;
+
+            return {
+                ...node,
+                position: { x, y }
+            };
+        });
+
+    }, [nodes, selectedDomains, globalFilterText, dataMeshRegistry, selection.id, config.tiers]);
 
 
     const visibleNodes = contractViewNodes || lineageViewNodes || meshFilterNodes || nodes;
@@ -853,12 +891,12 @@ function Flow() {
 
     // Fit view on load/change
     React.useEffect(() => {
-        if (rfInstance && !isLoading && nodes.length > 0) {
+        if (rfInstance && !isLoading && visibleNodes.length > 0) {
             window.requestAnimationFrame(() => {
                 rfInstance.fitView({ duration: 800, padding: 0.2 });
             });
         }
-    }, [selection.id, rfInstance, isLoading, nodes.length]);
+    }, [selection.id, rfInstance, isLoading, visibleNodes.length, selectedDomains, globalFilterText]);
 
     const visibleEdges = React.useMemo(() => {
         // If Contract View, show relationship edges
