@@ -143,7 +143,6 @@ export default memo(({ data, isConnectable }) => {
                         {data.hasOutputPorts && (
                             <div
                                 className="nodrag output-ports-pill"
-                                data-node-id={data.id}
                                 style={{
                                     background: '#dcfce7',
                                     color: '#166534',
@@ -154,6 +153,13 @@ export default memo(({ data, isConnectable }) => {
                                     cursor: 'pointer',
                                     border: '1px solid #bbf7d0',
                                     whiteSpace: 'nowrap'
+                                }}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    const event = new CustomEvent('navigate-to-node', {
+                                        detail: { id: data.id, kind: 'DataProduct' }
+                                    });
+                                    window.dispatchEvent(event);
                                 }}
                             >
                                 {data.outputPortCount || 0} Ports

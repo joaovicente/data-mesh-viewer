@@ -122,7 +122,7 @@ function Flow() {
     // React Flow State
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const [selectedNodeId, setSelectedNodeId] = React.useState(null);
+    const [selection, setSelection] = React.useState({ id: null, kind: null });
     const [hoveredEdgeId, setHoveredEdgeId] = React.useState(null);
     const [rfInstance, setRfInstance] = React.useState(null);
 
@@ -181,6 +181,7 @@ function Flow() {
         setError(null);
         try {
             processRegistryText(text);
+            setSelection({ id: null, kind: null });
             setRegistryUrl(''); // Clear URL if loading from clipboard
             setWorkingUrl('');
         } catch (err) {
@@ -209,6 +210,7 @@ function Flow() {
                 }
                 const text = await response.text();
                 processRegistryText(text);
+                setSelection({ id: null, kind: null });
             } catch (err) {
                 console.error("Error loading registry:", err);
                 setError(err.message);
@@ -378,12 +380,12 @@ function Flow() {
 
     // Filter nodes and edges based on selection
     const contractViewNodes = React.useMemo(() => {
-        if (!selectedNodeId) {
+        if (!selection.id || selection.kind !== 'DataContract') {
             return null;
         }
 
         // Helper to find nodes in the raw registry
-        const contractData = dataMeshNodes.find(n => n.id === selectedNodeId && n.kind === 'DataContract');
+        const contractData = dataMeshNodes.find(n => String(n.id) === String(selection.id) && n.kind === 'DataContract');
 
         if (contractData) {
             const tech = contractData.customProperties?.find(p => p.property === 'technology')?.value;
@@ -513,7 +515,7 @@ function Flow() {
                     ...contractData,
                     description: contractData.schema?.[0]?.description || "",
                     originalData: contractData,
-                    label: contractData.name || contractData.physicalName || selectedNodeId,
+                    label: contractData.name || contractData.physicalName || String(selection.id),
                     banner: 'DATA CONTRACT',
                     bannerColor: '#e5e7eb',
                     icon: normalizePath(config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
@@ -522,7 +524,7 @@ function Flow() {
             return [centralNode];
         }
         return null;
-    }, [selectedNodeId, dataMeshNodes, config]);
+    }, [selection, dataMeshNodes, config]);
 
     // Create edges for foreign key relationships in contract view
     const contractViewEdges = React.useMemo(() => {
@@ -646,13 +648,13 @@ function Flow() {
                 }
             };
         });
-    }, [contractViewNodes]);
+    }, [contractViewNodes, selection.kind]);
 
     const lineageViewNodes = React.useMemo(() => {
-        if (!selectedNodeId) return null; // Logic change: only return if selectedNodeId exists
+        if (!selection.id || selection.kind !== 'DataProduct') return null;
 
-        const selectedNode = nodes.find(n => n.id === selectedNodeId);
-        if (!selectedNode) return null; // Should be handled by contractViewNodes if it was a contract
+        const selectedNode = nodes.find(n => String(n.id) === String(selection.id));
+        if (!selectedNode) return null;
 
         const centralNode = {
             ...selectedNode,
@@ -661,7 +663,7 @@ function Flow() {
             data: {
                 ...selectedNode.data,
                 // Add outputPorts from original dataMeshNodes if available, enriched with icon
-                outputPorts: dataMeshNodes.find(n => n.id === selectedNodeId)?.outputPorts?.map(port => {
+                outputPorts: dataMeshNodes.find(n => String(n.id) === String(selection.id) && n.kind === 'DataProduct')?.outputPorts?.map(port => {
                     let portIcon = null;
                     if (port.contractId) {
                         const contract = dataMeshNodes.find(c => c.id === port.contractId && c.kind === 'DataContract');
@@ -701,7 +703,7 @@ function Flow() {
         }));
 
         // Upstream Nodes (Producers)
-        const upstreamEdges = dataMeshEdges.filter(e => e.target === selectedNodeId);
+        const upstreamEdges = dataMeshEdges.filter(e => String(e.target) === String(selection.id));
         upstreamEdges.forEach((edge, index) => {
             const sourceNode = nodes.find(n => n.id === edge.source);
             if (sourceNode) {
@@ -713,7 +715,7 @@ function Flow() {
         });
 
         // Downstream Nodes (Consumers)
-        const downstreamEdges = dataMeshEdges.filter(e => e.source === selectedNodeId);
+        const downstreamEdges = dataMeshEdges.filter(e => String(e.source) === String(selection.id));
         downstreamEdges.forEach((edge, index) => {
             const targetNode = nodes.find(n => n.id === edge.target);
             if (targetNode) {
@@ -725,12 +727,12 @@ function Flow() {
         });
 
         return relatedNodes;
-    }, [selectedNodeId, nodes, dataMeshNodes, dataMeshRegistry]);
+    }, [selection, nodes, dataMeshNodes, dataMeshRegistry]);
 
     // Mesh filtering visibility logic
     const meshFilterNodes = React.useMemo(() => {
         // If we have a selected node, we don't use this logic (we show Drill Down view)
-        if (selectedNodeId) return null;
+        if (selection.id) return null;
 
         // 1. Identify "Primary Matches" based on filters
         const primaryMatches = nodes.filter(node => {
@@ -770,7 +772,7 @@ function Flow() {
 
         return nodes.filter(n => finalIds.has(n.id));
 
-    }, [nodes, selectedDomains, globalFilterText, dataMeshRegistry, selectedNodeId]);
+    }, [nodes, selectedDomains, globalFilterText, dataMeshRegistry, selection.id]);
 
 
     const visibleNodes = contractViewNodes || lineageViewNodes || meshFilterNodes || nodes;
@@ -830,8 +832,18 @@ function Flow() {
                 setSidePanelAnchor(null);
             }
         };
+        const handleNavigateToNode = (e) => {
+            const { id, kind } = e.detail;
+            console.log('Navigating to:', kind, id);
+            setSelection({ id, kind });
+        };
+
         window.addEventListener('open-side-panel', handleOpenSidePanel);
-        return () => window.removeEventListener('open-side-panel', handleOpenSidePanel);
+        window.addEventListener('navigate-to-node', handleNavigateToNode);
+        return () => {
+            window.removeEventListener('open-side-panel', handleOpenSidePanel);
+            window.removeEventListener('navigate-to-node', handleNavigateToNode);
+        };
     }, []);
 
     // Fit view on load/change
@@ -841,7 +853,7 @@ function Flow() {
                 rfInstance.fitView({ duration: 800, padding: 0.2 });
             });
         }
-    }, [selectedNodeId, rfInstance, isLoading, nodes.length]);
+    }, [selection.id, rfInstance, isLoading, nodes.length]);
 
     const visibleEdges = React.useMemo(() => {
         // If Contract View, show relationship edges
@@ -850,7 +862,7 @@ function Flow() {
         }
 
         // If Drill Down
-        if (selectedNodeId) {
+        if (selection.id) {
             // Re-construct initial edges from registry state for filtering
             const initialEdges = dataMeshRegistry
                 .filter(item => item.dataUsageAgreementSpecification)
@@ -869,7 +881,7 @@ function Flow() {
                 }));
 
             // Base edges connected to the selected node
-            const connectedEdges = initialEdges.filter(e => e.source === selectedNodeId || e.target === selectedNodeId);
+            const connectedEdges = initialEdges.filter(e => String(e.source) === String(selection.id) || String(e.target) === String(selection.id));
             return connectedEdges;
         }
 
@@ -880,32 +892,13 @@ function Flow() {
         const visibleNodeIds = new Set(visibleNodes.map(n => n.id));
         return edges.filter(e => visibleNodeIds.has(e.source) && visibleNodeIds.has(e.target));
 
-    }, [selectedNodeId, edges, dataMeshRegistry, hoveredEdgeId, visibleNodes, contractViewNodes, contractViewEdges]);
+    }, [selection.id, edges, dataMeshRegistry, hoveredEdgeId, visibleNodes, contractViewNodes, contractViewEdges]);
 
 
     const onNodeClick = React.useCallback((event, node) => {
-        // Check if the click happened on a Data Contract pill
-        const contractPill = event.target.closest('.data-contract-pill');
-
-        if (contractPill) {
-            const contractId = contractPill.getAttribute('data-contract-id');
-            if (contractId && contractId !== selectedNodeId) {
-                console.log('Navigating to Data Contract view:', contractId);
-                setSelectedNodeId(contractId);
-            }
-            return;
-        }
-
-        // Check if the click happened on an Output Ports pill
-        const outputPortsPill = event.target.closest('.output-ports-pill');
-        if (outputPortsPill) {
-            if (node.id !== selectedNodeId) {
-                console.log('Navigating to Data Product detail view:', node.id);
-                setSelectedNodeId(node.id);
-            }
-            return;
-        }
-    }, [selectedNodeId]);
+        // We now use custom events to handle pill clicks, so this can be simplified
+        // or used for other node-level selection logic if needed.
+    }, []);
 
     const onNodeDoubleClick = (event, node) => {
         console.log('Double click ignored');
@@ -916,28 +909,24 @@ function Flow() {
             e.stopPropagation();
         }
 
-        const dataMeshNodes = dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract');
-        // Check if current view is a Data Contract
-        const isContract = dataMeshNodes.some(n => n.id === selectedNodeId && n.kind === 'DataContract');
-        if (isContract) {
+        if (selection.kind === 'DataContract') {
+            const dataMeshNodes = dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract');
             // Find the producer (upstream Data Product)
-            const producerNode = dataMeshNodes.find(n => n.outputPorts?.some(p => p.contractId === selectedNodeId));
+            const producerNode = dataMeshNodes.find(n => n.outputPorts?.some(p => String(p.contractId) === String(selection.id)));
             if (producerNode) {
-                setSelectedNodeId(producerNode.id);
+                setSelection({ id: producerNode.id, kind: 'DataProduct' });
                 return;
             }
         }
         // Default: Reset to Mesh
-        setSelectedNodeId(null);
-    }, [selectedNodeId, dataMeshRegistry]);
+        setSelection({ id: null, kind: null });
+    }, [selection, dataMeshRegistry]);
 
     const backButtonLabel = React.useMemo(() => {
-        if (!selectedNodeId) return '';
-        const dataMeshNodes = dataMeshRegistry.filter(item => item.kind === 'DataProduct' || item.kind === 'DataContract');
-        const isContract = dataMeshNodes.some(n => n.id === selectedNodeId && n.kind === 'DataContract');
-        if (isContract) return 'Back to Data Product';
+        if (!selection.id) return '';
+        if (selection.kind === 'DataContract') return 'Back to Data Product';
         return 'Back to Mesh';
-    }, [selectedNodeId, dataMeshRegistry]);
+    }, [selection.id, selection.kind]);
 
     const handleLoadUrl = (e) => {
         e.preventDefault();
@@ -1082,7 +1071,7 @@ function Flow() {
                 {/* Left Controls Group */}
                 <div style={{ display: 'flex', gap: '12px', pointerEvents: 'auto' }}>
                     {/* Domain Selector */}
-                    {!selectedNodeId && (
+                    {!selection.id && (
                         <DomainSelector
                             domains={availableDomains}
                             selectedDomains={selectedDomains}
@@ -1091,7 +1080,7 @@ function Flow() {
                     )}
 
                     {/* Global Filter */}
-                    {!selectedNodeId && (
+                    {!selection.id && (
                         <GlobalFilter
                             filterText={globalFilterText}
                             onFilterChange={setGlobalFilterText}
@@ -1099,7 +1088,7 @@ function Flow() {
                     )}
 
                     {/* Validate Button */}
-                    {!selectedNodeId && validationResults?.length > 0 && (
+                    {!selection.id && validationResults?.length > 0 && (
                         <button
                             onClick={handleValidateRegistry}
                             disabled={isLoading || error}
@@ -1120,7 +1109,7 @@ function Flow() {
                     )}
 
                     {/* Back Button */}
-                    {selectedNodeId && (
+                    {selection.id && (
                         <button
                             onClick={handleBack}
                             style={{
@@ -1246,7 +1235,7 @@ function Flow() {
                 edgeTypes={edgeTypes}
                 nodes={visibleNodes}
                 edges={visibleEdges}
-                onNodesChange={!selectedNodeId ? onNodesChange : undefined}
+                onNodesChange={!selection.id ? onNodesChange : undefined}
                 onEdgesChange={onEdgesChange}
                 onNodeClick={onNodeClick}
                 onEdgeClick={onEdgeClick}

@@ -160,7 +160,6 @@ export default memo(({ data, isConnectable }) => {
                                     {port.contractId && (
                                         <div
                                             className="nodrag data-contract-pill"
-                                            data-contract-id={port.contractId}
                                             style={{
                                                 fontSize: '10px',
                                                 color: '#059669',
@@ -170,6 +169,13 @@ export default memo(({ data, isConnectable }) => {
                                                 fontWeight: '500',
                                                 cursor: 'pointer',
                                                 whiteSpace: 'nowrap'
+                                            }}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                const event = new CustomEvent('navigate-to-node', {
+                                                    detail: { id: port.contractId, kind: 'DataContract' }
+                                                });
+                                                window.dispatchEvent(event);
                                             }}
                                         >
                                             Data Contract
