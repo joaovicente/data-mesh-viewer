@@ -81,6 +81,18 @@
       host: https://joaovicente.github.io
       catalog: petstore
       schema: retail_data
+    - server: "Petstore workspace"
+      type: databricks
+      environment: qa
+      host: https://joaovicente.github.io
+      catalog: petstore
+      schema: retail_data
+    - server: "Petstore workspace"
+      type: databricks
+      environment: prod
+      host: https://joaovicente.github.io
+      catalog: petstore
+      schema: retail_data
   schema:
     - name: customers
       physicalType: table

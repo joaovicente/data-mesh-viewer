@@ -1529,6 +1529,7 @@ function Flow() {
                                     anchor={sidePanelAnchor}
                                     filterByAnchor={!!sidePanelAnchor}
                                     onViewFull={() => setSidePanelAnchor(null)}
+                                    config={config}
                                 />
                             ) : sidePanelTab === 'visual' && sidePanelType === 'agreement-yaml' ? (
                                 <DataUsageAgreementVisual data={sidePanelContent.originalData || sidePanelContent} />

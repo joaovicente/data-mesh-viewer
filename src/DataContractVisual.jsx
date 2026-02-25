@@ -16,7 +16,19 @@
 
 import React, { useEffect, useRef } from 'react';
 
-export default function DataContractVisual({ data, anchor, filterByAnchor = false, onViewFull }) {
+const BASE_URL = import.meta.env.BASE_URL;
+
+const normalizePath = (path) => {
+    if (!path) return path;
+    if (path.startsWith('http')) return path;
+    // Prefix relative paths starting with / with BASE_URL
+    if (path.startsWith('/')) {
+        return `${BASE_URL}${path.slice(1)}`;
+    }
+    return path;
+};
+
+export default function DataContractVisual({ data, anchor, filterByAnchor = false, onViewFull, config }) {
     // data is the full YAML object for the Data Contract
     const containerRef = useRef(null);
 
@@ -39,6 +51,15 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
             return () => clearTimeout(timer);
         }
     }, [anchor, filterByAnchor]);
+
+    const headerLabelStyle = {
+        fontSize: '12px',
+        fontWeight: '700',
+        color: 'var(--m3-primary)',
+        marginBottom: '12px',
+        textTransform: 'uppercase',
+        letterSpacing: '1px'
+    };
 
     return (
         <div ref={containerRef} style={{ padding: '24px', fontFamily: 'Inter, sans-serif', color: 'var(--m3-on-surface)' }}>
@@ -133,6 +154,99 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                     </div>
                 )}
             </div>
+
+            {/* Servers Section */}
+            {data.servers && data.servers.length > 0 && (
+                <div style={{ marginBottom: '32px' }}>
+                    <h3 style={headerLabelStyle}>Servers</h3>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gap: '16px'
+                    }}>
+                        {data.servers.map((server, idx) => (
+                            <div key={idx} style={{
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                gap: '16px',
+                                padding: '16px',
+                                background: 'white',
+                                borderRadius: '16px',
+                                border: '1px solid var(--m3-outline-variant)',
+                                boxShadow: 'var(--m3-elevation-1)'
+                            }}>
+                                <div style={{
+                                    width: '40px',
+                                    height: '40px',
+                                    borderRadius: '12px',
+                                    background: 'var(--m3-surface-variant)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    flexShrink: 0
+                                }}>
+                                    {config?.iconMap?.[server.type] ? (
+                                        <img
+                                            src={normalizePath(config.iconMap[server.type])}
+                                            alt={server.type}
+                                            style={{ width: '24px', height: '24px', objectFit: 'contain' }}
+                                        />
+                                    ) : (
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+                                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+                                            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+                                            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+                                        </svg>
+                                    )}
+                                </div>
+                                <div style={{ flex: 1, overflow: 'hidden' }}>
+                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px' }}>
+                                        {server.server || `Server ${idx + 1}`}
+                                    </div>
+                                    <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px', overflow: 'hidden' }}>
+                                            <span style={{ fontWeight: '600', minWidth: '70px' }}>Type:</span>
+                                            <span style={{ fontFamily: 'monospace' }}>{server.type}</span>
+                                        </div>
+                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px', overflow: 'hidden' }}>
+                                            <span style={{ fontWeight: '600', minWidth: '70px' }}>Host:</span>
+                                            <a href={server.host} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--m3-primary)', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                {server.host}
+                                            </a>
+                                        </div>
+                                        {server.environment && (
+                                            <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
+                                                <span style={{ fontWeight: '600', minWidth: '70px' }}>Env:</span>
+                                                <span style={{
+                                                    background: '#e0f2fe',
+                                                    color: '#0369a1',
+                                                    padding: '2px 8px',
+                                                    borderRadius: '12px',
+                                                    fontSize: '11px',
+                                                    fontWeight: '700'
+                                                }}>{server.environment}</span>
+                                            </div>
+                                        )}
+                                        {server.catalog && (
+                                            <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
+                                                <span style={{ fontWeight: '600', minWidth: '70px' }}>Catalog:</span>
+                                                <span style={{ fontFamily: 'monospace' }}>{server.catalog}</span>
+                                            </div>
+                                        )}
+                                        {server.schema && (
+                                            <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
+                                                <span style={{ fontWeight: '600', minWidth: '70px' }}>Schema:</span>
+                                                <span style={{ fontFamily: 'monospace' }}>{server.schema}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Schema Section */}
             <div>
