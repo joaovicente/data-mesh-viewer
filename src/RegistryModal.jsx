@@ -16,12 +16,30 @@
 
 import React from 'react';
 
-export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad, onLoadText }) {
+export default function RegistryModal({ isOpen, onClose, currentUrl, registries = [], onLoad, onLoadText }) {
     const [url, setUrl] = React.useState(currentUrl);
+    const [showOptions, setShowOptions] = React.useState(false);
+    const [isSearching, setIsSearching] = React.useState(false);
+    const dropdownRef = React.useRef(null);
 
     React.useEffect(() => {
-        setUrl(currentUrl);
+        if (isOpen) {
+            setUrl(currentUrl);
+            setIsSearching(false);
+            setShowOptions(false);
+        }
     }, [currentUrl, isOpen]);
+
+    // Close dropdown when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setShowOptions(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     if (!isOpen) return null;
 
@@ -44,6 +62,10 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad, onL
             alert("Failed to read clipboard. Please make sure you have granted permission.");
         }
     };
+
+    const filteredOptions = isSearching && url
+        ? (registries || []).filter(reg => (reg || '').toLowerCase().includes(url.toLowerCase()))
+        : (registries || []);
 
     return (
         <>
@@ -79,30 +101,109 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, onLoad, onL
                         Load Data Mesh Registry
                     </h2>
 
-                    <div style={{ marginBottom: '20px' }}>
+                    <div style={{ marginBottom: '20px', position: 'relative' }} ref={dropdownRef}>
                         <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: '500', color: '#374151' }}>
                             Registry URL
                         </label>
-                        <input
-                            type="text"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            placeholder="Enter registry URL..."
-                            style={{
-                                width: '100%',
-                                padding: '10px 12px',
+                        <div style={{ position: 'relative' }}>
+                            <input
+                                type="text"
+                                value={url || ''}
+                                onChange={(e) => {
+                                    setUrl(e.target.value);
+                                    setIsSearching(true);
+                                    setShowOptions(true);
+                                }}
+                                onFocus={() => {
+                                    setShowOptions(true);
+                                }}
+                                placeholder="Select or enter registry URL..."
+                                style={{
+                                    width: '100%',
+                                    padding: '10px 12px',
+                                    paddingRight: '32px',
+                                    border: '1px solid #d1d5db',
+                                    borderRadius: '6px',
+                                    fontSize: '14px',
+                                    fontFamily: 'monospace',
+                                    boxSizing: 'border-box'
+                                }}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleLoad();
+                                    }
+                                    if (e.key === 'Escape') {
+                                        setShowOptions(false);
+                                    }
+                                }}
+                            />
+                            <div
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    if (showOptions) {
+                                        setShowOptions(false);
+                                    } else {
+                                        setIsSearching(false);
+                                        setShowOptions(true);
+                                    }
+                                }}
+                                style={{
+                                    position: 'absolute',
+                                    right: '8px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    cursor: 'pointer',
+                                    color: '#6b7280',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '4px'
+                                }}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showOptions ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {showOptions && filteredOptions.length > 0 && (
+                            <div style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: 0,
+                                right: 0,
+                                background: 'white',
                                 border: '1px solid #d1d5db',
                                 borderRadius: '6px',
-                                fontSize: '14px',
-                                fontFamily: 'monospace',
-                                boxSizing: 'border-box'
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleLoad();
-                                }
-                            }}
-                        />
+                                marginTop: '4px',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                zIndex: 1010,
+                                maxHeight: '200px',
+                                overflowY: 'auto'
+                            }}>
+                                {filteredOptions.map((reg, index) => (
+                                    <div
+                                        key={index}
+                                        onMouseDown={(e) => {
+                                            e.preventDefault();
+                                            setUrl(reg);
+                                            setIsSearching(false);
+                                            setShowOptions(false);
+                                        }}
+                                        style={{
+                                            padding: '8px 12px',
+                                            fontSize: '13px',
+                                            cursor: 'pointer',
+                                            borderBottom: index < (filteredOptions.length - 1) ? '1px solid #f3f4f6' : 'none',
+                                            background: url === reg ? '#f3f4f6' : 'white'
+                                        }}
+                                        onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = url === reg ? '#f3f4f6' : 'white'}
+                                    >
+                                        {reg}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>

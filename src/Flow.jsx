@@ -66,7 +66,7 @@ function Flow() {
     const [dataMeshRegistryRaw, setDataMeshRegistryRaw] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
-    const [config, setConfig] = React.useState({ iconMap: {}, tiers: {}, domainPalette: [], defaultDataMeshRegistryUrl: '' }); // Config state
+    const [config, setConfig] = React.useState({ iconMap: {}, tiers: {}, domainPalette: [], defaultDataMeshRegistryUrl: '', registries: [] }); // Config state
     const [configError, setConfigError] = React.useState(null); // Track config loading errors
     const [showRegistryModal, setShowRegistryModal] = React.useState(false);
 
@@ -105,7 +105,8 @@ function Flow() {
                     iconMap: data.iconMap || {},
                     tiers: data.tiers || {},
                     domainPalette: data.domainPalette || ['#fee2e2', '#f3e8ff', '#fef3c7', '#ffedd5', '#e0e7ff', '#dbeafe', '#dcfce7'],
-                    defaultDataMeshRegistryUrl: normalizePath(data.defaultDataMeshRegistryUrl)
+                    defaultDataMeshRegistryUrl: normalizePath(data.defaultDataMeshRegistryUrl),
+                    registries: (data.sampleDataMeshRegistryUrls || []).map(reg => normalizePath(reg))
                 };
                 setConfig(loadedConfig);
                 setConfigError(null);
@@ -1658,6 +1659,7 @@ function Flow() {
                 isOpen={showRegistryModal}
                 onClose={() => setShowRegistryModal(false)}
                 currentUrl={registryUrl}
+                registries={config.registries || []}
                 onLoad={(url) => setRegistryUrl(url)}
                 onLoadText={(text) => handleLoadRegistryText(text)}
             />

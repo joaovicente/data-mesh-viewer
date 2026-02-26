@@ -1,5 +1,13 @@
 defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 
+sampleDataMeshRegistryUrls:
+  - /DataMeshRegistryPetsExample.yaml
+  - /DataMeshRegistryLongStringExample.yaml
+  - /DataMeshRegistryIconsExample.yaml
+  - /DataMeshRegistryIdCollisionExample.yaml
+  - /DataMeshRegistryGenExample.yaml
+  - /DataMeshRegistryDqExample.yaml
+
 iconMap:
   dataproduct: /icons/dataproduct.svg
   database: /icons/database.svg
