@@ -17,18 +17,19 @@
 import React from 'react';
 
 export default function RegistryModal({ isOpen, onClose, currentUrl, registries = [], onLoad, onLoadText }) {
-    const [url, setUrl] = React.useState(currentUrl);
+    const [url, setUrl] = React.useState('');
     const [showOptions, setShowOptions] = React.useState(false);
     const [isSearching, setIsSearching] = React.useState(false);
     const dropdownRef = React.useRef(null);
 
+    // Synchronize local state with currentUrl when modal opens
     React.useEffect(() => {
         if (isOpen) {
-            setUrl(currentUrl);
+            setUrl(currentUrl || '');
             setIsSearching(false);
             setShowOptions(false);
         }
-    }, [currentUrl, isOpen]);
+    }, [isOpen, currentUrl]);
 
     // Close dropdown when clicking outside
     React.useEffect(() => {
@@ -63,8 +64,12 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, registries 
         }
     };
 
+    // registries is now expected to be [{ original: string, normalized: string }]
     const filteredOptions = isSearching && url
-        ? (registries || []).filter(reg => (reg || '').toLowerCase().includes(url.toLowerCase()))
+        ? (registries || []).filter(reg =>
+            (reg.original || '').toLowerCase().includes(url.toLowerCase()) ||
+            (reg.normalized || '').toLowerCase().includes(url.toLowerCase())
+        )
         : (registries || []);
 
     return (
@@ -108,7 +113,7 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, registries 
                         <div style={{ position: 'relative' }}>
                             <input
                                 type="text"
-                                value={url || ''}
+                                value={url}
                                 onChange={(e) => {
                                     setUrl(e.target.value);
                                     setIsSearching(true);
@@ -185,7 +190,7 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, registries 
                                         key={index}
                                         onMouseDown={(e) => {
                                             e.preventDefault();
-                                            setUrl(reg);
+                                            setUrl(reg.normalized);
                                             setIsSearching(false);
                                             setShowOptions(false);
                                         }}
@@ -194,12 +199,13 @@ export default function RegistryModal({ isOpen, onClose, currentUrl, registries 
                                             fontSize: '13px',
                                             cursor: 'pointer',
                                             borderBottom: index < (filteredOptions.length - 1) ? '1px solid #f3f4f6' : 'none',
-                                            background: url === reg ? '#f3f4f6' : 'white'
+                                            background: url === reg.normalized ? '#f3f4f6' : 'white'
                                         }}
                                         onMouseEnter={(e) => e.currentTarget.style.background = '#f3f4f6'}
-                                        onMouseLeave={(e) => e.currentTarget.style.background = url === reg ? '#f3f4f6' : 'white'}
+                                        onMouseLeave={(e) => e.currentTarget.style.background = url === reg.normalized ? '#f3f4f6' : 'white'}
                                     >
-                                        {reg}
+                                        <div style={{ fontWeight: '500' }}>{reg.original}</div>
+                                        <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px' }}>{reg.normalized}</div>
                                     </div>
                                 ))}
                             </div>

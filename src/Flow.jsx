@@ -106,7 +106,10 @@ function Flow() {
                     tiers: data.tiers || {},
                     domainPalette: data.domainPalette || ['#fee2e2', '#f3e8ff', '#fef3c7', '#ffedd5', '#e0e7ff', '#dbeafe', '#dcfce7'],
                     defaultDataMeshRegistryUrl: normalizePath(data.defaultDataMeshRegistryUrl),
-                    registries: (data.sampleDataMeshRegistryUrls || []).map(reg => normalizePath(reg))
+                    registries: (data.sampleDataMeshRegistryUrls || []).map(reg => ({
+                        original: reg,
+                        normalized: normalizePath(reg)
+                    }))
                 };
                 setConfig(loadedConfig);
                 setConfigError(null);
