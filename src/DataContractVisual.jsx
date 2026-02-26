@@ -57,7 +57,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
         fontWeight: '700',
         color: 'var(--m3-primary)',
         marginBottom: '12px',
-        textTransform: 'uppercase',
+        textTransform: 'none',
         letterSpacing: '1px'
     };
 
@@ -92,7 +92,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                         padding: '4px 12px',
                         borderRadius: '8px',
                         fontWeight: '600',
-                        textTransform: 'uppercase',
+                        textTransform: 'capitalize',
                         fontSize: '12px',
                         letterSpacing: '0.5px'
                     }}>
@@ -321,7 +321,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                     fontWeight: '700',
                     color: 'var(--m3-primary)',
                     marginBottom: '20px',
-                    textTransform: 'uppercase',
+                    textTransform: 'none',
                     letterSpacing: '1px'
                 }}>
                     Schema Elements

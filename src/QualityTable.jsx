@@ -77,7 +77,7 @@ const QualityTable = ({ schema }) => {
                 borderRadius: '12px',
                 fontSize: '11px',
                 fontWeight: '600',
-                textTransform: 'uppercase',
+                textTransform: 'capitalize',
                 display: 'inline-block',
                 whiteSpace: 'nowrap'
             }}>

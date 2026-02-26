@@ -38,7 +38,7 @@ export default memo(({ data, isConnectable }) => {
                 fontWeight: '500',
                 letterSpacing: '0.5px',
                 color: '#1e3a8a',
-                textTransform: 'uppercase',
+                textTransform: 'none',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center'

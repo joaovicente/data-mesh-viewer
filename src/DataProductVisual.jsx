@@ -60,7 +60,7 @@ export default function DataProductVisual({ data }) {
                             borderRadius: '8px',
                             fontSize: '12px',
                             fontWeight: '600',
-                            textTransform: 'uppercase',
+                            textTransform: 'capitalize',
                             letterSpacing: '0.5px'
                         }}>
                             {data.status}
@@ -80,7 +80,7 @@ export default function DataProductVisual({ data }) {
                         fontWeight: '700',
                         color: 'var(--m3-primary)',
                         marginBottom: '16px',
-                        textTransform: 'uppercase',
+                        textTransform: 'none',
                         letterSpacing: '1px'
                     }}>
                         Extended Properties
@@ -94,7 +94,7 @@ export default function DataProductVisual({ data }) {
                                 border: '1px solid var(--m3-outline-variant)',
                                 transition: 'all 0.2s ease'
                             }}>
-                                <div style={{ fontSize: '11px', color: 'var(--m3-on-surface-variant)', marginBottom: '6px', textTransform: 'uppercase', fontWeight: 'bold' }}>
+                                <div style={{ fontSize: '11px', color: 'var(--m3-on-surface-variant)', marginBottom: '6px', textTransform: 'none', fontWeight: 'bold' }}>
                                     {prop.property.replace(/([A-Z])/g, ' $1').trim()}
                                 </div>
                                 <div style={{ fontSize: '15px', fontWeight: '500', color: 'var(--m3-on-surface)' }}>
@@ -114,7 +114,7 @@ export default function DataProductVisual({ data }) {
                         fontWeight: '700',
                         color: 'var(--m3-primary)',
                         marginBottom: '16px',
-                        textTransform: 'uppercase',
+                        textTransform: 'none',
                         letterSpacing: '1px'
                     }}>
                         Output Ports

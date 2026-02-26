@@ -1,19 +1,19 @@
 defaultDataMeshRegistryUrl: /DataMeshRegistryPetsExample.yaml
 
 iconMap:
-  dataProduct: /icons/dataproduct.svg
+  dataproduct: /icons/dataproduct.svg
   database: /icons/database.svg
   table: /icons/table.svg
   oracle: /icons/oracle.svg
-  rdsOracle: /icons/rdsoracle.svg
-  rdsAurora: /icons/rdsaurora.svg
-  rdsMariaDb: /icons/rdsmariadb.svg
-  rdsMySql: /icons/rdsmysql.svg
-  rdsPostgreSql: /icons/rdspostgresql.svg
-  rdsSqlserver: /icons/rdssqlserver.svg
+  rdsoracle: /icons/rdsoracle.svg
+  rdsaurora: /icons/rdsaurora.svg
+  rdsmariadb: /icons/rdsmariadb.svg
+  rdsmysql: /icons/rdsmysql.svg
+  rdspostgresql: /icons/rdspostgresql.svg
+  rdssqlserver: /icons/rdssqlserver.svg
   sharepoint: /icons/sharepoint.svg
   reltio: /icons/reltio.svg
-  veevaVault: /icons/veeva.svg
+  veevavault: /icons/veeva.svg
   ftp: /icons/ftp.svg
   salesforce: /icons/salesforce.svg
   sap: /icons/sap.svg
@@ -21,17 +21,17 @@ iconMap:
   redshift: /icons/redshift.svg
   atlassian: /icons/atlassian.svg
   jira: /icons/jira.svg
-  googleAnalytics: /icons/googleanalytics.svg
-  serviceNow: /icons/servicenow.svg
+  googleanalytics: /icons/googleanalytics.svg
+  servicenow: /icons/servicenow.svg
   databricks: /icons/databricks.svg
-  deltaLake: /icons/deltalake.svg
+  deltalake: /icons/deltalake.svg
   odata: /icons/odata.svg
   snowflake: /icons/snowflake.svg
   api: /icons/api.svg
   iceberg: /icons/iceberg.svg
   kafka: /icons/kafka.svg
   kinesis: /icons/kinesis.svg
-  powerBi: /icons/powerbi.svg
+  powerbi: /icons/powerbi.svg
   agent: /icons/robot.svg
   application: /icons/application.svg
 
@@ -45,33 +45,33 @@ domainPalette:
   - "#dcfce7"
 
 tiers:
-  dataSource:
-    label: DATA SOURCE
+  datasource:
+    label: Data Source
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 1
-  sourceAligned:
-    label: DATA PRODUCT (SOURCE ALIGNED)
+  sourcealigned:
+    label: Data Product (Source Aligned)
     color: "#bfdbfe"
     bannerColor: "#93c5fd"
     columnNumber: 2
   curated:
-    label: DATA PRODUCT (CURATED)
+    label: Data Product (Curated)
     color: "#bfdbfe"
     bannerColor: "#93c5fd"
     columnNumber: 3
-  consumerAligned:
-    label: DATA PRODUCT (CONSUMER ALIGNED)
+  consumeraligned:
+    label: Data Product (Consumer Aligned)
     color: "#bfdbfe"
     bannerColor: "#93c5fd"
     columnNumber: 4
   application:
-    label: APPLICATION
+    label: Application
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 5
   agent:
-    label: AGENT
+    label: Agent
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 5

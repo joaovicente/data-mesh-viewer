@@ -289,7 +289,7 @@ function Flow() {
                 // Get tier config
                 const tierConfig = config.tiers?.[tier] || {};
                 const color = tierConfig.color || '#bfdbfe';
-                const banner = tierConfig.label || 'DATA PRODUCT';
+                const banner = tierConfig.label || 'Data Product';
                 const bannerColor = tierConfig.bannerColor || tierConfig.color || '#93c5fd';
 
                 // Background Color Logic (Domain based)

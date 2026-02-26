@@ -63,7 +63,7 @@ export default function DataUsageAgreementVisual({ data }) {
                         padding: '4px 12px',
                         borderRadius: '8px',
                         fontWeight: '600',
-                        textTransform: 'uppercase',
+                        textTransform: 'capitalize',
                         fontSize: '12px',
                         letterSpacing: '0.5px'
                     }}>
@@ -99,7 +99,7 @@ export default function DataUsageAgreementVisual({ data }) {
                         fontWeight: '700',
                         color: 'var(--m3-primary)',
                         marginBottom: '16px',
-                        textTransform: 'uppercase',
+                        textTransform: 'none',
                         letterSpacing: '1px'
                     }}>
                         Provider
@@ -149,7 +149,7 @@ export default function DataUsageAgreementVisual({ data }) {
                         fontWeight: '700',
                         color: 'var(--m3-primary)',
                         marginBottom: '16px',
-                        textTransform: 'uppercase',
+                        textTransform: 'none',
                         letterSpacing: '1px'
                     }}>
                         Consumer
@@ -180,7 +180,7 @@ export default function DataUsageAgreementVisual({ data }) {
                             fontWeight: '700',
                             color: 'var(--m3-primary)',
                             marginBottom: '16px',
-                            textTransform: 'uppercase',
+                            textTransform: 'none',
                             letterSpacing: '1px'
                         }}>
                             Custom Properties

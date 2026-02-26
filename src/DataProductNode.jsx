@@ -41,8 +41,7 @@ export default memo(({ data, isConnectable }) => {
                     fontSize: '10px',
                     fontWeight: '500',
                     letterSpacing: '0.5px',
-                    color: '#1e3a8a',
-                    textTransform: 'uppercase'
+                    color: '#1e3a8a'
                 }}>
                     {data.banner}
                 </span>
