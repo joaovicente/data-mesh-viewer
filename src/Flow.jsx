@@ -326,7 +326,7 @@ function Flow() {
                         bannerColor: bannerColor,
                         backgroundColor: backgroundColor,
                         subtitle: node.domain,
-                        icon: normalizePath(config.iconMap[technology] || (node.kind === 'DataContract' ? config.iconMap['table'] : config.iconMap['dataProduct'])),
+                        icon: normalizePath(config.iconMap[technology] || (node.kind === 'DataContract' ? config.iconMap['table'] : config.iconMap['dataproduct'])),
                         hasOutputPorts: node.outputPorts && node.outputPorts.length > 0,
                         outputPortCount: node.outputPorts ? node.outputPorts.length : 0,
                         originalData: node // Pass full source data for YAML view

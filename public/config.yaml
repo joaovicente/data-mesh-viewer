@@ -45,33 +45,33 @@ domainPalette:
   - "#dcfce7"
 
 tiers:
-  datasource:
-    label: Data Source
+  dataSource:
+    label: DATA SOURCE
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 1
-  sourcealigned:
-    label: Data Product (Source Aligned)
+  sourceAligned:
+    label: DATA PRODUCT (SOURCE ALIGNED)
     color: "#bfdbfe"
     bannerColor: "#93c5fd"
     columnNumber: 2
   curated:
-    label: Data Product (Curated)
+    label: DATA PRODUCT (CURATED)
     color: "#bfdbfe"
     bannerColor: "#93c5fd"
     columnNumber: 3
-  consumeraligned:
-    label: Data Product (Consumer Aligned)
+  consumerAligned:
+    label: DATA PRODUCT (CONSUMER ALIGNED)
     color: "#bfdbfe"
     bannerColor: "#93c5fd"
     columnNumber: 4
   application:
-    label: Application
+    label: APPLICATION
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 5
   agent:
-    label: Agent
+    label: AGENT
     color: "#e2e8f0"
     bannerColor: "#cbd5e1"
     columnNumber: 5
