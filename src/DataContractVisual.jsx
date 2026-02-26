@@ -77,6 +77,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                 </h2>
                 <div style={{
                     display: 'flex',
+                    flexWrap: 'wrap',
                     gap: '16px',
                     fontSize: '14px',
                     alignItems: 'center',
@@ -201,13 +202,13 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                     )}
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px', wordBreak: 'break-word' }}>
+                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px', wordBreak: 'break-all' }}>
                                         {server.server || `Server ${idx + 1}`}
                                     </div>
                                     <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                         <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                             <span style={{ fontWeight: '600', minWidth: '70px' }}>Type:</span>
-                                            <span style={{ fontFamily: 'monospace' }}>{server.type}</span>
+                                            <span style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{server.type}</span>
                                         </div>
                                         <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                             <span style={{ fontWeight: '600', minWidth: '70px' }}>Host:</span>
@@ -216,7 +217,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 title={server.host}
-                                                style={{ color: 'var(--m3-primary)', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                                                style={{ color: 'var(--m3-primary)', textDecoration: 'none', wordBreak: 'break-all' }}
                                             >
                                                 {server.host}
                                             </a>
@@ -237,13 +238,13 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                         {server.catalog && (
                                             <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                 <span style={{ fontWeight: '600', minWidth: '70px' }}>Catalog:</span>
-                                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-word' }}>{server.catalog}</span>
+                                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{server.catalog}</span>
                                             </div>
                                         )}
                                         {server.schema && (
                                             <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                 <span style={{ fontWeight: '600', minWidth: '70px' }}>Schema:</span>
-                                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-word' }}>{server.schema}</span>
+                                                <span style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{server.schema}</span>
                                             </div>
                                         )}
                                     </div>
@@ -293,7 +294,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                     </svg>
                                 </div>
                                 <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px', wordBreak: 'break-word' }}>
+                                    <div style={{ fontWeight: '700', fontSize: '15px', color: 'var(--m3-on-surface)', marginBottom: '4px', wordBreak: 'break-all' }}>
                                         {roleObj.role || `Role ${idx + 1}`}
                                     </div>
                                     <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -301,7 +302,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                             key !== 'role' && (
                                                 <div key={key} style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                     <span style={{ fontWeight: '600', minWidth: '60px', textTransform: 'capitalize' }}>{key}:</span>
-                                                    <span style={{ wordBreak: 'break-word' }}>{String(value)}</span>
+                                                    <span style={{ wordBreak: 'break-all' }}>{String(value)}</span>
                                                 </div>
                                             )
                                         ))}
