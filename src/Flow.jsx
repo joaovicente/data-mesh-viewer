@@ -487,6 +487,7 @@ function Flow() {
                 return sortedSchema.map((schemaElement, index) => {
                     const row = Math.floor(index / cols);
                     const col = index % cols;
+                    const tableTech = schemaElement.customProperties?.find(p => p.property === 'technology')?.value;
 
                     return {
                         id: `${contractData.id}-schema-${index}`,
@@ -500,7 +501,7 @@ function Flow() {
                             label: schemaElement.name || schemaElement.physicalName || `Schema ${index + 1}`,
                             banner: 'DATA CONTRACT',
                             bannerColor: '#e5e7eb',
-                            icon: normalizePath(config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
+                            icon: normalizePath(config.iconMap[tableTech] || config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
                             // Add a stable ID for handles to reference
                             tableName: schemaElement.name,
                             rowIndices: { row, col, totalCols: cols },
@@ -512,6 +513,7 @@ function Flow() {
             }
 
             // Fallback: if no schema
+            const firstSchemaTech = contractData.schema?.[0]?.customProperties?.find(p => p.property === 'technology')?.value;
             const centralNode = {
                 id: contractData.id,
                 type: 'dataContractNode',
@@ -523,7 +525,7 @@ function Flow() {
                     label: contractData.name || contractData.physicalName || String(selection.id),
                     banner: 'DATA CONTRACT',
                     bannerColor: '#e5e7eb',
-                    icon: normalizePath(config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
+                    icon: normalizePath(config.iconMap[firstSchemaTech] || config.iconMap['table'] || config.iconMap[tech] || config.iconMap['dataProduct']),
                 }
             };
             return [centralNode];
