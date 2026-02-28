@@ -1,0 +1,182 @@
+- kind: DataProduct
+  id: food_production.food_production_analytics
+  name: Food Production Analytics
+  domain: food_production
+  status: active
+  apiVersion: v1.0.0
+  description:
+    purpose: Curated food production data with quality metrics and performance
+      indicators
+  customProperties:
+    - property: dataProductTier
+      value: curated
+    - property: technology
+      value: databricks
+  outputPorts:
+    - name: product_quality
+      version: "1"
+      contractId: food_production.food_production_analytics
+      customProperties:
+        - property: portAdapter
+          value: odata
+    - name: batch_performance
+      version: "1"
+      contractId: food_production.food_production_analytics
+      customProperties:
+        - property: portAdapter
+          value: iceberg
+        - property: portAdapter
+          value: odata
+    - name: product_quality
+      version: "1"
+      contractId: food_production.food_production_analytics.product_quality.odata
+    - name: batch_performance_iceberg
+      version: "1"
+      contractId: food_production.food_production_analytics.batch_performance.iceberg
+- kind: DataContract
+  id: food_production.food_production_analytics
+  status: active
+  version: "1"
+  apiVersion: v3.0.1
+  schema:
+    - name: product_quality
+      physicalType: table
+      description:
+        Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for product_quality
+      customProperties:
+        - property: technology
+          value: deltalake
+      properties:
+        - name: quality_id
+          logicalType: string
+          physicalType: STRING
+          customProperties:
+            - property: technology
+              value: deltalake
+          primaryKey: true
+          examples:
+            - QA-001
+        - name: product_id
+          logicalType: string
+          physicalType: STRING
+          customProperties:
+            - property: technology
+              value: deltalake
+          examples:
+            - FP-001
+        - name: avg_quality_score
+          logicalType: number
+          physicalType: DECIMAL(5,2)
+          customProperties:
+            - property: technology
+              value: deltalake
+          examples:
+            - 97.5
+    - name: batch_performance
+      physicalType: table
+      description:
+        Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for batch_performance
+      customProperties:
+        - property: technology
+          value: deltalake
+      properties:
+        - name: performance_id
+          logicalType: string
+          physicalType: STRING
+          customProperties:
+            - property: technology
+              value: deltalake
+          primaryKey: true
+          examples:
+            - BP-001
+        - name: batch_id
+          logicalType: string
+          physicalType: STRING
+          customProperties:
+            - property: technology
+              value: deltalake
+          examples:
+            - BATCH-2024-001
+        - name: efficiency_score
+          logicalType: number
+          physicalType: DECIMAL(5,2)
+          customProperties:
+            - property: technology
+              value: deltalake
+          examples:
+            - 95
+
+- kind: DataContract
+  id: food_production.food_production_analytics.product_quality.odata
+  status: active
+  version: "1"
+  apiVersion: v3.0.1
+  servers:
+    - server: "OData server"
+      type: api
+      environment: dev
+      location: https://joaovicente.github.io/data-mesh-viewer/product_quality.json
+  schema:
+    - name: product_quality
+      physicalType: table
+      description:
+        Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for product_quality
+      customProperties:
+        - property: technology
+          value: odata
+      properties:
+        - name: quality_id
+          logicalType: string
+          physicalType: STRING
+          primaryKey: true
+          examples:
+            - QA-001
+        - name: product_id
+          logicalType: string
+          physicalType: STRING
+          examples:
+            - FP-001
+        - name: avg_quality_score
+          logicalType: number
+          physicalType: DECIMAL(5,2)
+          examples:
+            - 97.5
+
+- kind: DataContract
+  id: food_production.food_production_analytics.batch_performance.iceberg
+  status: active
+  version: "1"
+  apiVersion: v3.0.1
+  schema:
+    - name: batch_performance_iceberg
+      physicalType: table
+      description:
+        Production data with quality metrics, batch performance, inventory
+        levels, cost analysis, supplier ratings, and production schedules data
+        for batch_performance
+      customProperties:
+        - property: technology
+          value: iceberg
+      properties:
+        - name: performance_id
+          logicalType: string
+          physicalType: STRING
+          primaryKey: true
+          examples:
+            - BP-001
+        - name: batch_id
+          logicalType: string
+          physicalType: STRING
+          examples:
+            - BATCH-2024-001
+        - name: efficiency_score
+          logicalType: number
+          physicalType: DECIMAL(5,2)
+          examples:
+            - 95

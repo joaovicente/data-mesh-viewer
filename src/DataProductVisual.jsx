@@ -22,6 +22,16 @@ export default function DataProductVisual({ data }) {
     const properties = data.customProperties || [];
     const outputPorts = data.outputPorts || [];
 
+    const formatLabel = (str) => {
+        if (!str) return '';
+        const spaced = str.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').trim();
+        return spaced.charAt(0).toUpperCase() + spaced.slice(1).toLowerCase();
+    };
+
+    const allPortCustomKeys = Array.from(new Set(
+        outputPorts.flatMap(port => (port.customProperties || []).map(p => p.property))
+    ));
+
     return (
         <div style={{ padding: '24px', fontFamily: 'Inter, sans-serif', color: 'var(--m3-on-surface)' }}>
             {/* Header Section */}
@@ -95,7 +105,7 @@ export default function DataProductVisual({ data }) {
                                 transition: 'all 0.2s ease'
                             }}>
                                 <div style={{ fontSize: '11px', color: 'var(--m3-on-surface-variant)', marginBottom: '6px', textTransform: 'none', fontWeight: 'bold' }}>
-                                    {prop.property.replace(/([A-Z])/g, ' $1').trim()}
+                                    {formatLabel(prop.property)}
                                 </div>
                                 <div style={{ fontSize: '15px', fontWeight: '500', color: 'var(--m3-on-surface)' }}>
                                     {prop.value}
@@ -122,7 +132,7 @@ export default function DataProductVisual({ data }) {
                     <div style={{
                         border: '1px solid var(--m3-outline-variant)',
                         borderRadius: '16px',
-                        overflow: 'hidden',
+                        overflowX: 'auto',
                         background: 'var(--m3-surface)'
                     }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', textAlign: 'left' }}>
@@ -131,6 +141,11 @@ export default function DataProductVisual({ data }) {
                                     <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Name</th>
                                     <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Version</th>
                                     <th style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>Contract</th>
+                                    {allPortCustomKeys.map(key => (
+                                        <th key={key} style={{ padding: '12px 20px', fontWeight: '600', color: 'var(--m3-on-surface-variant)' }}>
+                                            {formatLabel(key)}
+                                        </th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody>
@@ -154,6 +169,16 @@ export default function DataProductVisual({ data }) {
                                                 {port.contractId.split(':').pop()}
                                             </span>
                                         </td>
+                                        {allPortCustomKeys.map(key => {
+                                            const values = (port.customProperties || [])
+                                                .filter(p => p.property === key)
+                                                .map(p => p.value);
+                                            return (
+                                                <td key={key} style={{ padding: '14px 20px', color: 'var(--m3-on-surface-variant)' }}>
+                                                    {values.length > 0 ? values.join(', ') : '-'}
+                                                </td>
+                                            );
+                                        })}
                                     </tr>
                                 ))}
                             </tbody>

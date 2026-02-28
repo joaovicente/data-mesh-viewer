@@ -106,7 +106,7 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                         s.environment && (
                             <a
                                 key={idx}
-                                href={s.host}
+                                href={s.host || s.location}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title={s.server || `Server ${idx + 1}`}
@@ -210,18 +210,34 @@ export default function DataContractVisual({ data, anchor, filterByAnchor = fals
                                             <span style={{ fontWeight: '600', minWidth: '70px' }}>Type:</span>
                                             <span style={{ fontFamily: 'monospace', wordBreak: 'break-all' }}>{server.type}</span>
                                         </div>
-                                        <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
-                                            <span style={{ fontWeight: '600', minWidth: '70px' }}>Host:</span>
-                                            <a
-                                                href={server.host}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                title={server.host}
-                                                style={{ color: 'var(--m3-primary)', textDecoration: 'none', wordBreak: 'break-all' }}
-                                            >
-                                                {server.host}
-                                            </a>
-                                        </div>
+                                        {server.host && (
+                                            <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
+                                                <span style={{ fontWeight: '600', minWidth: '70px' }}>Host:</span>
+                                                <a
+                                                    href={server.host}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    title={server.host}
+                                                    style={{ color: 'var(--m3-primary)', textDecoration: 'none', wordBreak: 'break-all' }}
+                                                >
+                                                    {server.host}
+                                                </a>
+                                            </div>
+                                        )}
+                                        {server.location && (
+                                            <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
+                                                <span style={{ fontWeight: '600', minWidth: '70px' }}>Location:</span>
+                                                <a
+                                                    href={server.location}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    title={server.location}
+                                                    style={{ color: 'var(--m3-primary)', textDecoration: 'none', wordBreak: 'break-all' }}
+                                                >
+                                                    {server.location}
+                                                </a>
+                                            </div>
+                                        )}
                                         {server.environment && (
                                             <div style={{ color: 'var(--m3-on-surface-variant)', display: 'flex', gap: '8px' }}>
                                                 <span style={{ fontWeight: '600', minWidth: '70px' }}>Env:</span>
