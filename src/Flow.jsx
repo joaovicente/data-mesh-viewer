@@ -1460,7 +1460,7 @@ function Flow() {
                                                 boxShadow: sidePanelTab === 'visual' ? 'var(--m3-elevation-1)' : 'none'
                                             }}
                                         >
-                                            Representation
+                                            Visual
                                         </button>
                                         <button
                                             onClick={() => setSidePanelTab('yaml')}
@@ -1476,7 +1476,7 @@ function Flow() {
                                                 transition: 'all 0.2s ease'
                                             }}
                                         >
-                                            YAML Source
+                                            YAML
                                         </button>
                                     </div>
 
