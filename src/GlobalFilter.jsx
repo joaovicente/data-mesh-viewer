@@ -33,7 +33,7 @@ const GlobalFilter = ({ filterText, onFilterChange }) => {
             </svg>
             <input
                 type="text"
-                placeholder="Search nodes..."
+                placeholder="Search ..."
                 value={filterText}
                 onChange={(e) => onFilterChange(e.target.value)}
                 style={{

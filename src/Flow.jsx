@@ -260,6 +260,25 @@ function Flow() {
         }
     }, [availableDomains]);
 
+    // Auto-select node if ID is provided in URL (?id=...)
+    React.useEffect(() => {
+        if (dataMeshRegistry.length > 0) {
+            const params = new URLSearchParams(window.location.search);
+            const idParam = params.get('id');
+            if (idParam) {
+                const target = dataMeshRegistry.find(item =>
+                    String(item.id).toLowerCase() === idParam.toLowerCase()
+                );
+                if (target) {
+                    setSelection({
+                        id: target.id,
+                        kind: target.kind || (target.dataUsageAgreementSpecification ? 'DataUsageAgreement' : 'DataProduct')
+                    });
+                }
+            }
+        }
+    }, [dataMeshRegistry]);
+
     // Process Registry into Nodes/Edges
     React.useEffect(() => {
         if (!dataMeshRegistry || dataMeshRegistry.length === 0) {
@@ -762,8 +781,10 @@ function Flow() {
         // 1. Identify "Primary Matches" based on filters
         const primaryMatches = nodes.filter(node => {
             const matchesDomain = selectedDomains.length === 0 || selectedDomains.includes(node.data.subtitle); // subtitle stores domain
-            const matchesName = globalFilterText === '' || node.data.label.toLowerCase().includes(globalFilterText.toLowerCase());
-            return matchesDomain && matchesName;
+            const matchesSearch = globalFilterText === '' ||
+                node.data.label.toLowerCase().includes(globalFilterText.toLowerCase()) ||
+                String(node.id).toLowerCase().includes(globalFilterText.toLowerCase());
+            return matchesDomain && matchesSearch;
         });
 
         if (primaryMatches.length === 0 && (selectedDomains.length > 0 || globalFilterText !== '')) {
