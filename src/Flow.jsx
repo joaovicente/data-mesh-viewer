@@ -1070,6 +1070,14 @@ function Flow() {
                 setSidePanelWidth(500);
             }
 
+            // Set default tab based on type
+            if (type === 'observability') {
+                setSidePanelTab('metrics');
+            } else if (['data-product-yaml', 'data-contract-yaml', 'agreement-yaml'].includes(type)) {
+                setSidePanelTab('visual');
+            }
+
+
             // Handle anchoring for Data Contract tables
             if (e.detail.activeTable) {
                 setSidePanelTab('visual');
@@ -1792,7 +1800,7 @@ function Flow() {
                             </div>
 
                             {/* Tab Selector */}
-                            {['data-product-yaml', 'data-contract-yaml', 'agreement-yaml'].includes(sidePanelType) && (
+                            {['data-product-yaml', 'data-contract-yaml', 'agreement-yaml', 'observability'].includes(sidePanelType) && (
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                     <div style={{
                                         display: 'flex',
@@ -1801,39 +1809,66 @@ function Flow() {
                                         borderRadius: '24px',
                                         width: 'fit-content'
                                     }}>
-                                        <button
-                                            onClick={() => setSidePanelTab('visual')}
-                                            style={{
-                                                padding: '10px 24px',
-                                                fontSize: '14px',
-                                                fontWeight: '600',
-                                                color: sidePanelTab === 'visual' ? 'var(--m3-on-secondary-container)' : 'var(--m3-on-surface-variant)',
-                                                background: sidePanelTab === 'visual' ? 'var(--m3-secondary-container)' : 'transparent',
-                                                border: 'none',
-                                                borderRadius: '20px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease',
-                                                boxShadow: sidePanelTab === 'visual' ? 'var(--m3-elevation-1)' : 'none'
-                                            }}
-                                        >
-                                            Visual
-                                        </button>
-                                        <button
-                                            onClick={() => setSidePanelTab('yaml')}
-                                            style={{
-                                                padding: '10px 24px',
-                                                fontSize: '14px',
-                                                fontWeight: '600',
-                                                color: sidePanelTab === 'yaml' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
-                                                background: sidePanelTab === 'yaml' ? 'var(--m3-primary-container)' : 'transparent',
-                                                border: 'none',
-                                                borderRadius: '20px',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                        >
-                                            YAML
-                                        </button>
+                                        {sidePanelType === 'observability' ? (
+                                            ['metrics', 'events', 'yaml'].map(tab => (
+                                                <button
+                                                    key={tab}
+                                                    onClick={() => setSidePanelTab(tab)}
+                                                    style={{
+                                                        padding: '10px 24px',
+                                                        fontSize: '14px',
+                                                        fontWeight: '600',
+                                                        color: sidePanelTab === tab ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
+                                                        background: sidePanelTab === tab ? 'var(--m3-primary-container)' : 'transparent',
+                                                        border: 'none',
+                                                        borderRadius: '20px',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        boxShadow: sidePanelTab === tab ? 'var(--m3-elevation-1)' : 'none',
+                                                        textTransform: 'capitalize'
+                                                    }}
+                                                >
+                                                    {tab}
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <>
+                                                <button
+                                                    onClick={() => setSidePanelTab('visual')}
+                                                    style={{
+                                                        padding: '10px 24px',
+                                                        fontSize: '14px',
+                                                        fontWeight: '600',
+                                                        color: sidePanelTab === 'visual' ? 'var(--m3-on-secondary-container)' : 'var(--m3-on-surface-variant)',
+                                                        background: sidePanelTab === 'visual' ? 'var(--m3-secondary-container)' : 'transparent',
+                                                        border: 'none',
+                                                        borderRadius: '20px',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        boxShadow: sidePanelTab === 'visual' ? 'var(--m3-elevation-1)' : 'none'
+                                                    }}
+                                                >
+                                                    Visual
+                                                </button>
+                                                <button
+                                                    onClick={() => setSidePanelTab('yaml')}
+                                                    style={{
+                                                        padding: '10px 24px',
+                                                        fontSize: '14px',
+                                                        fontWeight: '600',
+                                                        color: sidePanelTab === 'yaml' ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
+                                                        background: sidePanelTab === 'yaml' ? 'var(--m3-primary-container)' : 'transparent',
+                                                        border: 'none',
+                                                        borderRadius: '20px',
+                                                        cursor: 'pointer',
+                                                        transition: 'all 0.2s ease',
+                                                        boxShadow: sidePanelTab === 'yaml' ? 'var(--m3-elevation-1)' : 'none'
+                                                    }}
+                                                >
+                                                    YAML
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
 
                                     {sidePanelType === 'data-contract-yaml' && sidePanelAnchor && (
@@ -1876,7 +1911,8 @@ function Flow() {
                             )}
 
                             {/* Filter Input for YAML views - Only show in YAML tab */}
-                            {['yaml', 'data-product-yaml', 'agreement-yaml', 'data-contract-yaml'].includes(sidePanelType) && sidePanelTab === 'yaml' && (
+                            {((['yaml', 'data-product-yaml', 'agreement-yaml', 'data-contract-yaml'].includes(sidePanelType) && sidePanelTab === 'yaml') || 
+                              (sidePanelType === 'observability' && sidePanelTab === 'yaml')) && (
                                 <div style={{ position: 'relative' }}>
                                     <input
                                         type="text"
@@ -1920,7 +1956,11 @@ function Flow() {
                             ) : sidePanelType === 'dq' ? (
                                 <QualityTable schema={sidePanelContent} />
                             ) : sidePanelType === 'observability' ? (
-                                <ObservabilityDrilldown metrics={sidePanelContent} />
+                                <ObservabilityDrilldown 
+                                    metrics={sidePanelContent} 
+                                    filterText={sidePanelFilter}
+                                    activeTab={sidePanelTab}
+                                />
                             ) : sidePanelTab === 'visual' && sidePanelType === 'data-product-yaml' ? (
                                 <DataProductVisual data={sidePanelContent.originalData || sidePanelContent} />
                             ) : sidePanelTab === 'visual' && sidePanelType === 'data-contract-yaml' ? (

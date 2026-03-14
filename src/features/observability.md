@@ -274,6 +274,25 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - The tab label shows a badge count of critical events if any exist (e.g. "EVENTS (2)").
 
+#### US-13 · View observability metrica as YAML via a an observability panel tab
+
+| **Field** | **Detail** |
+| --- | --- |
+| Role      | Developer, technical operator                                                                                                                                                             |
+| Story     | I want a YAML tab that shows the raw metric data in YAML format for the selected data product so that I can debug and inspect the underlying data source directly. |
+| Priority  | P2                                                                                                                                                                                                                       |
+
+##### Acceptance Criteria
+
+- The YAML tab is available alongside the Metrics and Events tabs.
+
+- It displays the currently loaded `DataProductObservabilityMetrics` object in a syntax-highlighted YAML format.
+
+- The data shown matches what is currently stored in memory (including any runtime date adjustments if Test Mode is active).
+
+- Reuses the existing YAML inspection component and style used in other UI panels (e.g. Data Product / Data Contract details).
+
+
 ### 2.5 API Integration
 
 #### US-10 · Fetch /observe/metrics on Observe Mode Activation
@@ -382,8 +401,9 @@ The drilldown panel follows similar layout to the existing Data Product Details 
 | **Zone** | **Height** | **Content** |
 | --- | --- | --- |
 | Header   | 64px fixed            | DATA PRODUCT label, product name (bold, 15px), active dimension filter badge (if set), close button |
-| Tab bar  | 40px fixed            | METRICS and EVENTS tabs. Tab switch is instantaneous with no re-fetch.                              |
-| Body     | Remaining, scrollable | Metric cards (Metrics tab) or event feed (Events tab)                                               |
+| Tab bar  | 40px fixed            | METRICS, EVENTS, and YAML tabs. Tab switch is instantaneous with no re-fetch.                              |
+| Body     | Remaining, scrollable | Metric cards (Metrics tab), event feed (Events tab), or YAML viewer (YAML tab)                                               |
+
 
 > **NOTE:** The panel width (320px) is chosen to leave at least 65% of an 1280px viewport available for the graph — sufficient to keep the selected node visible and maintain mesh context.
 
@@ -464,7 +484,8 @@ function deriveStatus(metrics, dimension) {
 | metricsCache    | Map\<productId, MetricsResponse\>          | Cached /observe/metrics responses for the session                                          |
 | fetchStatus     | Map\<productId, "pending"\|"ok"\|"error"\> | Per-node fetch state for loading indicators                                                |
 | drillNodeId     | string \| null                             | Currently selected node's productId, or null                                               |
-| drillTab        | "metrics" \| "events"                      | Active tab in the drilldown panel                                                          |
+| drillTab        | "metrics" \| "events" \| "yaml"            | Active tab in the drilldown panel                                                          |
+
 
 ### 6.3 Performance Considerations
 

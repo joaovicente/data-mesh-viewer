@@ -1,4 +1,5 @@
 import React from 'react';
+import InteractiveYaml from './InteractiveYaml';
 
 const MetricCard = ({ title, status, value, unit, detail, icon }) => {
     const getStatusColor = (s) => {
@@ -60,15 +61,11 @@ const MetricCard = ({ title, status, value, unit, detail, icon }) => {
     );
 };
 
-const ObservabilityDrilldown = ({ metrics }) => {
-    const [activeTab, setActiveTab] = React.useState('metrics');
-
+const ObservabilityDrilldown = ({ metrics, filterText, activeTab }) => {
     if (!metrics) return <div style={{ padding: '20px', color: 'var(--m3-on-surface-variant)' }}>No observability data available.</div>;
 
     // Helper to determine status for cards
     const getCardStatus = (dim) => {
-        // This is a simplified version of the logic in Flow.jsx
-        // In a real app, this should probably come from props or a shared utility
         if (dim === 'SLO') {
             if (metrics.slo?.uptime?.met === false || metrics.slo?.qualityScore?.met === false) return 'critical';
             return 'healthy';
@@ -92,34 +89,7 @@ const ObservabilityDrilldown = ({ metrics }) => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            {/* Tabs */}
-            <div style={{ 
-                display: 'flex', 
-                borderBottom: '1px solid var(--m3-outline-variant)',
-                padding: '0 16px'
-            }}>
-                {['metrics', 'events'].map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        style={{
-                            padding: '12px 16px',
-                            background: 'none',
-                            border: 'none',
-                            borderBottom: activeTab === tab ? '2px solid var(--m3-primary)' : '2px solid transparent',
-                            color: activeTab === tab ? 'var(--m3-primary)' : 'var(--m3-on-surface-variant)',
-                            fontWeight: '600',
-                            fontSize: '14px',
-                            cursor: 'pointer',
-                            textTransform: 'capitalize'
-                        }}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
-
-            <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+            <div style={{ flex: 1, overflow: 'auto', padding: activeTab === 'yaml' ? '0' : '16px' }}>
                 {activeTab === 'metrics' ? (
                     <div>
                         <MetricCard 
@@ -155,7 +125,7 @@ const ObservabilityDrilldown = ({ metrics }) => {
                             icon="▸"
                         />
                     </div>
-                ) : (
+                ) : activeTab === 'events' ? (
                     <div style={{ color: 'var(--m3-on-surface-variant)', fontSize: '14px' }}>
                         <div style={{ marginBottom: '20px', padding: '12px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
                             <strong>Pipeline Succeeded</strong>
@@ -170,6 +140,8 @@ const ObservabilityDrilldown = ({ metrics }) => {
                             <div style={{ fontSize: '12px', marginTop: '4px' }}>2 days ago</div>
                         </div>
                     </div>
+                ) : (
+                    <InteractiveYaml data={metrics} filterText={filterText} />
                 )}
             </div>
         </div>
