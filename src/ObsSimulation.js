@@ -50,8 +50,7 @@ export const generatePipelineMetrics = (statusOverride) => {
         status: isCritical ? 'failed' : 'success',
         lastRunAt: new Date().toISOString(),
         durationSeconds: isCritical ? null : getRandomInt(60, 3600),
-        recordsProcessed: isCritical ? null : getRandomInt(100, 10000000),
-        nextRun: new Date(Date.now() + 3600000).toISOString()
+        recordsProcessed: isCritical ? null : getRandomInt(100, 10000000)
     };
 
     if (isCritical) {
