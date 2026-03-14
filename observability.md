@@ -472,7 +472,9 @@ function deriveStatus(metrics, dimension) {
 
 - All status colours must meet WCAG AA contrast ratios against their respective background colours.
 
-7. Test Plan
+
+7. Visual Test Plan
 
 Create a DataMeshRegistryObservability.yaml derived with the exact same Data Product and Data Contracts as DataMeshRegistryPetsExample.yaml that illustrates the various features of the observability feature.
+Ensure that in DataMeshRegistryObservability.yaml Data Sources and Applications data products don't have observability data, so unknown status can be visually verified.
 Ensure that DataMeshRegistryObservability.yaml is valid against all schemas in src/schemas.
