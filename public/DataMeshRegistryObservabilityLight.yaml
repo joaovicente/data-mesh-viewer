@@ -2182,28 +2182,6 @@
       lastRunAt: 2026-03-02T05:50:00Z
       durationSeconds: 120
       recordsProcessed: 1500
-  dynamic:
-    freshness:
-      withinExpectation: true
-      lastUpdatedAt: 2026-03-02T05:50:00Z
-      lagMinutes: 10
-    quality:
-      rulesTotal: 25
-      rulesPassed: 25
-      rulesFailed: 0
-  slo:
-    uptime:
-      met: true
-      actualPct: 99.8
-      objectivePct: 99.5
-    freshness:
-      met: true
-    qualityScore:
-      met: true
-    responseTime:
-      met: true
-      actualP95Ms: 120
-      objectiveMs: 200
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2217,26 +2195,6 @@
       lastRunAt: 2026-03-02T05:30:00Z
       durationSeconds: 3600
       recordsProcessed: 4500000
-  dynamic:
-    freshness:
-      withinExpectation: true
-    quality:
-      rulesTotal: 25
-      rulesPassed: 22
-      rulesFailed: 3
-      checks:
-        - rule: order_amount_positive
-          column: total_amount
-          status: failed
-          failRate: 0.01
-          message: 1% of orders have zero or negative total_amount
-  slo:
-    uptime:
-      met: true
-    qualityScore:
-      met: false
-      actualPassRate: 0.88
-      objectivePassRate: 1.0
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2249,22 +2207,6 @@
       status: failed
       lastRunAt: 2026-03-02T04:00:00Z
       errorMessage: "OOM error in Spark executor"
-  dynamic:
-    freshness:
-      withinExpectation: false
-      lagMinutes: 120
-      maxAllowedLagMinutes: 60
-    quality:
-      rulesTotal: 15
-      rulesPassed: 10
-      rulesFailed: 5
-  slo:
-    uptime:
-      met: false
-      objectivePct: 95.0
-      actualPct: 50.0
-    qualityScore:
-      met: false
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2277,16 +2219,6 @@
       status: success
       durationSeconds: 90
       recordsProcessed: 455
-  dynamic:
-    freshness:
-      withinExpectation: true
-    quality:
-      rulesTotal: 50
-      rulesPassed: 50
-      rulesFailed: 0
-  slo:
-    uptime:
-      met: true
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
   productId: urn:food-production:curated:production-analytics
@@ -2298,20 +2230,6 @@
       status: success
       durationSeconds: 7200
       recordsProcessed: 2500000000
-  dynamic:
-    freshness:
-      withinExpectation: false
-      lagMinutes: 45
-      maxAllowedLagMinutes: 30
-    quality:
-      rulesTotal: 30
-      rulesPassed: 30
-      rulesFailed: 0
-  slo:
-    uptime:
-      met: true
-    qualityScore:
-      met: true
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2322,16 +2240,6 @@
   physical:
     pipeline:
       status: success
-  dynamic:
-    freshness:
-      withinExpectation: true
-    quality:
-      rulesTotal: 40
-      rulesPassed: 40
-      rulesFailed: 0
-  slo:
-    uptime:
-      met: true
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
   productId: urn:food-production:consumer-aligned:operations-analytics
@@ -2344,25 +2252,3 @@
       durationSeconds: 310
       status: success
       recordsProcessed: 1500
-  usage:
-    activeConsumers: 1
-    queryCount: 210
-    lastAccessedAt: 2026-03-02T05:58:00Z
-  slo:
-    responseTime:
-      objectiveMs: 10000
-      actualP95Ms: 7734
-      met: true
-    uptime:
-      objectivePct: 99.0
-      actualPct: 99.5
-      met: true
-  dynamic:
-    freshness:
-      lagMinutes: 10
-      maxAllowedLagMinutes: 60
-      withinExpectation: true
-    quality:
-      rulesTotal: 20
-      rulesPassed: 20
-      rulesFailed: 0

@@ -246,6 +246,21 @@ function Flow() {
         setMetricsMap(metrics);
     }, [dataMeshRegistry, adjustMetricsTime, isTestMode]);
 
+    const availableDimensions = React.useMemo(() => {
+        const dims = new Set();
+        metricsMap.forEach(metrics => {
+            if (metrics.physical?.pipeline) dims.add('Pipeline');
+            if (metrics.slo) dims.add('SLOs');
+            if (metrics.dynamic?.freshness) dims.add('Freshness');
+            if (metrics.dynamic?.quality) dims.add('Quality');
+        });
+        const activeList = ['Pipeline', 'SLOs', 'Freshness', 'Quality'].filter(d => dims.has(d));
+        if (activeList.length > 1) {
+            return ['Any', ...activeList];
+        }
+        return activeList;
+    }, [metricsMap]);
+
     // Health Status Derivation Logic
     const isDimUnknown = (metrics, dim) => {
         if (!metrics) return true;
@@ -461,7 +476,7 @@ function Flow() {
             .filter(node => {
                 if (observeMode && hideHealthy) {
                     const healthStatus = deriveStatus(node.id, activeDimension);
-                    return healthStatus !== 'healthy';
+                    return healthStatus !== 'healthy' && healthStatus !== 'unknown';
                 }
                 return true;
             })
@@ -528,7 +543,8 @@ function Flow() {
                         activeDimension,
                         healthStatus,
                         pips,
-                        isSelected: drillNodeId === node.id
+                        isSelected: drillNodeId === node.id,
+                        availableDimensions
                     },
                     position: { x, y }
                 };
@@ -1469,7 +1485,7 @@ function Flow() {
                             border: '1px solid #e2e8f0',
                             animation: 'slideDown 0.3s ease-out'
                         }}>
-                            {['Any', 'Pipeline', 'SLOs', 'Freshness', 'Quality'].map(dim => {
+                            {availableDimensions.map(dim => {
                                 const dimKey = dim === 'Any' ? null : (dim === 'SLOs' ? 'slo' : dim.toLowerCase());
                                 const isActive = activeDimension === dimKey;
                                 return (
@@ -1981,6 +1997,7 @@ function Flow() {
                                     metrics={sidePanelContent} 
                                     filterText={sidePanelFilter}
                                     activeTab={sidePanelTab}
+                                    availableDimensions={availableDimensions}
                                 />
                             ) : sidePanelTab === 'visual' && sidePanelType === 'data-product-yaml' ? (
                                 <DataProductVisual data={sidePanelContent.originalData || sidePanelContent} />

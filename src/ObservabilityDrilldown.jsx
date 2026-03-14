@@ -85,7 +85,7 @@ const formatRecords = (count) => {
     return (count / 1000000000).toFixed(1) + 'B';
 };
 
-const ObservabilityDrilldown = ({ metrics, filterText, activeTab }) => {
+const ObservabilityDrilldown = ({ metrics, filterText, activeTab, availableDimensions = ['Pipeline', 'SLOs', 'Freshness', 'Quality'] }) => {
 
     if (!metrics) return <div style={{ padding: '20px', color: 'var(--m3-on-surface-variant)' }}>No observability data available.</div>;
 
@@ -128,69 +128,89 @@ const ObservabilityDrilldown = ({ metrics, filterText, activeTab }) => {
             <div style={{ flex: 1, overflow: 'auto', padding: activeTab === 'yaml' ? '0' : '16px' }}>
                 {activeTab === 'metrics' ? (
                     <div>
-                        <MetricCard
-                            title="Pipeline Status"
-                            status={getCardStatus('Pipeline')}
-                            value={metrics.physical?.pipeline?.status?.toUpperCase() || 'UNKNOWN'}
-                            unit=""
-                            detail={(() => {
-                                let details = [];
-                                if (getCardStatus('Pipeline') === 'critical') {
-                                    if (metrics.physical?.pipeline?.errorMessage) {
-                                        details.push(`Failure reason: ${metrics.physical.pipeline.errorMessage}`);
+                        {availableDimensions.includes('Pipeline') && (
+                            <MetricCard
+                                title="Pipeline Status"
+                                status={getCardStatus('Pipeline')}
+                                value={metrics.physical?.pipeline?.status?.toUpperCase() || 'UNKNOWN'}
+                                unit=""
+                                detail={(() => {
+                                    const lastRunStr = `Last run: ${new Date(metrics.asOf).toLocaleString()}`;
+                                    if (getCardStatus('Pipeline') === 'critical') {
+                                        return (
+                                            <>
+                                                <div>{lastRunStr}</div>
+                                                {metrics.physical?.pipeline?.errorMessage && <div style={{ color: 'var(--health-critical)', marginTop: '4px' }}>Failure reason: {metrics.physical.pipeline.errorMessage}</div>}
+                                            </>
+                                        );
+                                    } else if (getCardStatus('Pipeline') === 'healthy') {
+                                        const durationStr = formatDuration(metrics.physical?.pipeline?.durationSeconds);
+                                        const recordsStr = formatRecords(metrics.physical?.pipeline?.recordsProcessed);
+                                        return (
+                                            <>
+                                                <div>{lastRunStr}</div>
+                                                {durationStr && <div>Duration: {durationStr}</div>}
+                                                {recordsStr && <div>Records processed: {recordsStr}</div>}
+                                            </>
+                                        );
                                     }
-                                } else if (getCardStatus('Pipeline') === 'healthy') {
-                                    const durationStr = formatDuration(metrics.physical?.pipeline?.durationInSeconds);
-                                    const recordsStr = formatRecords(metrics.physical?.pipeline?.recordsProcessed);
-                                    if (durationStr) details.push(`Duration: ${durationStr}`);
-                                    if (recordsStr) details.push(`Records processed: ${recordsStr}`);
-                                }
-                                if (details.length > 0) return details.join(' | ');
-                                return `Last run: ${new Date(metrics.asOf).toLocaleString()}. Next: ${metrics.physical?.pipeline?.nextRun || 'N/A'}.`;
-                            })()}
+                                    return (
+                                        <>
+                                            <div>{lastRunStr}</div>
+                                            {metrics.physical?.pipeline?.nextRun && <div>Next: {metrics.physical.pipeline.nextRun}</div>}
+                                        </>
+                                    );
+                                })()}
 
-                            icon="▸"
-                        />
-                        <MetricCard
-                            title="Service Level Objectives"
-                            status={getCardStatus('SLO')}
-                            value={[
-                                metrics.slo?.uptime?.actualPct || 'N/A',
-                                metrics.slo?.responseTime?.actualP95Ms || 'N/A'
-                            ]}
-                            unit={['% Uptime', 'ms Response time (p95)']}
-                            detail={(
-                                <>
-                                    <div>Target uptime: {metrics.slo?.uptime?.objectivePct || '?'}% and Target response time: {metrics.slo?.responseTime?.objectiveMs || '?'} ms</div>
-                                    {metrics.usage && (
-                                        <div>
-                                            Active consumers: {metrics.usage.activeConsumers || 0}, Query count: {metrics.usage.queryCount || 0}
-                                        </div>
-                                    )}
-                                </>
-                            )}
-                            icon="◈"
-                        />
-                        <MetricCard
-                            title="Data Freshness"
-                            status={getCardStatus('Freshness')}
-                            value={metrics.dynamic?.freshness?.lagMinutes || 0}
-                            unit="min lag"
-                            detail={
-                                metrics.dynamic?.freshness?.maxAllowedLagMinutes != null
-                                    ? `Max Allowed: ${metrics.dynamic.freshness.maxAllowedLagMinutes}m. ${metrics.dynamic.freshness.withinExpectation ? 'Within expectations.' : 'Outside expectations.'}`
-                                    : 'Max Allowed: unknown'
-                            }
-                            icon="⧗"
-                        />
-                        <MetricCard
-                            title="Data Quality"
-                            status={getCardStatus('Quality')}
-                            value={metrics.dynamic?.quality?.rulesPassed || 0}
-                            unit={`/ ${(metrics.dynamic?.quality?.rulesPassed || 0) + (metrics.dynamic?.quality?.rulesFailed || 0)} tests`}
-                            detail={`Score: ${metrics.dynamic?.quality?.score}%. Failed: ${metrics.dynamic?.quality?.rulesFailed}.`}
-                            icon="✦"
-                        />
+                                icon="▸"
+                            />
+                        )}
+                        {availableDimensions.includes('SLOs') && (
+                            <MetricCard
+                                title="Service Level Objectives"
+                                status={getCardStatus('SLO')}
+                                value={[
+                                    metrics.slo?.uptime?.actualPct || 'N/A',
+                                    metrics.slo?.responseTime?.actualP95Ms || 'N/A'
+                                ]}
+                                unit={['% Uptime', 'ms Response time (p95)']}
+                                detail={(
+                                    <>
+                                        <div>Target uptime: {metrics.slo?.uptime?.objectivePct || '?'}% and Target response time: {metrics.slo?.responseTime?.objectiveMs || '?'} ms</div>
+                                        {metrics.usage && (
+                                            <div>
+                                                Active consumers: {metrics.usage.activeConsumers || 0}, Query count: {metrics.usage.queryCount || 0}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                icon="◈"
+                            />
+                        )}
+                        {availableDimensions.includes('Freshness') && (
+                            <MetricCard
+                                title="Data Freshness"
+                                status={getCardStatus('Freshness')}
+                                value={metrics.dynamic?.freshness?.lagMinutes || 0}
+                                unit="min lag"
+                                detail={
+                                    metrics.dynamic?.freshness?.maxAllowedLagMinutes != null
+                                        ? `Max Allowed: ${metrics.dynamic.freshness.maxAllowedLagMinutes}m. ${metrics.dynamic.freshness.withinExpectation ? 'Within expectations.' : 'Outside expectations.'}`
+                                        : 'Max Allowed: unknown'
+                                }
+                                icon="⧗"
+                            />
+                        )}
+                        {availableDimensions.includes('Quality') && (
+                            <MetricCard
+                                title="Data Quality"
+                                status={getCardStatus('Quality')}
+                                value={metrics.dynamic?.quality?.rulesPassed || 0}
+                                unit={`/ ${(metrics.dynamic?.quality?.rulesPassed || 0) + (metrics.dynamic?.quality?.rulesFailed || 0)} tests`}
+                                detail={`Score: ${metrics.dynamic?.quality?.score}%. Failed: ${metrics.dynamic?.quality?.rulesFailed}.`}
+                                icon="✦"
+                            />
+                        )}
                     </div>
                 ) : activeTab === 'events' ? (
                     <div style={{ color: 'var(--m3-on-surface-variant)', fontSize: '14px' }}>

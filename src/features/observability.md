@@ -131,6 +131,8 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - When a dimension filter is active, non-active dimension pips are visually de-emphasised (reduced opacity).
 
+- Pips for dimensions for which there are no observability metrics for any data product (hidden from the dimension filter sub-menu) should not be displayed on the node.
+
 ### 2.2 Dimension Filter Sub-Menu
 
 #### US-04 · Dimension Filter Sub-Menu
@@ -145,8 +147,10 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - The dimension sub-menu appears below the OBSERVE button immediately when Observe Mode is activated.
 
-- The sub-menu offers five options: Any (default), Pipeline, SLOs, Freshness, Quality.
+- The sub-menu offers up to five options: Any (default), Pipeline, SLOs, Freshness, Quality.
 
+- Show only dimensions for which there are observability metrics, at least for one data product. This allows for data-mesh-viewer users to add dimensions as they see fit, but not showing unprioritised metrics.
+- If there is only one specific dimension showing (due to a lack of observability metrics on the others), then do not show the "Any" option.
 - Selecting a dimension re-shades all nodes to reflect that dimension's health only, within 200ms.
 
 - The active dimension is visually highlighted in the sub-menu (enhaned border and background).
@@ -173,6 +177,8 @@ Requirements are expressed as user stories following the standard format: As a [
 - The configuration option is available as a cog icon in the dimension sub-menu.
 
 - By default, healthy nodes are visible in the graph.
+
+- When the filter is active, both nodes with a "healthy" status and nodes with an "unknown" status (insufficient data) are hidden from the graph.
 
 - Configuration option is applicable to all dimensions.
 
@@ -238,7 +244,7 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - The Metrics tab is the default active tab when the panel opens.
 
-- When no dimension filter is active, all four dimension cards are displayed: Pipeline, SLOs, Freshness, Quality.
+- When no dimension filter is active, dimension cards (Pipeline, SLOs, Freshness, Quality) are displayed only if observability metrics exist for that dimension in at least one data product.
 
 - When a dimension filter is active, only the card for that dimension is displayed.
 
@@ -250,7 +256,8 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - **Pipeline Metric Card Specifics:**
   - If `physical.pipeline.status` equals failed, pipeline status should be CRITICAL. "Failure reason: <errorMessage>" will be shown in the card using the value from `physical.pipeline.errorMessage`.
-  - If `physical.pipeline.status` is healthy (i.e. not "failed"), and `physical.pipeline.durationInSeconds` and `physical.pipeline.recordsProcessed` are available, they should be shown in the card's detail section.
+  - In Pipeline Status card show "Last run: <asOf>" as the first line below status
+  - If `physical.pipeline.status` is healthy (i.e. not "failed"), and `physical.pipeline.durationInSeconds` and `physical.pipeline.recordsProcessed` are available, they should be shown in the card's detail section, as "Duration: <duration>" and "Records processed: <records>", one in each line
   - Duration is formatted as `Nh Nm` (e.g., 1h 30m, 0h 45m).
   - "Records processed: " should prefix the formatted number of records. Records are formatted concisely: 
     - `< 1000`: `nnn` 

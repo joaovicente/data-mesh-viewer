@@ -18,7 +18,7 @@ import React, { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
 
 export default memo(({ data, isConnectable }) => {
-    const { observeMode, healthStatus, pips, isSelected, activeDimension } = data;
+    const { observeMode, healthStatus, pips, isSelected, activeDimension, availableDimensions } = data;
 
     const getHealthColor = (status) => {
         switch (status) {
@@ -82,7 +82,11 @@ export default memo(({ data, isConnectable }) => {
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     {observeMode && pips && (
                         <div style={{ display: 'flex', gap: '4px', marginRight: '8px' }}>
-                            {['pipeline', 'slo', 'freshness', 'quality'].map((dim) => (
+                            {['pipeline', 'slo', 'freshness', 'quality'].filter(dim => {
+                                if (!availableDimensions) return true;
+                                const label = dim === 'slo' ? 'SLOs' : (dim.charAt(0).toUpperCase() + dim.slice(1));
+                                return availableDimensions.includes(label);
+                            }).map((dim) => (
                                 <div
                                     key={dim}
                                     title={dim.toUpperCase()}
