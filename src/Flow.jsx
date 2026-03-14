@@ -151,6 +151,19 @@ function Flow() {
     const [hideHealthy, setHideHealthy] = React.useState(false);
     const [showConfig, setShowConfig] = React.useState(false);
 
+    // Testability State
+    const [isTestMode, setIsTestMode] = React.useState(() => window.location.hash.includes('#test'));
+    const [adjustMetricsTime, setAdjustMetricsTime] = React.useState(false);
+
+    // Listen for hash changes to update isTestMode dynamically
+    React.useEffect(() => {
+        const handleHashChange = () => {
+            setIsTestMode(window.location.hash.includes('#test'));
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
     // Reset tab to visual when opening new content
     React.useEffect(() => {
         if (sidePanelContent) {
@@ -181,17 +194,65 @@ function Flow() {
         } else {
             const items = Array.isArray(parsed) ? parsed : [parsed];
             setDataMeshRegistry(items);
-
-            // Extract Observability Metrics
-            const metrics = new Map();
-            items.forEach(item => {
-                if (item.kind === 'DataProductObservabilityMetrics') {
-                    metrics.set(item.productId, item);
-                }
-            });
-            setMetricsMap(metrics);
+            // Observability Metrics extracted in a separate useEffect
         }
     };
+
+    // Extract and Process Observability Metrics
+    React.useEffect(() => {
+        const metrics = new Map();
+        let latestAsOf = 0;
+
+        // First pass: find the latest asOf date to calculate offset if needed
+        dataMeshRegistry.forEach(item => {
+            if (item.kind === 'DataProductObservabilityMetrics' && item.asOf) {
+                const asOfTime = new Date(item.asOf).getTime();
+                if (asOfTime > latestAsOf) {
+                    latestAsOf = asOfTime;
+                }
+            }
+        });
+
+        const timeOffset = (adjustMetricsTime && latestAsOf > 0 && isTestMode) ? (Date.now() - latestAsOf) : 0;
+
+        const shiftTimeStr = (timeStr) => {
+            if (!timeStr) return timeStr;
+            return new Date(new Date(timeStr).getTime() + timeOffset).toISOString();
+        };
+
+        const shiftTimeIso = (isoStr) => {
+             if (!isoStr) return isoStr;
+             return new Date(new Date(isoStr).getTime() + timeOffset).toISOString();
+        }
+
+        dataMeshRegistry.forEach(item => {
+            if (item.kind === 'DataProductObservabilityMetrics') {
+                if (timeOffset > 0) {
+                    // Deep clone to avoid mutating original registry
+                    const clonedItem = JSON.parse(JSON.stringify(item));
+                    if (clonedItem.asOf) clonedItem.asOf = shiftTimeIso(clonedItem.asOf);
+                    if (clonedItem.slo?.uptime?.lastRunAt) clonedItem.slo.uptime.lastRunAt = shiftTimeIso(clonedItem.slo.uptime.lastRunAt);
+                    if (clonedItem.slo?.freshness?.lastRunAt) clonedItem.slo.freshness.lastRunAt = shiftTimeIso(clonedItem.slo.freshness.lastRunAt);
+                    if (clonedItem.slo?.qualityScore?.lastRunAt) clonedItem.slo.qualityScore.lastRunAt = shiftTimeIso(clonedItem.slo.qualityScore.lastRunAt);
+                    if (clonedItem.slo?.responseTime?.lastRunAt) clonedItem.slo.responseTime.lastRunAt = shiftTimeIso(clonedItem.slo.responseTime.lastRunAt);
+                    if (clonedItem.dynamic?.freshness?.lastUpdatedAt) clonedItem.dynamic.freshness.lastUpdatedAt = shiftTimeIso(clonedItem.dynamic.freshness.lastUpdatedAt);
+                    if (clonedItem.dynamic?.quality?.lastRunAt) clonedItem.dynamic.quality.lastRunAt = shiftTimeIso(clonedItem.dynamic.quality.lastRunAt);
+                    if (clonedItem.physical?.pipeline?.lastRunAt) clonedItem.physical.pipeline.lastRunAt = shiftTimeIso(clonedItem.physical.pipeline.lastRunAt);
+
+                    if (clonedItem.events) {
+                        clonedItem.events = clonedItem.events.map(ev => ({
+                            ...ev,
+                            timestamp: shiftTimeIso(ev.timestamp)
+                        }));
+                    }
+                    metrics.set(clonedItem.productId, clonedItem);
+                } else {
+                    metrics.set(item.productId, item);
+                }
+            }
+        });
+        setMetricsMap(metrics);
+    }, [dataMeshRegistry, adjustMetricsTime, isTestMode]);
 
     // Health Status Derivation Logic
     const isDimCritical = (metrics, dim) => {
@@ -1454,6 +1515,23 @@ function Flow() {
                                             />
                                             <span style={{ fontSize: '12px', fontWeight: '500', color: '#1e293b' }}>Hide Healthy Nodes</span>
                                         </div>
+                                        {isTestMode && (
+                                            <div 
+                                                style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', whiteSpace: 'nowrap', marginTop: '8px' }} 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setAdjustMetricsTime(!adjustMetricsTime);
+                                                }}
+                                            >
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={adjustMetricsTime} 
+                                                    readOnly
+                                                    style={{ cursor: 'pointer' }}
+                                                />
+                                                <span style={{ fontSize: '12px', fontWeight: '500', color: '#1e293b' }}>Adjust metrics time</span>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>

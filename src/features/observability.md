@@ -315,6 +315,24 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - The schemaVersion field is checked; responses with unsupported schema versions are flagged in the developer console but are not rejected.
 
+### 2.6 Testability
+
+#### US-12 · Internal Test Mode
+
+| **Field** | **Detail** |
+| --- | --- |
+| Role      | Developer, QA, platform operator                                                                                                                                                          |
+| Story     | I want a testing mode so that I can easily verify edge cases and demonstrate observability behaviours using static mocked data. |
+| Priority  | P0                                                                                                                                                                               |
+
+##### Acceptance Criteria
+
+- Testing mode is controlled by appending a `#test` fragment to the URL.
+
+- Only when in test mode, the configuration option cog (US-05) shows an additional "Adjust metrics time" checkbox.
+
+- When "Adjust metrics time" is active, dynamically adjust all dates and timestamps within the loaded observability data at runtime so that the view correctly simulates a 24-hour window ending at the current real-world time.
+
 ## 3. UI/UX Design
 
 ### 3.1 Design Principles
@@ -476,6 +494,6 @@ function deriveStatus(metrics, dimension) {
 7. Visual Test Plan
 
 Create a DataMeshRegistryObservability.yaml derived with the exact same Data Product and Data Contracts as DataMeshRegistryPetsExample.yaml that illustrates the various features of the observability feature.
-When creating test data create a sample view that shows metrics for a 24 hour window in 1st of March 2026 (dates will become stale but will mitigate this with #test mode)
+When creating test data, create a sample view that shows metrics for a 24 hour window ending on the 2nd of March 2026 (dates will normally become stale but this will be mitigated dynamically via the #test mode logic).
 Ensure that in DataMeshRegistryObservability.yaml Data Sources and Applications data products (dataSource and application data product tiers) don't have observability data, so unknown status can be visually verified.
 Ensure that DataMeshRegistryObservability.yaml is valid against all schemas in src/schemas.
