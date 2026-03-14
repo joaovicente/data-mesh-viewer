@@ -153,6 +153,115 @@ function Flow() {
     const [showConfig, setShowConfig] = React.useState(false);
     const [showEventsTab, setShowEventsTab] = React.useState(false);
 
+    const availableDimensions = React.useMemo(() => {
+        const dims = new Set();
+        metricsMap.forEach(metrics => {
+            if (metrics.physical?.pipeline) dims.add('Pipeline');
+            if (metrics.slo) dims.add('SLOs');
+            if (metrics.dynamic?.freshness) dims.add('Freshness');
+            if (metrics.dynamic?.quality) dims.add('Quality');
+        });
+        const activeList = ['Pipeline', 'SLOs', 'Freshness', 'Quality'].filter(d => dims.has(d));
+        if (activeList.length > 1) {
+            return ['Any', ...activeList];
+        }
+        return activeList;
+    }, [metricsMap]);
+
+    // Health Status Derivation Logic
+    const isDimUnknown = (metrics, dim) => {
+        if (!metrics) return true;
+        switch (dim) {
+            case 'slo':
+                return metrics.slo?.responseTime?.met == null && metrics.slo?.uptime?.met == null;
+            case 'pipeline':
+                return !metrics.physical?.pipeline;
+            case 'freshness':
+                return !metrics.dynamic?.freshness;
+            case 'quality':
+                return !metrics.dynamic?.quality;
+            default:
+                return true;
+        }
+    };
+
+    const isDimCritical = (metrics, dim) => {
+        if (!metrics) return false;
+        switch (dim) {
+            case 'slo': {
+                if (metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false) {
+                    const responseTimeCrit = metrics.slo.responseTime?.actualP95Ms > 2 * metrics.slo.responseTime?.objectiveMs;
+                    const uptimeCrit = metrics.slo.uptime?.actualPct < (metrics.slo.uptime?.objectivePct - 20);
+                    return responseTimeCrit || uptimeCrit;
+                }
+                return false;
+            }
+            case 'freshness': {
+                const lag = metrics.dynamic?.freshness?.lagMinutes;
+                const max = metrics.dynamic?.freshness?.maxAllowedLagMinutes;
+                return lag != null && max != null && lag > 2 * max;
+            }
+            case 'quality': return (metrics.dynamic?.quality?.rulesFailed || 0) > 1;
+            case 'pipeline': return metrics.physical?.pipeline?.status === 'failed';
+            default: return false;
+        }
+    };
+
+    const isDimDegraded = (metrics, dim) => {
+        if (!metrics) return false;
+        switch (dim) {
+            case 'slo': {
+                if (isDimCritical(metrics, 'slo')) return false;
+                return metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false;
+            }
+            case 'freshness': return metrics.dynamic?.freshness?.withinExpectation === false;
+            case 'quality': return metrics.dynamic?.quality?.rulesFailed === 1;
+            case 'pipeline': return false; // Pipeline only has critical or healthy states
+
+            default: return false;
+        }
+    };
+
+    const deriveStatus = React.useCallback((productId, dimension) => {
+        const metrics = metricsMap.get(productId);
+        if (!metrics) return 'unknown';
+
+        let dimsToCheck = dimension ? [dimension] : ['pipeline', 'slo', 'freshness', 'quality'];
+        
+        // If aggregating, only check dimensions that are globally available
+        if (!dimension) {
+            dimsToCheck = availableDimensions
+                .filter(d => d !== 'Any')
+                .map(d => d === 'SLOs' ? 'slo' : d.toLowerCase());
+        }
+
+        if (dimsToCheck.length === 0) return 'unknown';
+
+        // 1. Critical if any are critical
+        for (const d of dimsToCheck) {
+            if (isDimCritical(metrics, d)) return 'critical';
+        }
+        
+        // 2. Degraded if any are degraded
+        for (const d of dimsToCheck) {
+            if (isDimDegraded(metrics, d)) return 'degraded';
+        }
+
+        // 3. Healthy if at least one is healthy (not unknown)
+        let hasHealthy = false;
+        for (const d of dimsToCheck) {
+            if (!isDimUnknown(metrics, d)) {
+                hasHealthy = true;
+                break;
+            }
+        }
+
+        if (hasHealthy) return 'healthy';
+
+        // 4. Unknown if all are unknown
+        return 'unknown';
+    }, [metricsMap, availableDimensions]);
+
     // Testability State
     const [isTestMode, setIsTestMode] = React.useState(() => window.location.hash.includes('#test'));
     const [adjustMetricsTime, setAdjustMetricsTime] = React.useState(false);
@@ -166,6 +275,25 @@ function Flow() {
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);
+
+    // Ensure activeDimension is valid for the current registry
+    React.useEffect(() => {
+        if (availableDimensions.length > 0) {
+            // Mapping current activeDimension back to labels to check existence
+            const currentLabel = activeDimension === null ? 'Any' : 
+                               (activeDimension === 'slo' ? 'SLOs' : 
+                                activeDimension.charAt(0).toUpperCase() + activeDimension.slice(1));
+            
+            if (!availableDimensions.includes(currentLabel)) {
+                // If current selected dimension is invalid (e.g. 'Any' when only 1 dim exists)
+                // Default to the first available dimension
+                const firstDim = availableDimensions[0];
+                const dimKey = firstDim === 'Any' ? null : 
+                             (firstDim === 'SLOs' ? 'slo' : firstDim.toLowerCase());
+                setActiveDimension(dimKey);
+            }
+        }
+    }, [availableDimensions, activeDimension]);
 
     const [isResizing, setIsResizing] = React.useState(false);
 
@@ -270,93 +398,6 @@ function Flow() {
         setMetricsMap(metrics);
     }, [dataMeshRegistry, adjustMetricsTime, isTestMode, simulatedDims]);
 
-    const availableDimensions = React.useMemo(() => {
-        const dims = new Set();
-        metricsMap.forEach(metrics => {
-            if (metrics.physical?.pipeline) dims.add('Pipeline');
-            if (metrics.slo) dims.add('SLOs');
-            if (metrics.dynamic?.freshness) dims.add('Freshness');
-            if (metrics.dynamic?.quality) dims.add('Quality');
-        });
-        const activeList = ['Pipeline', 'SLOs', 'Freshness', 'Quality'].filter(d => dims.has(d));
-        if (activeList.length > 1) {
-            return ['Any', ...activeList];
-        }
-        return activeList;
-    }, [metricsMap]);
-
-    // Health Status Derivation Logic
-    const isDimUnknown = (metrics, dim) => {
-        if (!metrics) return true;
-        if (dim === 'slo') {
-            return metrics.slo?.responseTime?.met == null && metrics.slo?.uptime?.met == null;
-        }
-        return false;
-    };
-
-    const isDimCritical = (metrics, dim) => {
-        if (!metrics) return false;
-        switch (dim) {
-            case 'slo': {
-                if (metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false) {
-                    const responseTimeCrit = metrics.slo.responseTime?.actualP95Ms > 2 * metrics.slo.responseTime?.objectiveMs;
-                    const uptimeCrit = metrics.slo.uptime?.actualPct < (metrics.slo.uptime?.objectivePct - 20);
-                    return responseTimeCrit || uptimeCrit;
-                }
-                return false;
-            }
-            case 'freshness': {
-                const lag = metrics.dynamic?.freshness?.lagMinutes;
-                const max = metrics.dynamic?.freshness?.maxAllowedLagMinutes;
-                return lag != null && max != null && lag > 2 * max;
-            }
-            case 'quality': return (metrics.dynamic?.quality?.rulesFailed || 0) > 1;
-            case 'pipeline': return metrics.physical?.pipeline?.status === 'failed';
-            default: return false;
-        }
-    };
-
-    const isDimDegraded = (metrics, dim) => {
-        if (!metrics) return false;
-        switch (dim) {
-            case 'slo': {
-                if (isDimCritical(metrics, 'slo')) return false;
-                return metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false;
-            }
-            case 'freshness': return metrics.dynamic?.freshness?.withinExpectation === false;
-            case 'quality': return metrics.dynamic?.quality?.rulesFailed === 1;
-            case 'pipeline': return false; // Pipeline only has critical or healthy states
-
-            default: return false;
-        }
-    };
-
-    const deriveStatus = React.useCallback((productId, dimension) => {
-        const metrics = metricsMap.get(productId);
-        if (!metrics) return 'unknown';
-
-        const dims = dimension ? [dimension] : ['pipeline', 'slo', 'freshness', 'quality'];
-
-        for (const d of dims) {
-            if (isDimCritical(metrics, d)) return 'critical';
-        }
-        for (const d of dims) {
-            if (isDimDegraded(metrics, d)) return 'degraded';
-        }
-
-        for (const d of dims) {
-            if (isDimUnknown(metrics, d)) return 'unknown';
-        }
-
-        // Check if all requested dims are healthy
-        const allHealthy = dims.every(d => {
-            const isCrit = isDimCritical(metrics, d);
-            const isDeg = isDimDegraded(metrics, d);
-            return !isCrit && !isDeg;
-        });
-
-        return allHealthy ? 'healthy' : 'unknown';
-    }, [metricsMap]);
 
     const handleLoadRegistryText = (text) => {
         setIsLoading(true);
@@ -568,7 +609,8 @@ function Flow() {
                         healthStatus,
                         pips,
                         isSelected: drillNodeId === node.id,
-                        availableDimensions
+                        availableDimensions,
+                        metrics
                     },
                     position: { x, y }
                 };
