@@ -46,14 +46,19 @@ export const generatePipelineMetrics = (statusOverride) => {
     const status = statusOverride || getRandomStatus();
     const isCritical = status === 'critical';
     
-    return {
+    const metrics = {
         status: isCritical ? 'failed' : 'success',
         lastRunAt: new Date().toISOString(),
         durationSeconds: isCritical ? null : getRandomInt(60, 3600),
         recordsProcessed: isCritical ? null : getRandomInt(100, 10000000),
-        errorMessage: isCritical ? 'Upstream source connection timed out.' : null,
         nextRun: new Date(Date.now() + 3600000).toISOString()
     };
+
+    if (isCritical) {
+        metrics.errorMessage = 'Upstream source connection timed out.';
+    }
+
+    return metrics;
 };
 
 export const generateSloMetrics = (statusOverride) => {
