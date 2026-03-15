@@ -206,6 +206,35 @@
             "type": "object",
             "description": "Dynamic-space metrics (Petrella ch.5): data values, volume, freshness, and quality rules — the runtime fitness of the data itself.",
             "properties": {
+                "responseTime": {
+                    "type": "object",
+                    "description": "Query/access latency SLO. Applicable to output ports served via APIs or interactive query engines.",
+                    "properties": {
+                        "objectiveMs": {
+                            "type": [
+                                "number",
+                                "null"
+                            ],
+                            "minimum": 0,
+                            "description": "Declared maximum p95 response time in milliseconds."
+                        },
+                        "actualP95Ms": {
+                            "type": [
+                                "number",
+                                "null"
+                            ],
+                            "minimum": 0,
+                            "description": "Measured p95 response time in milliseconds over the observation period."
+                        },
+                        "met": {
+                            "type": [
+                                "boolean",
+                                "null"
+                            ],
+                            "description": "True if actualP95Ms <= objectiveMs."
+                        }
+                    }
+                },
                 "volume": {
                     "type": "object",
                     "description": "Row/record count health. Unexpected volume changes are a leading indicator of upstream issues.",
@@ -378,108 +407,6 @@
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "slo": {
-            "type": "object",
-            "description": "Service Level Objective evaluation. Mirrors the SLA dimensions declared in the linked ODCS output port contracts. Each entry compares the declared objective against the measured actual.",
-            "properties": {
-                "uptime": {
-                    "type": "object",
-                    "description": "Availability SLO: percentage of time the data product's output ports were accessible and serving valid data.",
-                    "properties": {
-                        "objectivePct": {
-                            "type": [
-                                "number",
-                                "null"
-                            ],
-                            "minimum": 0,
-                            "maximum": 100,
-                            "description": "Declared uptime objective as a percentage (e.g. 99.5)."
-                        },
-                        "actualPct": {
-                            "type": [
-                                "number",
-                                "null"
-                            ],
-                            "minimum": 0,
-                            "maximum": 100,
-                            "description": "Measured uptime percentage over the rolling 30-day window."
-                        },
-                        "windowDays": {
-                            "type": "integer",
-                            "default": 30,
-                            "description": "Rolling window over which actualPct is measured, in days."
-                        },
-                        "met": {
-                            "type": [
-                                "boolean",
-                                "null"
-                            ],
-                            "description": "True if actualPct >= objectivePct."
-                        }
-                    }
-                },
-                "qualityScore": {
-                    "type": "object",
-                    "description": "Quality SLO: minimum fraction of quality rules that must pass.",
-                    "properties": {
-                        "objectivePassRate": {
-                            "type": [
-                                "number",
-                                "null"
-                            ],
-                            "minimum": 0,
-                            "maximum": 1,
-                            "description": "Declared minimum rule pass rate (0.0–1.0). E.g. 1.0 = all rules must pass."
-                        },
-                        "actualPassRate": {
-                            "type": [
-                                "number",
-                                "null"
-                            ],
-                            "minimum": 0,
-                            "maximum": 1,
-                            "description": "Measured pass rate in the current run: rulesPassed / rulesTotal."
-                        },
-                        "met": {
-                            "type": [
-                                "boolean",
-                                "null"
-                            ],
-                            "description": "True if actualPassRate >= objectivePassRate."
-                        }
-                    }
-                },
-                "responseTime": {
-                    "type": "object",
-                    "description": "Query/access latency SLO. Applicable to output ports served via APIs or interactive query engines.",
-                    "properties": {
-                        "objectiveMs": {
-                            "type": [
-                                "number",
-                                "null"
-                            ],
-                            "minimum": 0,
-                            "description": "Declared maximum p95 response time in milliseconds."
-                        },
-                        "actualP95Ms": {
-                            "type": [
-                                "number",
-                                "null"
-                            ],
-                            "minimum": 0,
-                            "description": "Measured p95 response time in milliseconds over the observation period."
-                        },
-                        "met": {
-                            "type": [
-                                "boolean",
-                                "null"
-                            ],
-                            "description": "True if actualP95Ms <= objectiveMs."
                         }
                     }
                 }

@@ -2191,15 +2191,6 @@
       rulesTotal: 25
       rulesPassed: 25
       rulesFailed: 0
-  slo:
-    uptime:
-      met: true
-      actualPct: 99.8
-      objectivePct: 99.5
-    freshness:
-      met: true
-    qualityScore:
-      met: true
     responseTime:
       met: true
       actualP95Ms: 120
@@ -2230,13 +2221,6 @@
           status: failed
           failRate: 0.01
           message: 1% of orders have zero or negative total_amount
-  slo:
-    uptime:
-      met: true
-    qualityScore:
-      met: false
-      actualPassRate: 0.88
-      objectivePassRate: 1.0
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2258,13 +2242,6 @@
       rulesTotal: 15
       rulesPassed: 10
       rulesFailed: 5
-  slo:
-    uptime:
-      met: false
-      objectivePct: 95.0
-      actualPct: 50.0
-    qualityScore:
-      met: false
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2284,9 +2261,6 @@
       rulesTotal: 50
       rulesPassed: 50
       rulesFailed: 0
-  slo:
-    uptime:
-      met: true
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
   productId: urn:food-production:curated:production-analytics
@@ -2307,11 +2281,6 @@
       rulesTotal: 30
       rulesPassed: 30
       rulesFailed: 0
-  slo:
-    uptime:
-      met: true
-    qualityScore:
-      met: true
 
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
@@ -2329,9 +2298,6 @@
       rulesTotal: 40
       rulesPassed: 40
       rulesFailed: 0
-  slo:
-    uptime:
-      met: true
 - kind: DataProductObservabilityMetrics
   schemaVersion: 0.0.1
   productId: urn:food-production:consumer-aligned:operations-analytics
@@ -2348,16 +2314,11 @@
     activeConsumers: 1
     queryCount: 210
     lastAccessedAt: 2026-03-02T05:58:00Z
-  slo:
+  dynamic:
     responseTime:
       objectiveMs: 10000
       actualP95Ms: 7734
       met: true
-    uptime:
-      objectivePct: 95.0
-      actualPct: 99.0
-      met: true
-  dynamic:
     freshness:
       lagMinutes: 10
       maxAllowedLagMinutes: 60

@@ -60,36 +60,25 @@ export const generatePipelineMetrics = (statusOverride) => {
     return metrics;
 };
 
-export const generateSloMetrics = (statusOverride) => {
+export const generateConsumptionMetrics = (statusOverride) => {
     const status = statusOverride || getRandomStatus();
     const isCritical = status === 'critical';
     const isDegraded = status === 'degraded';
     
-    const uptimeTarget = 99.9;
     const responseTarget = 200;
     
-    let uptimeActual = uptimeTarget + (Math.random() * 0.1);
     let responseActual = responseTarget - getRandomInt(10, 50);
     
     if (isCritical) {
-        uptimeActual = 75.0 + (Math.random() * 5);
         responseActual = responseTarget * 3;
     } else if (isDegraded) {
-        uptimeActual = 98.5 + (Math.random() * 1);
         responseActual = responseTarget * 1.5;
     }
     
     return {
-        uptime: {
-            objectivePct: uptimeTarget,
-            actualPct: parseFloat(uptimeActual.toFixed(2)),
-            met: !isCritical && !isDegraded
-        },
-        responseTime: {
-            objectiveMs: responseTarget,
-            actualP95Ms: Math.round(responseActual),
-            met: !isCritical && !isDegraded
-        }
+        objectiveMs: responseTarget,
+        actualP95Ms: Math.round(responseActual),
+        met: !isCritical && !isDegraded
     };
 };
 
@@ -149,7 +138,7 @@ export const generateUsageMetrics = () => {
 /**
  * Simulates metrics for an entire registry.
  */
-export const simulateRegistryMetrics = (dataMeshRegistry, dimensions = ['Pipeline', 'SLOs', 'Freshness', 'Quality']) => {
+export const simulateRegistryMetrics = (dataMeshRegistry, dimensions = ['Pipeline', 'Quality', 'Freshness', 'Consumption']) => {
     if (!dataMeshRegistry) return [];
     
     return dataMeshRegistry
@@ -172,7 +161,11 @@ export const simulateRegistryMetrics = (dataMeshRegistry, dimensions = ['Pipelin
             };
             
             if (dimensions.includes('Pipeline')) metrics.physical = { pipeline: generatePipelineMetrics(status) };
-            if (dimensions.includes('SLOs')) metrics.slo = generateSloMetrics(status);
+            if (dimensions.includes('Consumption')) {
+                if (!metrics.dynamic) metrics.dynamic = {};
+                metrics.dynamic.responseTime = generateConsumptionMetrics(status);
+                metrics.usage = generateUsageMetrics();
+            }
             if (dimensions.includes('Freshness')) {
                 if (!metrics.dynamic) metrics.dynamic = {};
                 metrics.dynamic.freshness = generateFreshnessMetrics(status);
@@ -181,9 +174,6 @@ export const simulateRegistryMetrics = (dataMeshRegistry, dimensions = ['Pipelin
                 if (!metrics.dynamic) metrics.dynamic = {};
                 metrics.dynamic.quality = generateQualityMetrics(status);
             }
-            
-            // Usage is often present with SLOs
-            if (dimensions.includes('SLOs')) metrics.usage = generateUsageMetrics();
             
             return metrics;
         });
@@ -199,7 +189,7 @@ const runCli = async () => {
     const args = process.argv.slice(2);
     if (args.length === 0) {
         console.log('Usage: node ObsSimulation.js <path-to-registry.yaml> [dimensions...]');
-        console.log('Dimensions: Pipeline, SLOs, Freshness, Quality (comma separated or space separated)');
+        console.log('Dimensions: Pipeline, Quality, Freshness, Consumption (comma separated or space separated)');
         process.exit(1);
     }
     
@@ -213,7 +203,7 @@ const runCli = async () => {
         const fileContent = fs.readFileSync(registryPath, 'utf8');
         const registry = YAML.parse(fileContent);
         
-        let dimensions = ['Pipeline', 'SLOs', 'Freshness', 'Quality'];
+        let dimensions = ['Pipeline', 'Quality', 'Freshness', 'Consumption'];
         if (args.length > 1) {
             dimensions = args.slice(1).flatMap(a => a.split(','));
         }

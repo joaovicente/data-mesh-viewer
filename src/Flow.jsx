@@ -157,11 +157,11 @@ function Flow() {
         const dims = new Set();
         metricsMap.forEach(metrics => {
             if (metrics.physical?.pipeline) dims.add('Pipeline');
-            if (metrics.slo) dims.add('SLOs');
+            if (metrics.dynamic?.responseTime || metrics.usage) dims.add('Consumption');
             if (metrics.dynamic?.freshness) dims.add('Freshness');
             if (metrics.dynamic?.quality) dims.add('Quality');
         });
-        const activeList = ['Pipeline', 'SLOs', 'Freshness', 'Quality'].filter(d => dims.has(d));
+        const activeList = ['Pipeline', 'Quality', 'Freshness', 'Consumption'].filter(d => dims.has(d));
         if (activeList.length > 1) {
             return ['Any', ...activeList];
         }
@@ -172,8 +172,8 @@ function Flow() {
     const isDimUnknown = (metrics, dim) => {
         if (!metrics) return true;
         switch (dim) {
-            case 'slo':
-                return metrics.slo?.responseTime?.met == null && metrics.slo?.uptime?.met == null;
+            case 'consumption':
+                return metrics.dynamic?.responseTime?.met == null;
             case 'pipeline':
                 return !metrics.physical?.pipeline;
             case 'freshness':
@@ -188,11 +188,9 @@ function Flow() {
     const isDimCritical = (metrics, dim) => {
         if (!metrics) return false;
         switch (dim) {
-            case 'slo': {
-                if (metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false) {
-                    const responseTimeCrit = metrics.slo.responseTime?.actualP95Ms > 2 * metrics.slo.responseTime?.objectiveMs;
-                    const uptimeCrit = metrics.slo.uptime?.actualPct < (metrics.slo.uptime?.objectivePct - 20);
-                    return responseTimeCrit || uptimeCrit;
+            case 'consumption': {
+                if (metrics.dynamic?.responseTime?.met === false) {
+                    return metrics.dynamic.responseTime?.actualP95Ms > 2 * metrics.dynamic.responseTime?.objectiveMs;
                 }
                 return false;
             }
@@ -210,9 +208,9 @@ function Flow() {
     const isDimDegraded = (metrics, dim) => {
         if (!metrics) return false;
         switch (dim) {
-            case 'slo': {
-                if (isDimCritical(metrics, 'slo')) return false;
-                return metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false;
+            case 'consumption': {
+                if (isDimCritical(metrics, 'consumption')) return false;
+                return metrics.dynamic?.responseTime?.met === false;
             }
             case 'freshness': return metrics.dynamic?.freshness?.withinExpectation === false;
             case 'quality': return metrics.dynamic?.quality?.rulesFailed === 1;
@@ -226,13 +224,13 @@ function Flow() {
         const metrics = metricsMap.get(productId);
         if (!metrics) return 'unknown';
 
-        let dimsToCheck = dimension ? [dimension] : ['pipeline', 'slo', 'freshness', 'quality'];
+        let dimsToCheck = dimension ? [dimension] : ['pipeline', 'quality', 'freshness', 'consumption'];
         
         // If aggregating, only check dimensions that are globally available
         if (!dimension) {
             dimsToCheck = availableDimensions
                 .filter(d => d !== 'Any')
-                .map(d => d === 'SLOs' ? 'slo' : d.toLowerCase());
+                .map(d => d === 'Consumption' ? 'consumption' : d.toLowerCase());
         }
 
         if (dimsToCheck.length === 0) return 'unknown';
@@ -281,7 +279,7 @@ function Flow() {
         if (availableDimensions.length > 0) {
             // Mapping current activeDimension back to labels to check existence
             const currentLabel = activeDimension === null ? 'Any' : 
-                               (activeDimension === 'slo' ? 'SLOs' : 
+                               (activeDimension === 'consumption' ? 'Consumption' : 
                                 activeDimension.charAt(0).toUpperCase() + activeDimension.slice(1));
             
             if (!availableDimensions.includes(currentLabel)) {
@@ -289,7 +287,7 @@ function Flow() {
                 // Default to the first available dimension
                 const firstDim = availableDimensions[0];
                 const dimKey = firstDim === 'Any' ? null : 
-                             (firstDim === 'SLOs' ? 'slo' : firstDim.toLowerCase());
+                             (firstDim === 'Consumption' ? 'consumption' : firstDim.toLowerCase());
                 setActiveDimension(dimKey);
             }
         }
@@ -355,9 +353,6 @@ function Flow() {
                     // Deep clone to avoid mutating original registry
                     const clonedItem = JSON.parse(JSON.stringify(item));
                     if (clonedItem.asOf) clonedItem.asOf = shiftTimeIso(clonedItem.asOf);
-                    if (clonedItem.slo?.uptime?.lastRunAt) clonedItem.slo.uptime.lastRunAt = shiftTimeIso(clonedItem.slo.uptime.lastRunAt);
-                    if (clonedItem.slo?.qualityScore?.lastRunAt) clonedItem.slo.qualityScore.lastRunAt = shiftTimeIso(clonedItem.slo.qualityScore.lastRunAt);
-                    if (clonedItem.slo?.responseTime?.lastRunAt) clonedItem.slo.responseTime.lastRunAt = shiftTimeIso(clonedItem.slo.responseTime.lastRunAt);
                     if (clonedItem.dynamic?.freshness?.lastUpdatedAt) clonedItem.dynamic.freshness.lastUpdatedAt = shiftTimeIso(clonedItem.dynamic.freshness.lastUpdatedAt);
                     if (clonedItem.dynamic?.quality?.lastRunAt) clonedItem.dynamic.quality.lastRunAt = shiftTimeIso(clonedItem.dynamic.quality.lastRunAt);
                     if (clonedItem.physical?.pipeline?.lastRunAt) clonedItem.physical.pipeline.lastRunAt = shiftTimeIso(clonedItem.physical.pipeline.lastRunAt);
@@ -383,7 +378,6 @@ function Flow() {
                 // Merge simulated data into existing metrics
                 const merged = { ...existing };
                 if (metric.physical) merged.physical = { ...merged.physical, ...metric.physical };
-                if (metric.slo) merged.slo = metric.slo;
                 if (metric.usage) merged.usage = metric.usage;
                 if (metric.dynamic) {
                     merged.dynamic = { ...merged.dynamic, ...metric.dynamic };
@@ -582,7 +576,7 @@ function Flow() {
                 const healthStatus = observeMode ? deriveStatus(node.id, activeDimension) : null;
                 const metrics = metricsMap.get(node.id);
                 const pips = observeMode ? {
-                    slo: deriveStatus(node.id, 'slo'),
+                    consumption: deriveStatus(node.id, 'consumption'),
                     freshness: deriveStatus(node.id, 'freshness'),
                     quality: deriveStatus(node.id, 'quality'),
                     pipeline: deriveStatus(node.id, 'pipeline')
@@ -1552,7 +1546,7 @@ function Flow() {
                             animation: 'slideDown 0.3s ease-out'
                         }}>
                             {availableDimensions.map(dim => {
-                                const dimKey = dim === 'Any' ? null : (dim === 'SLOs' ? 'slo' : dim.toLowerCase());
+                                const dimKey = dim === 'Any' ? null : (dim === 'Consumption' ? 'consumption' : dim.toLowerCase());
                                 const isActive = activeDimension === dimKey;
                                 return (
                                     <button
@@ -1646,7 +1640,7 @@ function Flow() {
                                         {isTestMode && (
                                             <div style={{ borderTop: '1px solid #e2e8f0', marginTop: '12px', paddingTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                                 <div style={{ fontSize: '10px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Simulation</div>
-                                                {['Pipeline', 'SLOs', 'Freshness', 'Quality'].map(dim => {
+                                                {['Pipeline', 'Consumption', 'Freshness', 'Quality'].map(dim => {
                                                     const isSimulated = simulatedDims.has(dim);
                                                     return (
                                                         <div 

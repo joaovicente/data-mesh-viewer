@@ -85,19 +85,17 @@ const formatRecords = (count) => {
     return (count / 1000000000).toFixed(1) + 'B';
 };
 
-const ObservabilityDrilldown = ({ metrics, filterText, activeTab, availableDimensions = ['Pipeline', 'SLOs', 'Freshness', 'Quality'], showEventsTab = false }) => {
+const ObservabilityDrilldown = ({ metrics, filterText, activeTab, availableDimensions = ['Pipeline', 'Consumption', 'Freshness', 'Quality'], showEventsTab = false }) => {
 
     if (!metrics) return <div style={{ padding: '20px', color: 'var(--m3-on-surface-variant)' }}>No observability data available.</div>;
 
     // Helper to determine status for cards
     const getCardStatus = (dim) => {
-        if (dim === 'SLO') {
-            if (metrics.slo?.responseTime?.met == null && metrics.slo?.uptime?.met == null) return 'unknown';
+        if (dim === 'Consumption') {
+            if (metrics.dynamic?.responseTime?.met == null) return 'unknown';
 
-            if (metrics.slo?.responseTime?.met === false || metrics.slo?.uptime?.met === false) {
-                const responseTimeCrit = metrics.slo.responseTime?.actualP95Ms > 2 * metrics.slo.responseTime?.objectiveMs;
-                const uptimeCrit = metrics.slo.uptime?.actualPct < (metrics.slo.uptime?.objectivePct - 20);
-                if (responseTimeCrit || uptimeCrit) return 'critical';
+            if (metrics.dynamic?.responseTime?.met === false) {
+                if (metrics.dynamic.responseTime?.actualP95Ms > 2 * metrics.dynamic.responseTime?.objectiveMs) return 'critical';
                 return 'degraded';
             }
 
@@ -165,18 +163,15 @@ const ObservabilityDrilldown = ({ metrics, filterText, activeTab, availableDimen
                                 icon="▸"
                             />
                         )}
-                        {availableDimensions.includes('SLOs') && (
+                        {availableDimensions.includes('Consumption') && (
                             <MetricCard
-                                title="Service Level Objectives"
-                                status={getCardStatus('SLO')}
-                                value={[
-                                    metrics.slo?.uptime?.actualPct || 'N/A',
-                                    metrics.slo?.responseTime?.actualP95Ms || 'N/A'
-                                ]}
-                                unit={['% Uptime', 'ms Response time (p95)']}
+                                title="Consumption"
+                                status={getCardStatus('Consumption')}
+                                value={metrics.dynamic?.responseTime?.actualP95Ms || 'N/A'}
+                                unit="ms Response time (p95)"
                                 detail={(
                                     <>
-                                        <div>Target uptime: {metrics.slo?.uptime?.objectivePct || '?'}% and Target response time: {metrics.slo?.responseTime?.objectiveMs || '?'} ms</div>
+                                        <div>Target response time: {metrics.dynamic?.responseTime?.objectiveMs || '?'} ms</div>
                                         {metrics.usage && (
                                             <div>
                                                 Active consumers: {metrics.usage.activeConsumers || 0}, Query count: {metrics.usage.queryCount || 0}
@@ -219,7 +214,7 @@ const ObservabilityDrilldown = ({ metrics, filterText, activeTab, availableDimen
                             <div style={{ fontSize: '12px', marginTop: '4px' }}>Today at 10:00 AM</div>
                         </div>
                         <div style={{ marginBottom: '20px', padding: '12px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
-                            <strong>SLO Breach: Uptime dropped</strong>
+                            <strong>Consumption Breach: Latency spiked</strong>
                             <div style={{ fontSize: '12px', marginTop: '4px' }}>Yesterday at 11:30 PM</div>
                         </div>
                         <div style={{ marginBottom: '20px', padding: '12px', background: '#f8fafc', borderRadius: '8px', borderLeft: '4px solid #f59e0b' }}>
