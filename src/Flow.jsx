@@ -1320,6 +1320,67 @@ function Flow() {
         setHoveredEdgeId(null);
     }, []);
 
+    const formatKpiNumber = (count) => {
+        if (count == null || count === 0) return "0";
+        if (count < 1000) return count.toString();
+        if (count < 1000000) return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        if (count < 1000000000) return (count / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        return (count / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+    };
+
+    const KpiCard = ({ title, value, bgColor }) => (
+        <div style={{
+            backgroundColor: bgColor,
+            borderRadius: '0px',
+            padding: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '90px',
+            height: '90px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            border: 'none',
+            flexShrink: 0
+        }}>
+            <div style={{ fontSize: '10px', fontWeight: '700', color: 'rgba(255, 255, 255, 0.8)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px', textAlign: 'center', lineHeight: '1.2' }}>{title}</div>
+            <div style={{ fontSize: '26px', fontWeight: '800', color: '#ffffff', lineHeight: '1' }}>{value}</div>
+        </div>
+    );
+
+    const kpiStats = React.useMemo(() => {
+        if (!observeMode || selection.id) return null;
+        let dataSources = 0;
+        let dataProducts = 0;
+        let outputPorts = 0;
+        let recordsIngested = 0;
+        let recordsProcessed = 0;
+
+        visibleNodes.forEach(node => {
+            if (node.type !== 'selectorNode') return;
+            const tier = node.data.originalData?.customProperties?.find(p => p.property === 'dataProductTier')?.value;
+            
+            if (tier === 'source' || tier === 'dataSource') {
+                dataSources++;
+            } else if (tier !== 'application') {
+                dataProducts++;
+            }
+            
+            outputPorts += (node.data.outputPortCount || 0);
+
+            const metrics = metricsMap.get(node.id);
+            const records = metrics?.physical?.pipeline?.recordsProcessed || 0;
+            
+            if (tier === 'sourceAligned') {
+                recordsIngested += records;
+            } else if (tier !== 'sourceAligned' && tier !== 'application' && tier !== 'dataSource' && tier !== 'source') {
+                recordsProcessed += records;
+            }
+        });
+
+        return { dataSources, dataProducts, outputPorts, recordsIngested, recordsProcessed };
+    }, [visibleNodes, observeMode, selection.id, metricsMap]);
+
     return (
         <div style={{ height: '100%', position: 'relative', overflow: 'hidden' }}>
 
@@ -1429,7 +1490,7 @@ function Flow() {
                 zIndex: 10,
                 display: 'flex',
                 gap: '12px',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 pointerEvents: 'none' // Let clicks pass through to canvas where empty
             }}>
 
@@ -1438,67 +1499,80 @@ function Flow() {
                     {/* Domain Selector */}
                     {!selection.id && (
                         <DomainSelector
-                            domains={availableDomains}
-                            selectedDomains={selectedDomains}
-                            onChange={setSelectedDomains}
-                        />
-                    )}
+                                domains={availableDomains}
+                                selectedDomains={selectedDomains}
+                                onChange={setSelectedDomains}
+                            />
+                        )}
 
-                    {/* Global Filter */}
-                    {!selection.id && (
-                        <GlobalFilter
-                            filterText={globalFilterText}
-                            onFilterChange={setGlobalFilterText}
-                        />
-                    )}
+                        {/* Global Filter */}
+                        {!selection.id && (
+                            <GlobalFilter
+                                filterText={globalFilterText}
+                                onFilterChange={setGlobalFilterText}
+                            />
+                        )}
 
-                    {/* Validate Button */}
-                    {!selection.id && validationResults?.length > 0 && (
-                        <button
-                            onClick={handleValidateRegistry}
-                            disabled={isLoading || error}
-                            style={{
-                                padding: '8px 16px',
-                                background: '#dc2626',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                height: '32px' // Match input height roughly
-                            }}
-                        >
-                            Found {validationResults.length} Registry Error(s)
-                        </button>
-                    )}
+                        {/* Validate Button */}
+                        {!selection.id && validationResults?.length > 0 && (
+                            <button
+                                onClick={handleValidateRegistry}
+                                disabled={isLoading || error}
+                                style={{
+                                    padding: '8px 16px',
+                                    background: '#dc2626',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                    height: '32px' // Match input height roughly
+                                }}
+                            >
+                                Found {validationResults.length} Registry Error(s)
+                            </button>
+                        )}
 
-                    {/* Back Button */}
-                    {selection.id && (
-                        <button
-                            onClick={handleBack}
-                            style={{
-                                padding: '8px 16px',
-                                background: '#2563eb',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontWeight: '600',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                            }}
-                        >
-                            {backButtonLabel}
-                        </button>
-                    )}
+                        {/* Back Button */}
+                        {selection.id && (
+                            <button
+                                onClick={handleBack}
+                                style={{
+                                    padding: '8px 16px',
+                                    background: '#2563eb',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                }}
+                            >
+                                {backButtonLabel}
+                            </button>
+                        )}
                 </div>
 
                 {/* Spacer */}
                 <div style={{ flex: 1 }}></div>
 
                 {/* Right Controls Group - Observability */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', pointerEvents: 'auto', alignItems: 'flex-end' }}>
-                    <button
+                <div style={{ display: 'flex', gap: '16px', pointerEvents: 'auto', alignItems: 'flex-start' }}>
+
+                    {/* KPIs */}
+                    {observeMode && !selection.id && kpiStats && (
+                        <div style={{ display: 'flex', gap: '8px', animation: 'slideDown 0.3s ease-out', marginTop: '48px' }}>
+                            <KpiCard title="Data sources" value={formatKpiNumber(kpiStats.dataSources)} bgColor="#831843" />
+                            <KpiCard title="Data Products" value={formatKpiNumber(kpiStats.dataProducts)} bgColor="#1e3a8a" />
+                            <KpiCard title="Output ports" value={formatKpiNumber(kpiStats.outputPorts)} bgColor="#4c1d95" />
+                            <KpiCard title="Records Ingested" value={formatKpiNumber(kpiStats.recordsIngested)} bgColor="#064e3b" />
+                            <KpiCard title="Records Processed" value={formatKpiNumber(kpiStats.recordsProcessed)} bgColor="#9a3412" />
+                        </div>
+                    )}
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                        <button
                         onClick={() => {
                             setObserveMode(!observeMode);
                             if (observeMode) {
@@ -1685,6 +1759,7 @@ function Flow() {
                             </div>
                         </div>
                     )}
+                    </div>
                 </div>
             </div>
 

@@ -133,6 +133,27 @@ Requirements are expressed as user stories following the standard format: As a [
 
 - Pips for dimensions for which there are no observability metrics for any data product (hidden from the dimension filter sub-menu) should not be displayed on the node.
 
+#### US-03b · Observe Mode KPIs
+
+| **Field** | **Detail** |
+| --- | --- |
+| Role      | Platform operator, data product owner                                                                                                                                                        |
+| Story     | I want to see summary KPIs when Observing mode is on so that I can understand high-level metrics across the mesh. |
+| Priority  | P1                                                                                                                                                                                           |
+
+##### Acceptance Criteria
+
+- When Observing mode is on, layout the to the left of the observing menu, but below "All Domains" and "Search" box.
+- Each KPI card should be a square, with straight corners, where KPI figures are displayed, each with its own dark color background, showing the number in the center with big bold font and other text above. All text in white
+- KPIs to display:
+  - N Data sources
+  - N Data Products
+  - N Output ports
+  - N records ingested (aggregate physical.pipeline.recordsProcessed from sourceAligned dataProductTier)
+  - N records processed (aggregate physical.pipeline.recordsProcessed from any other dataProductTiers)
+- Where numbers are high, use the k, M, B units.
+- Calculation will update based on domain/search filtering criteria.
+
 ### 2.2 Dimension Filter Sub-Menu
 
 #### US-04 · Dimension Filter Sub-Menu
